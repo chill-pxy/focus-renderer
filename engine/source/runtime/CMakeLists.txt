@@ -18,15 +18,57 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
 
+set(JSON_INCLUDE ${THIRD_PARTY_DIR}/json11)
+
+add_library(json11 ${JSON_INCLUDE}/json11.cpp)
+set_target_properties(json11 PROPERTIES FOLDER "ThirdParty/json11")
+
+target_link_libraries(
+        ${TARGET_NAME} PUBLIC
+        glfw
+        glm
+        imgui
+        stb
+)
+
+target_link_libraries(${TARGET_NAME} PRIVATE $<BUILD_INTERFACE:json11>)
+
+target_link_libraries(${TARGET_NAME} PUBLIC ${vulkan_lib})
+
+target_link_libraries(
+        ${TARGET_NAME} PRIVATE
+        tinyobjloader
+)
+
 target_include_directories(
         ${TARGET_NAME}
         PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/source>
         $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
 
+target_include_directories(
+        ${TARGET_NAME}
+        PUBLIC $<BUILD_INTERFACE:${JSON_INCLUDE}>
+)
 
 target_include_directories(
         ${TARGET_NAME}
         PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/source/runtime>
         $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
 )
+
+target_include_directories(
+        ${TARGET_NAME}
+        PUBLIC $<BUILD_INTERFACE:${ENGINE_ROOT_DIR}/source/runtime/function/render/include>
+        $<INSTALL_INTERFACE:include/${TARGET_NAME}-${PROJECT_VERSION}>
+)
+
+target_include_directories(
+        ${TARGET_NAME}
+        PUBLIC $<BUILD_INTERFACE:${vulkan_include}>)
+
+string(TOLOWER ${TARGET_NAME}/version.h VERSION_HEADER_LOCATION)
+
+##precompile
+#set gloval vari used by precompile
+set(EAT_RUNTIME_HEADS "${HEADER_FILES}" PARENT_SCOPE)

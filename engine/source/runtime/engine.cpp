@@ -2,16 +2,22 @@
 // Created by pxy on 2024/4/8.
 //
 module;
+#include<iostream>
+#include<memory>
+module engine;
 
-#include <iostream>
-
-module Engine;
+import runtime_context;
 
 namespace EAT
 {
     Engine::Engine()
     {
-        std::cout<<"Engine builed";
+        _runtime_context = std::make_shared<RuntimeContext>();
+    }
+
+    void Engine::startEngine()
+    {
+        _runtime_context->startSystems();
     }
 }
 

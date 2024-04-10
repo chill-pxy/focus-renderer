@@ -1,4 +1,4 @@
-import Engine;
+import engine;
 
 int main(int argc, char** argv)
 {
@@ -17,7 +17,8 @@ int main(int argc, char** argv)
 //    editor->clear();
 //    engine->shutdownEngine();
 
-    EAT::Engine* m_engine = new EAT::Engine();
+    EAT::Engine* engine = new EAT::Engine();
+    engine->startEngine();
 
     return 0;
 } 

@@ -8,7 +8,7 @@ module engine;
 
 import runtime_context;
 
-namespace EAT
+namespace FOCUS
 {
     Engine::Engine()
     {

@@ -4,7 +4,7 @@
 module;
 export module window_system;
 
-namespace EAT
+namespace FOCUS
 {
     export class WindowSystem
     {

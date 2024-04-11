@@ -1,5 +1,5 @@
 
-set(ENGINE_ROOT_DIR "${EAT_ROOT_DIR}/engine")
+set(ENGINE_ROOT_DIR "${FOCUS_ROOT_DIR}/engine")
 set(THIRD_PARTY_DIR "${ENGINE_ROOT_DIR}/3rdparty")
 set(ENGINE_ASSET_DIR "/asset")
 
@@ -24,7 +24,7 @@ set(ENGINE_ASSET_DIR "/asset")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options("/MP")
-    set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT SmoothEditor)
+    set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Editor)
 endif()
 
 set(vulkan_include ${THIRD_PARTY_DIR}/VulkanSDK/include)

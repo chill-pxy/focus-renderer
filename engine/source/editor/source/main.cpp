@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 //    editor->clear();
 //    engine->shutdownEngine();
 
-    EAT::Engine* engine = new EAT::Engine();
+    FOCUS::Engine* engine = new FOCUS::Engine();
     engine->startEngine();
 
     return 0;

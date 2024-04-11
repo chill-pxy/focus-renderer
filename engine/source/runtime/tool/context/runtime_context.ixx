@@ -10,7 +10,7 @@ export module runtime_context;
 
 import window_system;
 
-namespace EAT
+namespace FOCUS
 {
     export class RuntimeContext
     {

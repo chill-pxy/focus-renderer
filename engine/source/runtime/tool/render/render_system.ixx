@@ -4,7 +4,7 @@
 
 export module render_system;
 
-namespace EAT
+namespace FOCUS
 {
     export class RenderSystem
     {

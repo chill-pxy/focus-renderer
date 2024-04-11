@@ -7,7 +7,7 @@ export module engine;
 
 import runtime_context;
 
-namespace EAT
+namespace FOCUS
 {
     export class Engine
     {

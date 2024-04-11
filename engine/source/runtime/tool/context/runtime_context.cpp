@@ -8,7 +8,7 @@ module runtime_context;
 
 import window_system;
 
-namespace EAT
+namespace FOCUS
 {
     void RuntimeContext::startSystems()
     {

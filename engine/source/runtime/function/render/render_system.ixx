@@ -1,7 +1,7 @@
 //
 // Created by pxy on 2024/4/10.
 //
-
+module;
 export module render_system;
 
 namespace FOCUS
@@ -10,9 +10,9 @@ namespace FOCUS
     {
     public:
         RenderSystem() = default;
-        ~RenderSystem();
+        //~RenderSystem();
 
         void init();
-        void tick();
+        //void tick();
     };
 }

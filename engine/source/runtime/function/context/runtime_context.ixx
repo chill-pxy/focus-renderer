@@ -9,6 +9,7 @@ module;
 export module runtime_context;
 
 import window_system;
+import render_system;
 
 namespace FOCUS
 {
@@ -21,5 +22,6 @@ namespace FOCUS
 
     public:
         std::shared_ptr<WindowSystem> _window_system;
+        std::shared_ptr<RenderSystem> _render_system;
     };
 }

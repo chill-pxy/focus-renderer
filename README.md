@@ -1,4 +1,4 @@
-EvolutionArt Engine(EAT Engine)
+FOCUS Engine
 
 features:
     designed with C++ modules concept

@@ -1,56 +1,11 @@
+set(TARGET_NAME engine)
 
-set(ENGINE_ROOT_DIR "${FOCUS_ROOT_DIR}/engine")
-set(THIRD_PARTY_DIR "${ENGINE_ROOT_DIR}/3rdparty")
-set(ENGINE_ASSET_DIR "/asset")
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(DEPLOY_CONFIG_DIR "configs/deployment")
-#set(DEVELOP_CONFIG_DIR "configs/development")
+file(GLOB_RECURSE HEADER_FILES "*.ixx")
+file(GLOB_RECURSE SOURCE_FILES "*.cpp")
 
-# option(ENABLE_PHYSICS_DEBUG_RENDERER "Enable Physics Debug Renderer" OFF)
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES})
 
-# if(NOT WIN32)
-#   if(ENABLE_PHYSICS_DEBUG_RENDERER)
-#     message(WARNING "Disable Physics Debug Renderer")
-#     set(ENABLE_PHYSICS_DEBUG_RENDERER OFF CACHE BOOL "" FORCE)
-#   endif()
-# endif()
-
-# if(ENABLE_PHYSICS_DEBUG_RENDERER)
-#   set(JOLT_ASSET_DIR "/jolt-asset")
-# endif()
-
-# set(SHADER_COMPILE_TARGET SmoothShaderCompile)
-#add_subdirectory(shader)
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options("/MP")
-    set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Editor)
-endif()
-
-set(vulkan_include ${THIRD_PARTY_DIR}/VulkanSDK/include)
-
-if(WIN32)
-    set(vulkan_lib ${THIRD_PARTY_DIR}/VulkanSDK/lib/Win32/vulkan-1.lib)
-    set(glslangValidator_executable ${THIRD_PARTY_DIR}/VulkanSDK/bin/Win32/glslangValidator.exe)
-    add_compile_definitions("PICCOLO_VK_LAYER_PATH=${THIRD_PARTY_DIR}/VulkanSDK/bin/Win32")
-elseif(UNIX)
-    if(APPLE)
-        set(vulkan_lib ${THIRD_PARTY_DIR}/VulkanSDK/lib/MacOS/libvulkan.1.dylib)
-        set(glslangValidator_executable ${THIRD_PARTY_DIR}/VulkanSDK/bin/MacOS/glslangValidator)
-        add_compile_definitions("PICCOLO_VK_LAYER_PATH=${THIRD_PARTY_DIR}/VulkanSDK/bin/MacOS")
-        add_compile_definitions("PICCOLO_VK_ICD_FILENAMES=${THIRD_PARTY_DIR}/VulkanSDK/bin/MacOS/MoltenVK_icd.json")
-    else()
-        set(vulkan_lib ${THIRD_PARTY_DIR}/VulkanSDK/lib/Linux/libvulkan.so.1)
-        set(glslangValidator_executable ${THIRD_PARTY_DIR}/VulkanSDK/bin/Linux/glslangValidator)
-        add_compile_definitions("PICCOLO_VK_LAYER_PATH=${THIRD_PARTY_DIR}/VulkanSDK/bin/Linux")
-    endif()
-else()
-    message(FATAL_ERROR "Unknown Platform")
-endif()
-
-#
-#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS OFF)
-
-add_subdirectory(3rdparty)
-add_subdirectory(source/runtime)
-add_subdirectory(source/editor)
+add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES})

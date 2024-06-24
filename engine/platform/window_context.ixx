@@ -1,4 +1,5 @@
 module;
+#define GLFW_INCLUDE_VULKAN
 #include"GLFW/glfw3.h"
 export module window_context;
 
@@ -14,16 +15,24 @@ namespace FOCUS
             glfwInit();
 
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-            GLFWwindow* window = glfwCreateWindow(800, 800, "FOCUS", nullptr, nullptr);
+            _window = glfwCreateWindow(800, 800, "FOCUS", nullptr, nullptr);
 
-            while (!glfwWindowShouldClose(window))
+            while (!glfwWindowShouldClose(_window))
             {
                 glfwPollEvents();
             }
 
-            glfwDestroyWindow(window);
+            glfwDestroyWindow(_window);
 
             glfwTerminate();
         }
+
+        GLFWwindow* getWindowInstance()
+        {
+            return _window;
+        }
+
+    private:
+        GLFWwindow* _window;
     };
 }

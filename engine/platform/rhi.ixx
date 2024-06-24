@@ -5,7 +5,8 @@ namespace FOCUS
 {
 	export class RHI
 	{
-		RHI();
-		virtual void init();
+	public:
+		RHI() = default;
+		virtual void init() {}
 	};
 }

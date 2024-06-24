@@ -10,6 +10,7 @@ add_library(${TARGET_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${TARGET_NAME} PUBLIC
     ${vulkan_lib}
+    glfw
 )
 
 target_include_directories(${TARGET_NAME} PUBLIC 

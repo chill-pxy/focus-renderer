@@ -1,8 +1,9 @@
-import interfaces;
+import window_context;
 
 int main()
 {
-	FOCUS::testFun();
+	auto window = new FOCUS::WindowContext();
+	window->init();
 
 	return 0;
 }

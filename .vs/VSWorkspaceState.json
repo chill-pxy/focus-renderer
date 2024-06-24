@@ -7,9 +7,10 @@
   },
   "ExpandedNodes": [
     "",
-    "\\engine",
-    "\\engine\\platform"
+    "\\engine\\function",
+    "\\engine\\platform",
+    "\\out\\build"
   ],
-  "SelectedNode": "\\engine\\platform",
+  "SelectedNode": "\\engine",
   "PreviewInSolutionExplorer": false
 }

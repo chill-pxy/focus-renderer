@@ -1,6 +1,6 @@
 module;
 #include<memory>
-
+#include<iostream>
 #include<GLFW/glfw3.h>
 export module engine;
 
@@ -31,7 +31,7 @@ namespace FOCUS
 			while (!glfwWindowShouldClose(_window_context->getWindowInstance())) 
 			{
 				glfwPollEvents();
-				_vulkan_rhi->run();
+				_vulkan_rhi->drawTriangle();
 			}
 
 			_vulkan_rhi->cleanup();

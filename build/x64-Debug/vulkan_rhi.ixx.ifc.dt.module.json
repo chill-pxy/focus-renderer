@@ -1,9 +1,0 @@
-{
-    "Version": "1.1",
-    "Data": {
-        "Source": "c:\\project\\focus\\engine\\platform\\vulkan_rhi.ixx",
-        "ProvidedModule": "vulkan_rhi",
-        "ImportedModules": [],
-        "ImportedHeaderUnits": []
-    }
-}

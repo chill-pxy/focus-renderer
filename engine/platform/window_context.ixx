@@ -8,20 +8,18 @@ namespace FOCUS
     export class WindowContext
     {
     public:
-        WindowContext() = default;
-
         void init()
         {
             glfwInit();
 
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-            _window = glfwCreateWindow(800, 800, "FOCUS", nullptr, nullptr);
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-            while (!glfwWindowShouldClose(_window))
-            {
-                glfwPollEvents();
-            }
+            _window = glfwCreateWindow(800, 800, "Vulkan", nullptr, nullptr);
+        }
 
+        void cleanup()
+        {
             glfwDestroyWindow(_window);
 
             glfwTerminate();

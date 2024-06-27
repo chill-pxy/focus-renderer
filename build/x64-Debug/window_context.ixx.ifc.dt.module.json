@@ -1,9 +1,0 @@
-{
-    "Version": "1.1",
-    "Data": {
-        "Source": "c:\\project\\focus\\engine\\platform\\window_context.ixx",
-        "ProvidedModule": "window_context",
-        "ImportedModules": [],
-        "ImportedHeaderUnits": []
-    }
-}

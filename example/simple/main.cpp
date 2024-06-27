@@ -1,29 +1,10 @@
-//import window_context;
-import vulkan_rhi;
+import engine;
 
 #include <iostream>
-#include <fstream>
 #include <stdexcept>
-#include <algorithm>
-#include <vector>
-#include <cstring>
-#include <cstdlib>
-#include <cstdint>
-#include <limits>
-#include <optional>
-#include <set>
-
 int main()
 {
-	/*auto window = new FOCUS::WindowContext();
-	window->init();
-
-	auto vulkan = new FOCUS::VulkanRHI();
-	vulkan->init(window->getWindowInstance());
-
-	return 0;*/
-
-    HelloTriangleApplication app;
+    FOCUS::Engine app;
 
     try {
         app.run();

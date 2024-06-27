@@ -8,11 +8,15 @@ file(GLOB_RECURSE SOURCE_FILES "*.ixx")
 
 add_library(${TARGET_NAME} ${SOURCE_FILES})
 
+find_package(Vulkan REQUIRED)
+if(Vulkan_FOUND)
+    message(STATUS "Vulkan include dir:${Vulkan_INCLUDE_DIR}")
+    message(STATUS "Vulkan library dir:${Vulkan_LIBRARY}")
+endif()
+
 target_link_libraries(${TARGET_NAME} PUBLIC
-    ${vulkan_lib}
+    ${Vulkan_LIBRARY}
     glfw
 )
 
-target_include_directories(${TARGET_NAME} PUBLIC 
-    $<BUILD_INTERFACE:${vulkan_include}>
-)
+include_directories(${Vulkan_INCLUDE_DIRS})

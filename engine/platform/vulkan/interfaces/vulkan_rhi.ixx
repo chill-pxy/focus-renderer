@@ -40,35 +40,35 @@ namespace FOCUS
     export class VulkanRHI 
     {
     private:
-        GLFWwindow* window;
+        GLFWwindow*                _window;
 
-        VkInstance instance;
-        VkDebugUtilsMessengerEXT debugMessenger;
-        VkSurfaceKHR surface;
+        VkInstance                 _instance;
+        VkDebugUtilsMessengerEXT   _debugMessenger;
+        VkSurfaceKHR               _surface;
 
-        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        VkDevice device;
+        VkPhysicalDevice           _physicalDevice = VK_NULL_HANDLE;
+        VkDevice                   _device;
 
-        VkQueue graphicsQueue;
-        VkQueue presentQueue;
+        VkQueue                    _graphicsQueue;
+        VkQueue                    _presentQueue;
 
-        VkSwapchainKHR swapChain;
-        std::vector<VkImage> swapChainImages;
-        VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
-        std::vector<VkImageView> swapChainImageViews;
-        std::vector<VkFramebuffer> swapChainFramebuffers;
+        VkSwapchainKHR             _swapChain;
+        std::vector<VkImage>       _swapChainImages;
+        VkFormat                   _swapChainImageFormat;
+        VkExtent2D                 _swapChainExtent;
+        std::vector<VkImageView>   _swapChainImageViews;
+        std::vector<VkFramebuffer> _swapChainFramebuffers;
 
-        VkRenderPass renderPass;
-        VkPipelineLayout pipelineLayout;
-        VkPipeline graphicsPipeline;
+        VkRenderPass               _renderPass;
+        VkPipelineLayout           _pipelineLayout;
+        VkPipeline                 _graphicsPipeline;
 
-        VkCommandPool commandPool;
-        VkCommandBuffer commandBuffer;
+        VkCommandPool              _commandPool;
+        VkCommandBuffer            _commandBuffer;
 
-        VkSemaphore imageAvailableSemaphore;
-        VkSemaphore renderFinishedSemaphore;
-        VkFence inFlightFence;
+        VkSemaphore                _imageAvailableSemaphore;
+        VkSemaphore                _renderFinishedSemaphore;
+        VkFence                    _inFlightFence;
 
     public:
         void init(GLFWwindow* windows);

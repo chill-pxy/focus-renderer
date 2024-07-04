@@ -17,6 +17,9 @@ endif()
 target_link_libraries(${TARGET_NAME} PUBLIC
     ${Vulkan_LIBRARY}
     glfw
+    tinyobjloader
+    glm
+    stb
 )
 
 include_directories(${Vulkan_INCLUDE_DIRS})

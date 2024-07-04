@@ -15,7 +15,7 @@ namespace FOCUS
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-            _window = glfwCreateWindow(800, 800, "Vulkan", nullptr, nullptr);
+            _window = glfwCreateWindow(800, 800, "FOCUS", nullptr, nullptr);
         }
 
         void cleanup()

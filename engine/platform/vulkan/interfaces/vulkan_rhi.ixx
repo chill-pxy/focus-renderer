@@ -147,10 +147,8 @@ namespace FOCUS
         bool framebufferResized = false;
 
     public:
-        void run();
-        void initWindow();
-        void initVulkan();
-        void mainLoop();
+        void init(GLFWwindow* windows);
+        void drawFrame();
         void cleanupSwapChain();
         void cleanup();
 
@@ -169,7 +167,7 @@ namespace FOCUS
         void createInstance();
         void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
         void setupDebugMessenger();
-        void createSurface();
+        void createSurface(GLFWwindow* window);
         void pickPhysicalDevice();
         void createLogicalDevice();
         void createSwapChain();
@@ -198,7 +196,6 @@ namespace FOCUS
         void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void createSyncObjects();
         void updateUniformBuffer(uint32_t currentImage);
-        void drawFrame();
         void createUniformBuffers();
         void recreateSwapChain();
 

@@ -85,27 +85,10 @@ struct UniformBufferObject {
 
 namespace FOCUS
 {
-    void VulkanRHI::run() {
-        initWindow();
-        initVulkan();
-        mainLoop();
-        cleanup();
-    }
-
-    void VulkanRHI::initWindow() {
-        glfwInit();
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-        window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-        glfwSetWindowUserPointer(window, this);
-        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-    }
-
-    void VulkanRHI::initVulkan() {
+    void VulkanRHI::init(GLFWwindow* windows) {
         createInstance();
         setupDebugMessenger();
-        createSurface();
+        createSurface(windows);
         pickPhysicalDevice();
         createLogicalDevice();
         createSwapChain();
@@ -129,15 +112,6 @@ namespace FOCUS
         createSyncObjects();
     }
 
-    void VulkanRHI::mainLoop() {
-        while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
-            drawFrame();
-        }
-
-        vkDeviceWaitIdle(device);
-    }
-
     void VulkanRHI::cleanupSwapChain() {
         vkDestroyImageView(device, depthImageView, nullptr);
         vkDestroyImage(device, depthImage, nullptr);
@@ -155,6 +129,8 @@ namespace FOCUS
     }
 
     void VulkanRHI::cleanup() {
+        vkDeviceWaitIdle(device);
+
         cleanupSwapChain();
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
@@ -198,10 +174,6 @@ namespace FOCUS
 
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
-
-        glfwDestroyWindow(window);
-
-        glfwTerminate();
     }
 
 
@@ -290,7 +262,8 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createSurface() {
+    void VulkanRHI::createSurface(GLFWwindow* windows) {
+        window = windows;
         if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
             throw std::runtime_error("failed to create window surface!");
         }

@@ -24,6 +24,8 @@ module;
 #include <unordered_map>
 export module vulkan_rhi;
 
+import vulkan_swap_chain;
+
 
 export struct Vertex 
 {
@@ -66,28 +68,13 @@ export struct Vertex
     }
 };
 
-export struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
-
-    bool isComplete() {
-        return graphicsFamily.has_value() && presentFamily.has_value();
-    }
-};
-
-export struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
-
-
-
 namespace FOCUS
 {
 	export class VulkanRHI
 	{
     private:
+        std::shared_ptr<VulkanSwapChain> _vkSwapChain;
+
         GLFWwindow* window;
 
         VkInstance instance;
@@ -99,13 +86,6 @@ namespace FOCUS
 
         VkQueue graphicsQueue;
         VkQueue presentQueue;
-
-        VkSwapchainKHR swapChain;
-        std::vector<VkImage> swapChainImages;
-        VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
-        std::vector<VkImageView> swapChainImageViews;
-        std::vector<VkFramebuffer> swapChainFramebuffers;
 
         VkRenderPass renderPass;
         VkDescriptorSetLayout descriptorSetLayout;
@@ -147,9 +127,10 @@ namespace FOCUS
         bool framebufferResized = false;
 
     public:
+        VulkanRHI();
+
         void init(GLFWwindow* windows);
         void drawFrame();
-        void cleanupSwapChain();
         void cleanup();
 
         static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
@@ -158,7 +139,7 @@ namespace FOCUS
         };
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-            std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+            //std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
             return VK_FALSE;
         };
@@ -170,7 +151,6 @@ namespace FOCUS
         void createSurface(GLFWwindow* window);
         void pickPhysicalDevice();
         void createLogicalDevice();
-        void createSwapChain();
         void createImageViews();
         void createRenderPass();
         void createDescriptorSetLayout();
@@ -203,13 +183,8 @@ namespace FOCUS
         VkCommandBuffer beginSingleTimeCommands();
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         VkShaderModule createShaderModule(const std::vector<char>& code);
-        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-        SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
         bool isDeviceSuitable(VkPhysicalDevice device);
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
         std::vector<const char*> getRequiredExtensions();
         bool checkValidationLayerSupport();
         bool hasStencilComponent(VkFormat format);

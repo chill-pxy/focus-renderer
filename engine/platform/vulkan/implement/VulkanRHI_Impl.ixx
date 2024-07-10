@@ -28,12 +28,9 @@
 #include <set>
 #include <unordered_map>
 
-import vulkan_rhi;
-import vulkan_swap_chain;
-import vulkan_queue_family_indices;
-
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+import VulkanRHI;
+import VulkanSwapChain;
+import VulkanQueueFamilyIndices;
 
 const std::string MODEL_PATH = "../../../engine/asset/Models/viking_room.obj";
 const std::string TEXTURE_PATH = "../../../engine/asset/Models/viking_room.png";

@@ -2,10 +2,10 @@ module;
 #include<memory>
 #include<iostream>
 #include<GLFW/glfw3.h>
-export module engine;
+export module Engine;
 
-import window_context;
-import vulkan_rhi;
+import WindowContext;
+import VulkanRHI;
 
 namespace FOCUS
 {

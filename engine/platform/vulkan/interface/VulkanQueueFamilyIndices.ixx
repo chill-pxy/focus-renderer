@@ -3,7 +3,7 @@ module;
 
 #include <vector>
 #include <optional>
-export module vulkan_queue_family_indices;
+export module VulkanQueueFamilyIndices;
 
 namespace FOCUS
 {

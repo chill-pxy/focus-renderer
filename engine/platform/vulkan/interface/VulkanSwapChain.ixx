@@ -3,7 +3,7 @@ module;
 #include <GLFW/glfw3.h>
 
 #include <vector>
-export module vulkan_swap_chain;
+export module VulkanSwapChain;
 
 export struct SwapChainSupportDetails
 {

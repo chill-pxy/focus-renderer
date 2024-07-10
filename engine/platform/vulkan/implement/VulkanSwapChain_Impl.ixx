@@ -5,8 +5,8 @@
 #include <optional>
 #include <algorithm>
 
-import vulkan_swap_chain;
-import vulkan_queue_family_indices;
+import VulkanSwapChain;
+import VulkanQueueFamilyIndices;
 
 namespace FOCUS
 {

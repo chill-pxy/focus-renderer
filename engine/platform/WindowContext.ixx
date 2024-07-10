@@ -1,7 +1,7 @@
 module;
 #define GLFW_INCLUDE_VULKAN
 #include"GLFW/glfw3.h"
-export module window_context;
+export module WindowContext;
 
 namespace FOCUS
 {
@@ -15,7 +15,7 @@ namespace FOCUS
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-            _window = glfwCreateWindow(800, 800, "FOCUS", nullptr, nullptr);
+            _window = glfwCreateWindow(1920, 1080, "FOCUS", nullptr, nullptr);
         }
 
         void cleanup()

@@ -13,11 +13,40 @@ namespace FOCUS
 		std::vector<VkCommandBuffer> commandBuffers;
 
 	public:
-		void createCommandBuffers();
-		void createCommandPool(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkDevice device);
-		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-		void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+		void createCommandBuffers(VkDevice device);
+		
+		void createCommandPool
+		(
+			VkPhysicalDevice physicalDevice, 
+			VkSurfaceKHR surface, 
+			VkDevice device
+		);
+		
+		void endSingleTimeCommands
+		(
+			VkCommandBuffer commandBuffer, 
+			VkQueue graphicsQueue, 
+			VkDevice device
+		);
+		
+		void recordCommandBuffer
+		(
+			VkCommandBuffer commandBuffer,
+			uint32_t imageIndex,
+			VkRenderPass renderPass,
+			VkFramebuffer framebuffer,
+			VkExtent2D swapChainExtent,
+			VkPipeline graphicsPipeline,
+			VkBuffer vertexBuffer,
+			VkBuffer indexBuffer,
+			VkDescriptorSet descriptorSet,
+			VkPipelineLayout pipelineLayout,
+			uint32_t size
+		);
 
-		VkCommandBuffer beginSingleTimeCommands();
+		VkCommandBuffer beginSingleTimeCommands
+		(
+			VkDevice device
+		);
 	};
 }

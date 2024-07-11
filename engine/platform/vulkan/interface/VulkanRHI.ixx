@@ -25,7 +25,7 @@ module;
 export module VulkanRHI;
 
 import VulkanSwapChain;
-
+import VulkanCommandBuffer;
 
 export struct Vertex 
 {
@@ -74,6 +74,7 @@ namespace FOCUS
 	{
     private:
         std::shared_ptr<VulkanSwapChain> _vkSwapChain;
+        std::shared_ptr<VulkanCommandBuffer> _vkCommandBuffer;
 
         GLFWwindow* window;
 
@@ -91,8 +92,6 @@ namespace FOCUS
         VkDescriptorSetLayout descriptorSetLayout;
         VkPipelineLayout pipelineLayout;
         VkPipeline graphicsPipeline;
-
-        //VkCommandPool commandPool;
 
         VkImage depthImage;
         VkDeviceMemory depthImageMemory;
@@ -116,8 +115,6 @@ namespace FOCUS
 
         VkDescriptorPool descriptorPool;
         std::vector<VkDescriptorSet> descriptorSets;
-
-        //std::vector<VkCommandBuffer> commandBuffers;
 
         std::vector<VkSemaphore> imageAvailableSemaphores;
         std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -156,7 +153,6 @@ namespace FOCUS
         void createDescriptorSetLayout();
         void createGraphicsPipeline();
         void createFramebuffers();
-        //void createCommandPool();
         void createDepthResources();
         void createTextureImage();
         void createTextureImageView();
@@ -170,17 +166,13 @@ namespace FOCUS
         void createDescriptorPool();
         void createDescriptorSets();
         void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-        //void endSingleTimeCommands(VkCommandBuffer commandBuffer);
         void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-        //void createCommandBuffers();
-        //void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void createSyncObjects();
         void updateUniformBuffer(uint32_t currentImage);
         void createUniformBuffers();
         void recreateSwapChain();
 
         VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
-        //VkCommandBuffer beginSingleTimeCommands();
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         VkShaderModule createShaderModule(const std::vector<char>& code);
         bool isDeviceSuitable(VkPhysicalDevice device);

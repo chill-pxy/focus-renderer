@@ -26,6 +26,7 @@ export module VulkanRHI;
 
 import VulkanSwapChain;
 import VulkanCommandBuffer;
+import VulkanImageView;
 
 export struct Vertex 
 {
@@ -75,6 +76,7 @@ namespace FOCUS
     private:
         std::shared_ptr<VulkanSwapChain> _vkSwapChain;
         std::shared_ptr<VulkanCommandBuffer> _vkCommandBuffer;
+        std::shared_ptr<VulkanImageView> _vkImageView;
 
         GLFWwindow* window;
 
@@ -148,31 +150,23 @@ namespace FOCUS
         void createSurface(GLFWwindow* window);
         void pickPhysicalDevice();
         void createLogicalDevice();
-        void createImageViews();
         void createRenderPass();
         void createDescriptorSetLayout();
         void createGraphicsPipeline();
         void createFramebuffers();
         void createDepthResources();
-        void createTextureImage();
-        void createTextureImageView();
         void createTextureSampler();
-        void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-        void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-        void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
         void loadModel();
         void createVertexBuffer();
         void createIndexBuffer();
         void createDescriptorPool();
         void createDescriptorSets();
-        void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
         void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
         void createSyncObjects();
         void updateUniformBuffer(uint32_t currentImage);
         void createUniformBuffers();
         void recreateSwapChain();
 
-        VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         VkShaderModule createShaderModule(const std::vector<char>& code);
         bool isDeviceSuitable(VkPhysicalDevice device);

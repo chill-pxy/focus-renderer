@@ -5,6 +5,8 @@ module;
 #include <vector>
 export module VulkanSwapChain;
 
+import VulkanImageView;
+
 export struct SwapChainSupportDetails
 {
 	VkSurfaceCapabilitiesKHR        capabilities;
@@ -27,6 +29,7 @@ namespace FOCUS
 	public:
 		void createSwapChain(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkDevice device, GLFWwindow* window);
 		void cleanupSwapChain(VkDevice device, VkImage depthImage, VkImageView depthImageView, VkDeviceMemory depthImageMemory);
+		void createImageViews(VkDevice device, VulkanImageView* vkImageView);
 
 		SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 		VkSurfaceFormatKHR      chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);

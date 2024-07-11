@@ -5,7 +5,7 @@ module;
 export module Engine;
 
 import WindowContext;
-import VulkanRHI;
+import VulkanContext;
 
 namespace FOCUS
 {
@@ -15,7 +15,7 @@ namespace FOCUS
 		Engine()
 		{
 			_window_context = std::make_unique<WindowContext>();
-			_vulkan_rhi = std::make_unique<VulkanRHI>();
+			_vulkan_rhi = std::make_unique<VulkanContext>();
 
 			init();
 		}
@@ -40,6 +40,6 @@ namespace FOCUS
 
 	private:
 		std::unique_ptr<WindowContext> _window_context;
-		std::unique_ptr<VulkanRHI> _vulkan_rhi;
+		std::unique_ptr<VulkanContext> _vulkan_rhi;
 	};
 }

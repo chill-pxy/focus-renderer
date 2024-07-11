@@ -28,7 +28,7 @@
 #include <set>
 #include <unordered_map>
 
-import VulkanRHI;
+import VulkanContext;
 import VulkanSwapChain;
 import VulkanQueueFamilyIndices;
 import VulkanBuffer;
@@ -85,14 +85,14 @@ struct UniformBufferObject {
 
 namespace FOCUS
 {
-    VulkanRHI::VulkanRHI()
+    VulkanContext::VulkanContext()
     {
         _vkSwapChain = std::make_shared<VulkanSwapChain>();
         _vkCommandBuffer = std::make_shared<VulkanCommandBuffer>();
         _vkImageView = std::make_shared<VulkanImageView>();
     }
 
-    void VulkanRHI::init(GLFWwindow* windows) {
+    void VulkanContext::init(GLFWwindow* windows) {
         createInstance();
         setupDebugMessenger();
         createSurface(windows);
@@ -119,7 +119,7 @@ namespace FOCUS
         createSyncObjects();
     }
 
-    void VulkanRHI::cleanup() {
+    void VulkanContext::cleanup() {
         vkDeviceWaitIdle(device);
 
         _vkSwapChain->cleanupSwapChain(device, _vkImageView->depthImage, _vkImageView->depthImageView, _vkImageView->depthImageMemory);
@@ -176,7 +176,7 @@ namespace FOCUS
 
 
 
-    void VulkanRHI::recreateSwapChain() {
+    void VulkanContext::recreateSwapChain() {
         int width = 0, height = 0;
         glfwGetFramebufferSize(window, &width, &height);
         while (width == 0 || height == 0) {
@@ -194,7 +194,7 @@ namespace FOCUS
         createFramebuffers();
     }
 
-    void VulkanRHI::createInstance() {
+    void VulkanContext::createInstance() {
         if (enableValidationLayers && !checkValidationLayerSupport()) {
             throw std::runtime_error("validation layers requested, but not available!");
         }
@@ -234,7 +234,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
+    void VulkanContext::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
         createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
         createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -242,7 +242,7 @@ namespace FOCUS
         createInfo.pfnUserCallback = debugCallback;
     }
 
-    void VulkanRHI::setupDebugMessenger() {
+    void VulkanContext::setupDebugMessenger() {
         if (!enableValidationLayers) return;
 
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
@@ -253,14 +253,14 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createSurface(GLFWwindow* windows) {
+    void VulkanContext::createSurface(GLFWwindow* windows) {
         window = windows;
         if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
             throw std::runtime_error("failed to create window surface!");
         }
     }
 
-    void VulkanRHI::pickPhysicalDevice() {
+    void VulkanContext::pickPhysicalDevice() {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 
@@ -283,7 +283,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createLogicalDevice() {
+    void VulkanContext::createLogicalDevice() {
         QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -329,7 +329,7 @@ namespace FOCUS
         vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
     }
 
-    void VulkanRHI::createRenderPass() {
+    void VulkanContext::createRenderPass() {
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = _vkSwapChain->swapChainImageFormat;
         colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -387,7 +387,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createDescriptorSetLayout() {
+    void VulkanContext::createDescriptorSetLayout() {
         VkDescriptorSetLayoutBinding uboLayoutBinding{};
         uboLayoutBinding.binding = 0;
         uboLayoutBinding.descriptorCount = 1;
@@ -413,7 +413,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createGraphicsPipeline() {
+    void VulkanContext::createGraphicsPipeline() {
         auto vertShaderCode = readFile("../../../engine/asset/Shader/model_vertex.spv");
         auto fragShaderCode = readFile("../../../engine/asset/Shader/model_fragment.spv");
 
@@ -536,7 +536,7 @@ namespace FOCUS
         vkDestroyShaderModule(device, vertShaderModule, nullptr);
     }
 
-    void VulkanRHI::createFramebuffers() {
+    void VulkanContext::createFramebuffers() {
         _vkSwapChain->swapChainFramebuffers.resize(_vkSwapChain->swapChainImageViews.size());
 
         for (size_t i = 0; i < _vkSwapChain->swapChainImageViews.size(); i++) {
@@ -560,14 +560,14 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createDepthResources() {
+    void VulkanContext::createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
 
         _vkImageView->createImage(_vkSwapChain->swapChainExtent.width, _vkSwapChain->swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _vkImageView->depthImage, _vkImageView->depthImageMemory, device, physicalDevice);
         _vkImageView->depthImageView = _vkImageView->createImageView(_vkImageView->depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, device);
     }
 
-    VkFormat VulkanRHI::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    VkFormat VulkanContext::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
         for (VkFormat format : candidates) {
             VkFormatProperties props;
             vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
@@ -583,7 +583,7 @@ namespace FOCUS
         throw std::runtime_error("failed to find supported format!");
     }
 
-    VkFormat VulkanRHI::findDepthFormat() {
+    VkFormat VulkanContext::findDepthFormat() {
         return findSupportedFormat(
             { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
             VK_IMAGE_TILING_OPTIMAL,
@@ -591,11 +591,11 @@ namespace FOCUS
         );
     }
 
-    bool VulkanRHI::hasStencilComponent(VkFormat format) {
+    bool VulkanContext::hasStencilComponent(VkFormat format) {
         return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
     }
 
-    void VulkanRHI::createTextureSampler() {
+    void VulkanContext::createTextureSampler() {
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
 
@@ -619,7 +619,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::loadModel() {
+    void VulkanContext::loadModel() {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
@@ -658,7 +658,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createVertexBuffer() {
+    void VulkanContext::createVertexBuffer() {
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
         VkBuffer stagingBuffer;
@@ -678,7 +678,7 @@ namespace FOCUS
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
-    void VulkanRHI::createIndexBuffer() {
+    void VulkanContext::createIndexBuffer() {
         VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
         VkBuffer stagingBuffer;
@@ -698,7 +698,7 @@ namespace FOCUS
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
-    void VulkanRHI::createUniformBuffers() {
+    void VulkanContext::createUniformBuffers() {
         VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
         uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -712,7 +712,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createDescriptorPool() {
+    void VulkanContext::createDescriptorPool() {
         std::array<VkDescriptorPoolSize, 2> poolSizes{};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
@@ -730,7 +730,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::createDescriptorSets() {
+    void VulkanContext::createDescriptorSets() {
         std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
         VkDescriptorSetAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -776,7 +776,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    void VulkanContext::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
         VkCommandBuffer commandBuffer = _vkCommandBuffer->beginSingleTimeCommands(device);
 
         VkBufferCopy copyRegion{};
@@ -786,7 +786,7 @@ namespace FOCUS
         _vkCommandBuffer->endSingleTimeCommands(commandBuffer,graphicsQueue,device);
     }
 
-    void VulkanRHI::createSyncObjects() {
+    void VulkanContext::createSyncObjects() {
         imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
@@ -807,7 +807,7 @@ namespace FOCUS
         }
     }
 
-    void VulkanRHI::updateUniformBuffer(uint32_t currentImage) {
+    void VulkanContext::updateUniformBuffer(uint32_t currentImage) {
         static auto startTime = std::chrono::high_resolution_clock::now();
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -822,7 +822,7 @@ namespace FOCUS
         memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }
 
-    void VulkanRHI::drawFrame() {
+    void VulkanContext::drawFrame() {
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
@@ -900,7 +900,7 @@ namespace FOCUS
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-    VkShaderModule VulkanRHI::createShaderModule(const std::vector<char>& code) {
+    VkShaderModule VulkanContext::createShaderModule(const std::vector<char>& code) {
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         createInfo.codeSize = code.size();
@@ -914,7 +914,7 @@ namespace FOCUS
         return shaderModule;
     }
 
-    bool VulkanRHI::isDeviceSuitable(VkPhysicalDevice device) {
+    bool VulkanContext::isDeviceSuitable(VkPhysicalDevice device) {
         QueueFamilyIndices indices = findQueueFamilies(device, surface);
 
         bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -931,7 +931,7 @@ namespace FOCUS
         return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
     }
 
-    bool VulkanRHI::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    bool VulkanContext::checkDeviceExtensionSupport(VkPhysicalDevice device) {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -947,7 +947,7 @@ namespace FOCUS
         return requiredExtensions.empty();
     }
 
-    std::vector<const char*> VulkanRHI::getRequiredExtensions() {
+    std::vector<const char*> VulkanContext::getRequiredExtensions() {
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -961,7 +961,7 @@ namespace FOCUS
         return extensions;
     }
 
-    bool VulkanRHI::checkValidationLayerSupport() {
+    bool VulkanContext::checkValidationLayerSupport() {
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -986,7 +986,7 @@ namespace FOCUS
         return true;
     }
 
-    std::vector<char> VulkanRHI::readFile(const std::string& filename) {
+    std::vector<char> VulkanContext::readFile(const std::string& filename) {
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
         if (!file.is_open()) {

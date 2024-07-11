@@ -22,7 +22,7 @@ module;
 #include <optional>
 #include <set>
 #include <unordered_map>
-export module VulkanRHI;
+export module VulkanContext;
 
 import VulkanSwapChain;
 import VulkanCommandBuffer;
@@ -71,7 +71,7 @@ export struct Vertex
 
 namespace FOCUS
 {
-	export class VulkanRHI
+	export class VulkanContext
 	{
     private:
         std::shared_ptr<VulkanSwapChain> _vkSwapChain;
@@ -119,14 +119,14 @@ namespace FOCUS
         bool framebufferResized = false;
 
     public:
-        VulkanRHI();
+        VulkanContext();
 
         void init(GLFWwindow* windows);
         void drawFrame();
         void cleanup();
 
         static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-            auto app = reinterpret_cast<VulkanRHI*>(glfwGetWindowUserPointer(window));
+            auto app = reinterpret_cast<VulkanContext*>(glfwGetWindowUserPointer(window));
             app->framebufferResized = true;
         };
 
@@ -160,7 +160,6 @@ namespace FOCUS
         void createUniformBuffers();
         void recreateSwapChain();
 
-        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         VkShaderModule createShaderModule(const std::vector<char>& code);
         bool isDeviceSuitable(VkPhysicalDevice device);
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);

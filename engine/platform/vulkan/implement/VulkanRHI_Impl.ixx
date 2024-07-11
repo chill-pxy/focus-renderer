@@ -122,7 +122,7 @@ namespace FOCUS
     void VulkanRHI::cleanup() {
         vkDeviceWaitIdle(device);
 
-        _vkSwapChain->cleanupSwapChain(device, depthImage, depthImageView, depthImageMemory);
+        _vkSwapChain->cleanupSwapChain(device, _vkImageView->depthImage, _vkImageView->depthImageView, _vkImageView->depthImageMemory);
 
         vkDestroyPipeline(device, graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
@@ -136,10 +136,10 @@ namespace FOCUS
         vkDestroyDescriptorPool(device, descriptorPool, nullptr);
 
         vkDestroySampler(device, textureSampler, nullptr);
-        vkDestroyImageView(device, textureImageView, nullptr);
+        vkDestroyImageView(device, _vkImageView->textureImageView, nullptr);
 
-        vkDestroyImage(device, textureImage, nullptr);
-        vkFreeMemory(device, textureImageMemory, nullptr);
+        vkDestroyImage(device, _vkImageView->textureImage, nullptr);
+        vkFreeMemory(device, _vkImageView->textureImageMemory, nullptr);
 
         vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
@@ -186,7 +186,7 @@ namespace FOCUS
 
         vkDeviceWaitIdle(device);
 
-        _vkSwapChain->cleanupSwapChain(device, depthImage, depthImageView, depthImageMemory);
+        _vkSwapChain->cleanupSwapChain(device, _vkImageView->depthImage, _vkImageView->depthImageView, _vkImageView->depthImageMemory);
 
         _vkSwapChain->createSwapChain(physicalDevice, surface, device, window);
         _vkSwapChain->createImageViews(device, _vkImageView.get());
@@ -542,7 +542,7 @@ namespace FOCUS
         for (size_t i = 0; i < _vkSwapChain->swapChainImageViews.size(); i++) {
             std::array<VkImageView, 2> attachments = {
                 _vkSwapChain->swapChainImageViews[i],
-                depthImageView
+                _vkImageView->depthImageView
             };
 
             VkFramebufferCreateInfo framebufferInfo{};
@@ -563,8 +563,8 @@ namespace FOCUS
     void VulkanRHI::createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
 
-        _vkImageView->createImage(_vkSwapChain->swapChainExtent.width, _vkSwapChain->swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory, device, physicalDevice);
-        depthImageView = _vkImageView->createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, device);
+        _vkImageView->createImage(_vkSwapChain->swapChainExtent.width, _vkSwapChain->swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _vkImageView->depthImage, _vkImageView->depthImageMemory, device, physicalDevice);
+        _vkImageView->depthImageView = _vkImageView->createImageView(_vkImageView->depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, device);
     }
 
     VkFormat VulkanRHI::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
@@ -751,7 +751,7 @@ namespace FOCUS
 
             VkDescriptorImageInfo imageInfo{};
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            imageInfo.imageView = textureImageView;
+            imageInfo.imageView = _vkImageView->textureImageView;
             imageInfo.sampler = textureSampler;
 
             std::array<VkWriteDescriptorSet, 2> descriptorWrites{};

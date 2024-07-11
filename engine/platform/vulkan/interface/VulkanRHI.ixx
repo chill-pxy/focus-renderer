@@ -95,13 +95,6 @@ namespace FOCUS
         VkPipelineLayout pipelineLayout;
         VkPipeline graphicsPipeline;
 
-        VkImage depthImage;
-        VkDeviceMemory depthImageMemory;
-        VkImageView depthImageView;
-
-        VkImage textureImage;
-        VkDeviceMemory textureImageMemory;
-        VkImageView textureImageView;
         VkSampler textureSampler;
 
         std::vector<Vertex> vertices;

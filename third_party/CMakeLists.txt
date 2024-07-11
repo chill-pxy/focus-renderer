@@ -32,11 +32,6 @@ endif()
 #     set_target_properties(spdlog PROPERTIES FOLDER ${third_party_folder}/spdlog)
 # endif()
 
-if(NOT TARGET glad)
-    include(glad.cmake)
-    set_target_properties(glad PROPERTIES FOLDER ${third_party_folder}/glad)
-endif()
-
 if(NOT TARGET stb)
     include(stb.cmake)
     set_target_properties(stb PROPERTIES FOLDER ${third_party_folder}/stb)

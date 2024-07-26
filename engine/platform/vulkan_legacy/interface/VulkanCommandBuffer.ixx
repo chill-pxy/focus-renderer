@@ -44,6 +44,15 @@ namespace FOCUS
 			uint32_t size
 		);
 
+		void copyBuffer
+		(
+			VkBuffer srcBuffer, 
+			VkBuffer dstBuffer,
+			VkDeviceSize size,
+			VkDevice device,
+			VkQueue graphicsQueue
+		);
+
 		VkCommandBuffer beginSingleTimeCommands
 		(
 			VkDevice device

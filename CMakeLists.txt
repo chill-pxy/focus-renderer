@@ -1,3 +1,3 @@
-add_subdirectory(third_party)
-add_subdirectory(engine)
-add_subdirectory(example)
+add_subdirectory(ThirdParty)
+add_subdirectory(Engine)
+add_subdirectory(Example)

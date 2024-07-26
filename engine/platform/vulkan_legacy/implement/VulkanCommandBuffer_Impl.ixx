@@ -139,6 +139,24 @@ namespace FOCUS
         }
     }
 
+    void VulkanCommandBuffer::copyBuffer
+    (
+        VkBuffer srcBuffer, 
+        VkBuffer dstBuffer, 
+        VkDeviceSize size,
+        VkDevice device,
+        VkQueue graphicsQueue
+    ) 
+    {
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands(device);
+
+        VkBufferCopy copyRegion{};
+        copyRegion.size = size;
+        vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+        endSingleTimeCommands(commandBuffer, graphicsQueue, device);
+    }
+
     VkCommandBuffer VulkanCommandBuffer::beginSingleTimeCommands
     (
         VkDevice device

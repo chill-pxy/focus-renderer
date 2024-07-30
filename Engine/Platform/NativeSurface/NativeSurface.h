@@ -4,9 +4,6 @@ namespace FOCUS
 {
 	namespace Platform
 	{
-		class PhysicalDevice
-		{
 
-		};
 	}
 }

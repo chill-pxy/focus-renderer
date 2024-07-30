@@ -4,7 +4,7 @@ namespace FOCUS
 {
 	namespace Platform
 	{
-		class PhysicalDevice
+		class CommandQueue
 		{
 
 		};

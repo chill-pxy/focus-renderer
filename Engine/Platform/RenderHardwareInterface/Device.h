@@ -1,10 +1,13 @@
 #pragma once
 
-namespace RHI
+namespace FOCUS
 {
-	class Device
+	namespace Platform
 	{
-		void CreateCommandAllocators();
-		void CreateCommandList();
-	};
+		class Device
+		{
+			void CreateCommandAllocators();
+			void CreateCommandList();
+		};
+	}
 }

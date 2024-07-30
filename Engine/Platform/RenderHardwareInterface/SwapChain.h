@@ -1,9 +1,12 @@
 #pragma once
 
-namespace RHI
+namespace FOCUS
 {
-	class SwapChain
+	namespace Platform
 	{
+		class SwapChain
+		{
 
-	};
+		};
+	}
 }

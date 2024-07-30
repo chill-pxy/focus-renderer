@@ -1,15 +1,18 @@
 #pragma once
 
-namespace RHI
+namespace FOCUS
 {
-	class Instance
+	namespace Platform
 	{
-	public:
-		void createInstance();
-		void createSwapChain();
+		class Instance
+		{
+		public:
+			void createInstance();
+			void createSwapChain();
 
-		void getNumPhysicalDevices();
-		void getAllPhysicalDevices();
-		void getPhysicalDevice();
-	};
+			void getNumPhysicalDevices();
+			void getAllPhysicalDevices();
+			void getPhysicalDevice();
+		};
+	}
 }

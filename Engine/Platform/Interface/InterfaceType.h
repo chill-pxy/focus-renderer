@@ -4,7 +4,7 @@
 
 namespace FOCUS
 {
-	namespace Plafrom
+	namespace Platform
 	{
 		class VulkanInstance : public Instance
 		{

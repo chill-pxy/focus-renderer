@@ -8,11 +8,11 @@ namespace FOCUS
 		{
 		public:
 			void createInstance(Instance& instance);
-			void createSwapChain();
+			//void createSwapChain();
 
-			void getNumPhysicalDevices();
-			void getAllPhysicalDevices();
-			void getPhysicalDevice();
+			//void getNumPhysicalDevices();
+			//void getAllPhysicalDevices();
+			//void getPhysicalDevice();
 		};
 	}
 }

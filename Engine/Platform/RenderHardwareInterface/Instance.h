@@ -7,7 +7,7 @@ namespace FOCUS
 		class Instance
 		{
 		public:
-			void createInstance();
+			void createInstance(Instance& instance);
 			void createSwapChain();
 
 			void getNumPhysicalDevices();

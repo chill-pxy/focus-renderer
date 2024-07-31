@@ -42,3 +42,7 @@ if(NOT TARGET tinyobjloader)
     set_target_properties(tinyobjloader PROPERTIES FOLDER ${third_party_folder}/tinyobjloader)
     set_target_properties(uninstall PROPERTIES FOLDER ${third_party_folder}/tinyobjloader)
 endif()
+
+if(NOT TARGET volk)
+    add_subdirectory(volk)
+endif()

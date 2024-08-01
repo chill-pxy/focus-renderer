@@ -2,7 +2,6 @@
 #include <vector>
 
 #include <volk.h>
-#include <vulkan/vulkan.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -94,7 +93,7 @@ namespace FOCUS
     //--------------------------------//
 	namespace Platform
 	{
-		void Instance::createInstance(Instance* instance)
+		void createInstance(Instance* instance)
 		{
             VulkanInstance* vinstance = new VulkanInstance();
             instance = vinstance;

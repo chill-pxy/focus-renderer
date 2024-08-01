@@ -18,13 +18,16 @@ namespace FOCUS
 		public:
 			Context() = default;
 
-			void initializeRHI
+			void initialize
 			(
-				Instance& instance, PhysicalDevice& physicalDevice,
+				/*Instance& instance, PhysicalDevice& physicalDevice,
 				Device& device, CommandQueue& commandQueue,
 				SwapChain& swapChain, Texture& backBufferImages, Texture& depthBufferImage,
-				DescriptorHeap& rtvHeap, DescriptorHeap& dsvHeap
-			);
+				DescriptorHeap& rtvHeap, DescriptorHeap& dsvHeap*/
+			)
+			{
+				createInstance(_instance.get());
+			}
 
 		private:
 			std::unique_ptr<Instance> _instance;

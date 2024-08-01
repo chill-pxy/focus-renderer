@@ -10,14 +10,14 @@ file(GLOB_RECURSE HEADER_FILES "*.h")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
 add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
 
-find_package(Vulkan REQUIRED)
-if(Vulkan_FOUND)
-    message(STATUS "Vulkan include dir:${Vulkan_INCLUDE_DIR}")
-    message(STATUS "Vulkan library dir:${Vulkan_LIBRARY}")
-endif()
+#find_package(Vulkan REQUIRED)
+#if(Vulkan_FOUND)
+#    message(STATUS "Vulkan include dir:${Vulkan_INCLUDE_DIR}")
+#    message(STATUS "Vulkan library dir:${Vulkan_LIBRARY}")
+#endif()
 
 target_link_libraries(${TARGET_NAME} PUBLIC
-    ${Vulkan_LIBRARY}
+    #${Vulkan_LIBRARY}
     glfw
     tinyobjloader
     glm
@@ -25,4 +25,4 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     volk
 )
 
-include_directories(${Vulkan_INCLUDE_DIRS})
+#include_directories(${Vulkan_INCLUDE_DIRS})

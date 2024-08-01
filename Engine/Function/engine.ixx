@@ -4,7 +4,7 @@ module;
 #include<GLFW/glfw3.h>
 export module Engine;
 
-//import WindowContext;
+import WindowContext;
 //import VulkanContext;
 
 namespace FOCUS
@@ -14,7 +14,7 @@ namespace FOCUS
 	public:
 		Engine()
 		{
-			//_window_context = std::make_unique<WindowContext>();
+			_window_context = std::make_unique<WindowContext>();
 			//_vulkan_rhi = std::make_unique<VulkanContext>();
 
 			init();
@@ -22,24 +22,24 @@ namespace FOCUS
 
 		void init()
 		{
-			//_window_context->init();
+			_window_context->init();
 			//_vulkan_rhi->init(_window_context->getWindowInstance());
 		}
 
 		void run()
 		{
-			//while (!glfwWindowShouldClose(_window_context->getWindowInstance())) 
+			while (!glfwWindowShouldClose(_window_context->getWindowInstance())) 
 			{
 				glfwPollEvents();
 				//_vulkan_rhi->drawFrame();
 			}
 
 			//_vulkan_rhi->cleanup();
-			//_window_context->cleanup();
+			_window_context->cleanup();
 		}
 
 	private:
-		//std::unique_ptr<WindowContext> _window_context;
+		std::unique_ptr<WindowContext> _window_context;
 		//std::unique_ptr<VulkanContext> _vulkan_rhi;
 	};
 }

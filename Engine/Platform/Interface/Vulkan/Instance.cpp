@@ -94,9 +94,10 @@ namespace FOCUS
     //--------------------------------//
 	namespace Platform
 	{
-		void Instance::createInstance(Instance& instance)
+		void Instance::createInstance(Instance* instance)
 		{
-            instance = static_cast<VulkanInstance>(instance);
+            VulkanInstance* vinstance = new VulkanInstance();
+            instance = vinstance;
 
             //³õÊ¼»¯volk
 			volkInitialize();
@@ -137,7 +138,7 @@ namespace FOCUS
                 createInfo.pNext = nullptr;
             }
 
-            if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
+            if (vkCreateInstance(&createInfo, nullptr, &(vinstance->object)) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create instance!");
             }
 		}

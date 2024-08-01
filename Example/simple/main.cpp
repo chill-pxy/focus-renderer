@@ -1,13 +1,13 @@
-//import Engine;
+import Engine;
 
 #include <iostream>
 #include <stdexcept>
 int main()
 {
-    //FOCUS::Engine app;
+    FOCUS::Engine app;
 
     try {
-        //app.run();
+        app.run();
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

@@ -9,36 +9,34 @@
 #include "CommandQueue.h"
 #include "Texture.h"
 #include "DescriptorHeap.h"
+#include "InterfaceType.h"
 
 namespace FOCUS
 {
 	namespace Platform
 	{
-		enum API
-		{
-			VULKAN
-		};
-
 		class Context
 		{
 		public:
 			Context()
 			{
+				//ƒ¨»œ π”√Vulkan
 				_runtimeInterface = API::VULKAN;
 
-				_instance = std::make_unique<Instance>();
+				_instance = std::make_unique<Instance>(_runtimeInterface);
 			}
 
 			Context(API api)
 			{
 				_runtimeInterface = api;
 
-				_instance = std::make_unique<Instance>();
+				_instance = std::make_unique<Instance>(_runtimeInterface);
 			}
 
 			void initialize()
 			{
-				 createInstance(_instance.get());
+				 _instance->createInstance();
+				 //_physicalDevice->pickPhysicalDevice(_instance.get());
 			}
 
 		private:

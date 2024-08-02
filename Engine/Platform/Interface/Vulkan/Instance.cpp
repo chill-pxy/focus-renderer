@@ -1,12 +1,16 @@
+#include "../InterfaceType.h"
+
+#ifdef VULKAN_IMPLEMENTATION
+
 #include <stdexcept>
 #include <vector>
+#include <iostream>
 
 #include <volk.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include "../Instance.h"
-#include "InterfaceType.h"
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -93,15 +97,12 @@ namespace FOCUS
     //--------------------------------//
 	namespace Platform
 	{
-        Instance::Instance()
-        {
-            _runtimeInstance = new VkInstance();
-        }
-
-		void createInstance(Instance* instance)
+		void Instance::createInstance()
 		{
+            std::cout << "VK Instance" << std::endl;
+
             VkInstance* vinstance = new VkInstance();
-            instance->_runtimeInstance = vinstance;
+            this->_runtimeInstance = vinstance;
 
             //≥ı ºªØvolk
 			volkInitialize();
@@ -148,3 +149,5 @@ namespace FOCUS
 		}
 	}
 }
+
+#endif

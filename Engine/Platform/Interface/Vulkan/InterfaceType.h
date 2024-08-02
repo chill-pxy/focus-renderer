@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include"Instance.h"
+#include "../Instance.h"
 
 namespace FOCUS
 {
@@ -11,7 +11,7 @@ namespace FOCUS
 		class VulkanInstance : public Instance
 		{
 		public:
-			VkInstance object;
+			
 		};
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <iostream>
 
 #include "Instance.h"
 #include "Device.h"
@@ -13,23 +14,36 @@ namespace FOCUS
 {
 	namespace Platform
 	{
+		enum API
+		{
+			VULKAN
+		};
+
 		class Context
 		{
 		public:
-			Context() = default;
-
-			void initialize
-			(
-				/*Instance& instance, PhysicalDevice& physicalDevice,
-				Device& device, CommandQueue& commandQueue,
-				SwapChain& swapChain, Texture& backBufferImages, Texture& depthBufferImage,
-				DescriptorHeap& rtvHeap, DescriptorHeap& dsvHeap*/
-			)
+			Context()
 			{
-				createInstance(_instance.get());
+				_runtimeInterface = API::VULKAN;
+
+				_instance = std::make_unique<Instance>();
+			}
+
+			Context(API api)
+			{
+				_runtimeInterface = api;
+
+				_instance = std::make_unique<Instance>();
+			}
+
+			void initialize()
+			{
+				 createInstance(_instance.get());
 			}
 
 		private:
+			API _runtimeInterface;
+
 			std::unique_ptr<Instance> _instance;
 			std::unique_ptr<Device> _device;
 			std::unique_ptr<PhysicalDevice> _physicalDevice;

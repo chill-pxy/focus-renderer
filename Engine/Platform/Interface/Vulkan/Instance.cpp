@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../Instance.h"
-#include "../InterfaceType.h"
+#include "InterfaceType.h"
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -93,10 +93,15 @@ namespace FOCUS
     //--------------------------------//
 	namespace Platform
 	{
+        Instance::Instance()
+        {
+            _runtimeInstance = new VkInstance();
+        }
+
 		void createInstance(Instance* instance)
 		{
-            VulkanInstance* vinstance = new VulkanInstance();
-            instance = vinstance;
+            VkInstance* vinstance = new VkInstance();
+            instance->_runtimeInstance = vinstance;
 
             //³õÊ¼»¯volk
 			volkInitialize();
@@ -137,7 +142,7 @@ namespace FOCUS
                 createInfo.pNext = nullptr;
             }
 
-            if (vkCreateInstance(&createInfo, nullptr, &(vinstance->object)) != VK_SUCCESS) {
+            if (vkCreateInstance(&createInfo, nullptr, vinstance) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create instance!");
             }
 		}

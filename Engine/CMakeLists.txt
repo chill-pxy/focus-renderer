@@ -36,7 +36,20 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 #---------------------------------#
 #------------配置文件-------------#
 #---------------------------------#
-#file(READ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Config/config.txt "#define VULKAN_IMPLEMENTATION")
-configure_file(${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Config/config.txt ${EngineRootDir}/Platform/Interface/InterfaceConfig.h)
+set(content " ")
+set(codeDefine "undefine")
+file(READ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Config/config.txt content)
+if(content STREQUAL "vk")
+    set(codeDefine "#define VULKAN_IMPLEMENTATION")
+endif()
+
+if(content STREQUAL "dx12")
+    set(codeDefine "#define DIRECT3D12_IMPLEMENTATION")
+endif()
+
+if(content STREQUAL "undefine")
+    message(FATAL_ERROR "没有定义图形API")
+endif()
+
+file(WRITE ${EngineRootDir}/Platform/Interface/InterfaceConfig.h "${codeDefine}" )
 add_definitions(-DINCLUDE_GENERATED_HEADER)
-include_directories(${EngineRootDir})

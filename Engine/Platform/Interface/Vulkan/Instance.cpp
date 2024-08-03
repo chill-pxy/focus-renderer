@@ -1,4 +1,4 @@
-#include "../InterfaceType.h"
+#include "../InterfaceConfig.h"
 
 #ifdef VULKAN_IMPLEMENTATION
 

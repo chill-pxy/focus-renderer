@@ -1,3 +1,7 @@
+#include "../InterfaceConfig.h"
+
+#ifdef VULKAN_IMPLEMENTATION
+
 #include <stdexcept>
 #include <vector>
 
@@ -33,3 +37,5 @@ namespace FOCUS
 		}
 	}
 }
+
+#endif

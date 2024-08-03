@@ -1,3 +1,5 @@
+#include "../InterfaceConfig.h"
+
 #ifdef DIRECT3D12_IMPLEMENTATION
 
 #include <iostream>

@@ -1,5 +1,7 @@
 set(TARGET_NAME platform)
 
+project(${TARGET_NAME})
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -8,7 +10,11 @@ file(GLOB_RECURSE SOURCE_FILES "*.cpp")
 file(GLOB_RECURSE HEADER_FILES "*.h")
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
-add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+add_library(${TARGET_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
+
+set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "platform")
 
 target_link_libraries(${TARGET_NAME} PUBLIC
     glfw
@@ -18,13 +24,14 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     volk
 )
 
+include_directories(${THIRD_PARTY_DIR})
 
 #---------------------------------#
 #------------≈‰÷√Œƒº˛-------------#
 #---------------------------------#
 set(content " ")
 set(codeDefine "undefine")
-file(READ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Config/config.txt content)
+file(READ ${PLATFORM_INCLUDE_DIR}/config.txt content)
 if(content STREQUAL "vk")
     set(codeDefine "#define VULKAN_IMPLEMENTATION")
 endif()

@@ -35,8 +35,8 @@ namespace FOCUS
 
 			void initialize()
 			{
-				 _instance->createInstance();
-				 _physicalDevice->pickPhysicalDevice(0, _instance.get());
+				 //_instance->createInstance();
+				 //_physicalDevice->pickPhysicalDevice(0, _instance.get());
 			}
 
 		private:

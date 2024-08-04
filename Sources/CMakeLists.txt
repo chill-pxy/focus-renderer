@@ -1,5 +1,7 @@
 set(TARGET_NAME engine)
 
+project(${TARGET_NAME})
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -8,7 +10,11 @@ file(GLOB_RECURSE SOURCE_FILES "*.cpp")
 file(GLOB_RECURSE HEADER_FILES "*.h")
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
-add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+add_library(${TARGET_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
+
+set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "engine")
 
 #---------------------------------#
 #--------- 调用原生Vulkan --------#
@@ -22,14 +28,15 @@ add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
 #include_directories(${Vulkan_INCLUDE_DIRS})
 #---------------------------------#
 #---------------------------------#
-#---------------------------------#
+#---------------------------------# 
 
 target_link_libraries(${TARGET_NAME} PUBLIC
     glfw
 )
 
+#find_package(PLATFORM platform)
 target_link_libraries(${TARGET_NAME} PRIVATE
-    platform
+    #platform
 )
 
 include_directories(${PLATFORM_INCLUDE_DIR})

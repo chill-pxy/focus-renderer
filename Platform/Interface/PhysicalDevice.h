@@ -16,7 +16,7 @@ namespace FOCUS
 			std::variant<VkPhysicalDevice*> _runtimePhysicalDevice;
 
 		public:
-			void pickPhysicalDevice(Instance* instance);
+			void pickPhysicalDevice(unsigned int id, Instance* instance);
 		};
 	}
 }

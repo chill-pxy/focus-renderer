@@ -25,31 +25,11 @@ add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
 #---------------------------------#
 
 target_link_libraries(${TARGET_NAME} PUBLIC
-    #${Vulkan_LIBRARY}
     glfw
-    tinyobjloader
-    glm
-    stb
-    volk
 )
 
-#---------------------------------#
-#------------配置文件-------------#
-#---------------------------------#
-set(content " ")
-set(codeDefine "undefine")
-file(READ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Config/config.txt content)
-if(content STREQUAL "vk")
-    set(codeDefine "#define VULKAN_IMPLEMENTATION")
-endif()
+target_link_libraries(${TARGET_NAME} PRIVATE
+    platform
+)
 
-if(content STREQUAL "dx12")
-    set(codeDefine "#define DIRECT3D12_IMPLEMENTATION")
-endif()
-
-if(content STREQUAL "undefine")
-    message(FATAL_ERROR "没有定义图形API")
-endif()
-
-file(WRITE ${EngineRootDir}/Platform/Interface/InterfaceConfig.h "${codeDefine}" )
-add_definitions(-DINCLUDE_GENERATED_HEADER)
+include_directories(${PLATFORM_INCLUDE_DIR})

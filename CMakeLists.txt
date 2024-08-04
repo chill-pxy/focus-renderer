@@ -1,4 +1,4 @@
-set(ENGINE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Engine)
+set(ENGINE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Sources)
 set(PLATFORM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Platform)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
@@ -7,6 +7,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 add_subdirectory(ThirdParty)
 add_subdirectory(Platform)
-add_subdirectory(Engine)
+add_subdirectory(Sources)
 add_subdirectory(Example)
 

@@ -46,3 +46,6 @@ endif()
 if(NOT TARGET volk)
     add_subdirectory(volk)
 endif()
+
+# DRHI
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/drhi/dynamic_rhi.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

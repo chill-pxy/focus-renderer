@@ -36,8 +36,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
 )
 
 target_link_libraries(${TARGET_NAME} PRIVATE
-    ${THIRD_PARTY_DIR}/drhi/dynamic_rhi.lib
-    #${THIRD_PARTY_DIR}/drhi/volk.lib
+    ${THIRD_PARTY_DIR}/drhi/drhi.lib
 )
 
 include_directories(${THIRD_PARTY_DIR}/drhi/Include)

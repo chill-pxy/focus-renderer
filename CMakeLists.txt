@@ -12,5 +12,5 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 add_subdirectory(ThirdParty)
 add_subdirectory(Sources)
-#add_subdirectory(Example)
+add_subdirectory(Example)
 

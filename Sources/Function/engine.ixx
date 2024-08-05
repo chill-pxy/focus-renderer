@@ -19,6 +19,9 @@ namespace FOCUS
 		{
 			//_windowContext = std::make_unique<WindowContext>();
 			//_platformContext = std::make_unique<Platform::Context>();
+
+			auto context = new DRHI::Context();
+
 			init();
 		}
 

@@ -1,14 +1,11 @@
 module;
 #include<memory>
 #include<iostream>
-#include<GLFW/glfw3.h>
 
-//#include "../Platform/Interface/Context.h"
-#include "Context.h"
-
+#include<Context.h>
 export module Engine;
 
-//import WindowContext;
+import WindowsSurface;
 
 namespace FOCUS
 {
@@ -17,32 +14,30 @@ namespace FOCUS
 	public:
 		Engine()
 		{
-			//_windowContext = std::make_unique<WindowContext>();
-			//_platformContext = std::make_unique<Platform::Context>();
-
-			auto context = new DRHI::Context();
+			_surfaceContext = std::make_unique<WindowsSurface>();
+			_platformContext = std::make_unique<DRHI::Context>();
 
 			init();
 		}
 
 		void init()
 		{
-			//_windowContext->init();
-			//_platformContext->initialize();
+			_surfaceContext->init();
+			_platformContext->initialize();
 		}
 
 		void run()
 		{
-			//while (!glfwWindowShouldClose(_windowContext->getWindowInstance())) 
+			while (!_surfaceContext->checkForClose()) 
 			{
-				//glfwPollEvents();
+				_surfaceContext->update();
 			}
 
-			//_windowContext->cleanup();
+			_surfaceContext->cleanup();
 		}
 
 	private:
-		//std::unique_ptr<WindowContext> _windowContext;
-		//std::unique_ptr<Platform::Context> _platformContext;
+		std::unique_ptr<WindowsSurface> _surfaceContext;
+		std::unique_ptr<DRHI::Context> _platformContext;
 	};
 }

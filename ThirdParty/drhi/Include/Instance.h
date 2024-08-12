@@ -1,16 +1,13 @@
 #pragma once
 #include<variant>
 #include<iostream>
-
-#include<volk.h>
+#include<vector>
 
 #include"InterfaceType.h"
 
 
 namespace DRHI
 {
-	class Context;
-
 	class Instance
 	{
 	private:
@@ -18,11 +15,7 @@ namespace DRHI
 		std::variant<VkInstance*, int> _runtimeInstance;
 
 	public:
-		void createInstance();
-		//void createSwapChain();
-		//void getNumPhysicalDevices();
-		//void getAllPhysicalDevices();
-		//void getPhysicalDevice();
+		void createInstance(std::vector<const char*> extensions);
 		
 	public:
 
@@ -55,6 +48,7 @@ namespace DRHI
 			else
 			{
 				std::cout<<"none vk instance";
+				return nullptr;
 			}
 		}
 	};

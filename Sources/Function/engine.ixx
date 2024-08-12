@@ -14,30 +14,38 @@ namespace FOCUS
 	public:
 		Engine()
 		{
-			_surfaceContext = std::make_unique<WindowsSurface>();
-			_platformContext = std::make_unique<DRHI::Context>();
+			_windowContext = std::make_unique<WindowsSurface>();
+			_windowContext->init();
+
+			DRHI::ContextCreatInfo info = {
+				API::VULKAN,
+				_windowContext->getWindowInstance(),
+				_windowContext->getExtensions()
+			};
+
+			_platformContext = std::make_unique<DRHI::Context>(info);
+			
 
 			init();
 		}
 
 		void init()
 		{
-			_surfaceContext->init();
 			_platformContext->initialize();
 		}
 
 		void run()
 		{
-			while (!_surfaceContext->checkForClose()) 
+			while (!_windowContext->checkForClose()) 
 			{
-				_surfaceContext->update();
+				_windowContext->update();
 			}
 
-			_surfaceContext->cleanup();
+			_windowContext->cleanup();
 		}
 
 	private:
-		std::unique_ptr<WindowsSurface> _surfaceContext;
 		std::unique_ptr<DRHI::Context> _platformContext;
+		std::unique_ptr<WindowsSurface> _windowContext;
 	};
 }

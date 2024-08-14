@@ -1,51 +1,36 @@
 module;
 #include<memory>
 #include<iostream>
-
-#include<Context.h>
 export module Engine;
 
-import WindowsSurface;
+import GlobalContext;
 
 namespace FOCUS
 {
 	export class Engine
 	{
+	private:
+		std::unique_ptr<GlobalContext> _globalContext;
+
 	public:
 		Engine()
 		{
-			_windowContext = std::make_unique<WindowsSurface>();
-			_windowContext->init();
-
-			DRHI::ContextCreatInfo info = {
-				API::VULKAN,
-				_windowContext->getWindowInstance(),
-				_windowContext->getExtensions()
-			};
-
-			_platformContext = std::make_unique<DRHI::Context>(info);
-			
-
-			init();
+			_globalContext = std::make_unique<GlobalContext>();
 		}
 
-		void init()
+		void initialize()
 		{
-			_platformContext->initialize();
+			
 		}
 
 		void run()
 		{
-			while (!_windowContext->checkForClose()) 
+			while (!_globalContext->getSurface()->checkForClose()) 
 			{
-				_windowContext->update();
+				_globalContext->getSurface()->update();
 			}
 
-			_windowContext->cleanup();
+			_globalContext->getSurface()->cleanup();
 		}
-
-	private:
-		std::unique_ptr<DRHI::Context> _platformContext;
-		std::unique_ptr<WindowsSurface> _windowContext;
 	};
 }

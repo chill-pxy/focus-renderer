@@ -1,0 +1,37 @@
+module;
+#include<memory>
+#include<vector>
+#include<drhi.h>
+export module Renderer;
+
+namespace FOCUS
+{
+	export struct RendererCreateInfo
+	{
+		GLFWwindow* window;
+		std::vector<const char*> extensions;
+	};
+
+	export class Renderer
+	{
+	private:
+		std::shared_ptr<DRHI::Context> _rhiContext;
+
+	public:
+		Renderer(RendererCreateInfo rendererCreateInfo)
+		{
+			DRHI::ContextCreatInfo contextCreateinfo = {
+				API::VULKAN,
+				rendererCreateInfo.window,
+				rendererCreateInfo.extensions
+			};
+
+			_rhiContext = std::make_shared<DRHI::Context>(contextCreateinfo);
+		}
+
+		void initialize()
+		{
+			_rhiContext->initialize();
+		}
+	};
+}

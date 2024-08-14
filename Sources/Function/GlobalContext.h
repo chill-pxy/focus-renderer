@@ -1,13 +1,13 @@
-module;
-#include<memory>
-export module GlobalContext;
+#pragma once
 
-import NativeWindow;
-import Renderer;
+#include<memory>
+
+#include"Render/Renderer.h";
+#include"NativeWindow.h";
 
 namespace FOCUS
 {
-	export class GlobalContext
+	class GlobalContext
 	{
 	private:
 		std::shared_ptr<Renderer> _renderer;

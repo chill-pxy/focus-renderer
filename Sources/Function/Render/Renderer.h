@@ -1,18 +1,18 @@
-module;
+#pragma once
+
 #include<memory>
 #include<vector>
 #include<drhi.h>
-export module Renderer;
 
 namespace FOCUS
 {
-	export struct RendererCreateInfo
+	struct RendererCreateInfo
 	{
 		GLFWwindow* window;
 		std::vector<const char*> extensions;
 	};
 
-	export class Renderer
+	class Renderer
 	{
 	private:
 		std::shared_ptr<DRHI::Context> _rhiContext;

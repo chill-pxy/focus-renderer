@@ -1,18 +1,18 @@
-module;
+#pragma once
+
 #include"GLFW/glfw3.h"
 #include<volk.h>
 #include<vector>
-export module NativeWindow;
 
 namespace FOCUS
 {
-    export struct NativeWindowCreateInfo {
+    struct NativeWindowCreateInfo {
         int width;
         int height;
         const char* title;
     };
 
-    export class NativeWindow
+    class NativeWindow
     {
     public:
         NativeWindow() = default;

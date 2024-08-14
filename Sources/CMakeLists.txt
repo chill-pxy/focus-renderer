@@ -33,6 +33,7 @@ set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "engine")
 target_link_libraries(${TARGET_NAME} PUBLIC
     glfw
     volk
+    tinyobjloader
 )
 
 target_link_libraries(${TARGET_NAME} PRIVATE

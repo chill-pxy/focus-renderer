@@ -1,9 +1,9 @@
 module;
 #include<memory>
 #include<iostream>
-export module Engine;
 
-import GlobalContext;
+#include"GlobalContext.h"
+export module Engine;
 
 namespace FOCUS
 {

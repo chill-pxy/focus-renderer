@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <iostream>
+#include <functional>
 
 #include "Instance.h"
 #include "Device.h"
@@ -14,6 +15,7 @@
 #include "Surface.h"
 #include "NativeWindow.h"
 #include "RenderPass.h"
+#include "CommandPool.h"
 
 namespace DRHI
 {
@@ -22,20 +24,15 @@ namespace DRHI
 		API         api;
 		GLFWwindow* window;
 		std::vector<const char*> windowExtensions;
-		//const char* windowTitle;
-		//int         windowWidth;
-		//int         windowHeight;
 	};
 
 	class Context
 	{
 	private:
-		API         _runtimeInterface;
-		GLFWwindow* _window;
+		API                      _runtimeInterface;
+		GLFWwindow*              _window;
 		std::vector<const char*> _windowExtensions;
-		const char* _windowTitle;
-		int         _windowWidth;
-		int         _windowHeight;
+		void*                    _surfaceCreateFunction;
 
 		std::unique_ptr<Instance>       _instance;
 		std::unique_ptr<Device>         _device;
@@ -47,19 +44,7 @@ namespace DRHI
 		std::unique_ptr<NativeWindow>   _nativeWindow;
 		std::unique_ptr<RenderPass>     _renderPass;
 		std::unique_ptr<DescriptorPool> _descriptorPool;
-
-		void createVkSurface(Instance* pinstance, Surface* psurface, GLFWwindow* window)
-		{
-			VkSurfaceKHR* surface = new VkSurfaceKHR();
-
-			auto instance = pinstance->getVkInstance();
-
-			if (glfwCreateWindowSurface(*instance, window, nullptr, surface) != VK_SUCCESS) {
-				throw std::runtime_error("failed to create window surface!");
-			}
-
-			psurface->setSurface(surface);
-		}
+		std::unique_ptr<CommandPool>    _commandPool;
 
 	public:
 		Context() = delete;
@@ -84,14 +69,15 @@ namespace DRHI
 			_surface        = std::make_unique<Surface>(_runtimeInterface);
 			_renderPass     = std::make_unique<RenderPass>(_runtimeInterface);
 			_descriptorPool = std::make_unique<DescriptorPool>(_runtimeInterface);
+			_commandPool    = std::make_unique<CommandPool>(_runtimeInterface);
 		}
 
 		void initialize()
 		{
 			_instance->createInstance(_windowExtensions);
 			 
-			createVkSurface(_instance.get(), _surface.get(), _window);
-			
+			_surface->createSurface(_runtimeInterface, _instance.get(), _window);
+
 			_physicalDevice->pickPhysicalDevice(0, _instance.get());
 			_physicalDevice->pickGraphicQueueFamily();
 			
@@ -100,8 +86,10 @@ namespace DRHI
 			_swapChain->createSwapChain(_physicalDevice.get(), _device.get(), _surface.get(), _window);
 			_swapChain->createImageViews(_device.get());
 
-			_renderPass->createRenderPass(_swapChain.get(), _device.get(), _physicalDevice.get());
+			//_renderPass->createRenderPass(_swapChain.get(), _device.get(), _physicalDevice.get());
 			
+			_commandPool->createCommandPool(_device.get());
+
 			_descriptorPool->createDescriptorSetLayout(_device.get());
 			_descriptorPool->createDescriptorPool(_device.get());
 		}

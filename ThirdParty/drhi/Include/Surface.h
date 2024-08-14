@@ -14,9 +14,6 @@ namespace DRHI
 		std::variant<VkSurfaceKHR*> _runtimeSurface;
 
 	public:
-		void createSurface(Instance* instance, GLFWwindow* window);
-
-	public:
 		
 		Surface()
 		{
@@ -49,6 +46,44 @@ namespace DRHI
 				std::cout << "none vk surface";
 				return nullptr;
 			}
+		}
+
+		//specify api type to create surface
+		void createSurface(API api, Instance* pinstance, GLFWwindow* window)
+		{
+			switch (api)
+			{
+			case VULKAN:
+				createVkSurface(pinstance, window);
+				break;
+			case DIRECT3D12:
+				createDxSurface();
+				break;
+			default:
+				createVkSurface(pinstance, window);
+				break;
+			}
+		}
+
+	private:
+		//due to glfw can not be recongized as initilized state cross DLL source file, 
+		// all glfw related functions should be called within header file 
+		void createVkSurface(Instance* pinstance, GLFWwindow* window)
+		{
+			VkSurfaceKHR* surface = new VkSurfaceKHR();
+
+			auto instance = pinstance->getVkInstance();
+
+			if (glfwCreateWindowSurface(*instance, window, nullptr, surface) != VK_SUCCESS) {
+				throw std::runtime_error("failed to create window surface!");
+			}
+
+			_runtimeSurface = surface;
+		}
+
+		void createDxSurface()
+		{
+			std::cout << "dx surface";
 		}
 	};
 }

@@ -52,17 +52,17 @@ namespace FOCUS
         DRHI::VertexInputAttributeDescription vertexInputAttributeDescription[3];
         vertexInputAttributeDescription[0].binding = 0;
         vertexInputAttributeDescription[0].location = 0;
-        vertexInputAttributeDescription[0].format;
+        vertexInputAttributeDescription[0].format = DRHI::FORMAT_R32G32_SFLOAT;
         vertexInputAttributeDescription[0].offset = offsetof(Vertex, Vertex::pos);
 
         vertexInputAttributeDescription[1].binding = 0;
         vertexInputAttributeDescription[1].location = 1;
-        vertexInputAttributeDescription[1].format;
+        vertexInputAttributeDescription[1].format = DRHI::FORMAT_R32G32B32_SFLOAT;
         vertexInputAttributeDescription[1].offset = offsetof(Vertex, Vertex::color);
 
         vertexInputAttributeDescription[2].binding = 0;
         vertexInputAttributeDescription[2].location = 2;
-        vertexInputAttributeDescription[2].format;
+        vertexInputAttributeDescription[2].format = DRHI::FORMAT_R32G32_SFLOAT;
         vertexInputAttributeDescription[2].offset = offsetof(Vertex, Vertex::texCoord);
 	}
 }

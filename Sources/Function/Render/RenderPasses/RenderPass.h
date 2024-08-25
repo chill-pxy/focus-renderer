@@ -21,7 +21,7 @@ namespace FOCUS
 		};
 
 	public:
-		virtual void initialize();
-		virtual void draw();
+		//virtual void initialize();
+		//virtual void draw();
 	};
 }

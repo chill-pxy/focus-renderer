@@ -6,7 +6,10 @@ namespace FOCUS
 {
 	class MainPass : public RenderPass
 	{
+	private:
+		DRHI::RenderPass _mainPass;
+
 	public:
-		void initialize() override;
+		void initialize(DRHI::Context* context);
 	};
 }

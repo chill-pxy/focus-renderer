@@ -4,6 +4,8 @@
 #include<vector>
 #include<drhi.h>
 
+#include"RenderPasses\MainPass.h"
+
 namespace FOCUS
 {
 	struct RendererCreateInfo
@@ -21,7 +23,7 @@ namespace FOCUS
 		Renderer(RendererCreateInfo rendererCreateInfo)
 		{
 			DRHI::ContextCreatInfo contextCreateinfo = {
-				API::VULKAN,
+				DRHI::API::VULKAN,
 				rendererCreateInfo.window,
 				rendererCreateInfo.extensions
 			};
@@ -32,6 +34,8 @@ namespace FOCUS
 		void initialize()
 		{
 			_rhiContext->initialize();
+			auto renderpass = new MainPass();
+			renderpass->initialize(_rhiContext.get());
 		}
 	};
 }

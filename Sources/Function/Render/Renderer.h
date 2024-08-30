@@ -26,7 +26,6 @@ namespace FOCUS
 			{
 			case DRHI::API::VULKAN:
 				DRHI::RHICreatInfo rhiCreateInfo = { createInfo.windowCreateInfo };
-
 				_rhiContext = new DRHI::VulkanDRHI(rhiCreateInfo);
 				break;
 			}
@@ -41,7 +40,7 @@ namespace FOCUS
 
 		GLFWwindow* getRendererWindow()
 		{
-			DRHI::VulkanDRHI* vkRHI = dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext);
+			DRHI::VulkanDRHI* vkRHI = static_cast<DRHI::VulkanDRHI*>(_rhiContext);
 			if (vkRHI)
 			{
 				return vkRHI->_glfwWindow;

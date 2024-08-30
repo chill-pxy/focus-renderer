@@ -11,13 +11,13 @@ namespace FOCUS
 		{
 			int width;
 			int height;
-			DRHI::RenderPass* renderPass;
+			//DRHI::RenderPass* renderPass;
 		};
 
 		struct Descriptor
 		{
-			DRHI::DescriptorSetLayout descriptorSetLayout;
-			DRHI::DescriptorSet descriptorSet;
+			//DRHI::DescriptorSetLayout descriptorSetLayout;
+			//DRHI::DescriptorSet descriptorSet;
 		};
 
 	public:

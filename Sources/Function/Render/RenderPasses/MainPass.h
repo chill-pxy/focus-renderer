@@ -10,6 +10,6 @@ namespace FOCUS
 		DRHI::RenderPass _mainPass;
 
 	public:
-		void initialize(DRHI::Context* context);
+		void initialize();
 	};
 }

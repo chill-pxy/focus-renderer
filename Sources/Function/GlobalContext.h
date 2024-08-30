@@ -16,20 +16,23 @@ namespace FOCUS
 	public:
 		GlobalContext()
 		{
-			NativeWindowCreateInfo nativeWindowCreateInfo = {
+			DRHI::VulkanGlfwWindowCreateInfo windowCreateInfo =
+			{
+				"FOCUS",
 				1920,
-				1080,
-				"FOCUS"
+				1080
 			};
-			_surface = std::make_shared<NativeWindow>();
-			_surface->initialize(nativeWindowCreateInfo);
 
-			RendererCreateInfo rendererCreateInfo = { 
-				_surface->getWindowInstance(), 
-				_surface->getExtensions()
+			RendererCreateInfo renderCreateInfo =
+			{
+				DRHI::API::VULKAN,
+				windowCreateInfo
 			};
-			_renderer = std::make_shared<Renderer>(rendererCreateInfo);
+
+			_renderer = std::make_shared<Renderer>(renderCreateInfo);
 			_renderer->initialize();
+
+			_surface = std::make_shared<NativeWindow>(_renderer->getRendererWindow());
 		}
 
 		Renderer* getRenderer()
@@ -37,7 +40,7 @@ namespace FOCUS
 			return _renderer.get();
 		}
 
-		NativeWindow* getSurface()
+		NativeWindow* getNativeWindow()
 		{
 			return _surface.get();
 		}

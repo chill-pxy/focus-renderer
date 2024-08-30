@@ -25,12 +25,12 @@ namespace FOCUS
 
 		void run()
 		{
-			while (!_globalContext->getSurface()->checkForClose()) 
+			while (!_globalContext->getNativeWindow()->checkForClose())
 			{
-				_globalContext->getSurface()->update();
+				_globalContext->getNativeWindow()->update();
 			}
 
-			_globalContext->getSurface()->cleanup();
+			_globalContext->getNativeWindow()->cleanup();
 		}
 	};
 }

@@ -5,7 +5,7 @@
 
 namespace FOCUS
 {
-	void MainPass::initialize(DRHI::Context* context)
+	void MainPass::initialize()
 	{
 		//auto bindingDescription = Vertex::getBindingDescription();
 		//auto attributeDescriptions = Vertex::getAttributeDescriptions();
@@ -65,6 +65,6 @@ namespace FOCUS
         vertexInputAttributeDescription[2].format = DRHI::FORMAT_R32G32_SFLOAT;
         vertexInputAttributeDescription[2].offset = offsetof(Vertex, Vertex::texCoord);
 
-        context->createRenderPass(&_mainPass);
+        //context->createRenderPass(&_mainPass);
 	}
 }

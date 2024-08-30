@@ -2,7 +2,7 @@
 
 #include<memory>
 #include<vector>
-#include<drhi.h>
+#include<Vulkan/VulkanDRHI.h>
 
 #include"RenderPasses\MainPass.h"
 
@@ -10,32 +10,44 @@ namespace FOCUS
 {
 	struct RendererCreateInfo
 	{
-		GLFWwindow* window;
-		std::vector<const char*> extensions;
+		DRHI::API api;
+		DRHI::VulkanGlfwWindowCreateInfo windowCreateInfo;
 	};
 
 	class Renderer
 	{
 	private:
-		std::shared_ptr<DRHI::Context> _rhiContext;
+		DRHI::DynamicRHI* _rhiContext;
 
 	public:
-		Renderer(RendererCreateInfo rendererCreateInfo)
+		Renderer(RendererCreateInfo createInfo)
 		{
-			DRHI::ContextCreatInfo contextCreateinfo = {
-				DRHI::API::VULKAN,
-				rendererCreateInfo.window,
-				rendererCreateInfo.extensions
-			};
+			switch (createInfo.api)
+			{
+			case DRHI::API::VULKAN:
+				DRHI::RHICreatInfo rhiCreateInfo = { createInfo.windowCreateInfo };
 
-			_rhiContext = std::make_shared<DRHI::Context>(contextCreateinfo);
+				_rhiContext = new DRHI::VulkanDRHI(rhiCreateInfo);
+				break;
+			}
 		}
 
 		void initialize()
 		{
 			_rhiContext->initialize();
 			auto renderpass = new MainPass();
-			renderpass->initialize(_rhiContext.get());
+			//renderpass->initialize(_rhiContext);
+		}
+
+		GLFWwindow* getRendererWindow()
+		{
+			DRHI::VulkanDRHI* vkRHI = dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext);
+			if (vkRHI)
+			{
+				return vkRHI->_glfwWindow;
+			}
+
+			return nullptr;
 		}
 	};
 }

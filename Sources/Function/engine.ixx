@@ -11,6 +11,7 @@ namespace FOCUS
 	{
 	private:
 		std::unique_ptr<GlobalContext> _globalContext;
+		bool _running = false;
 
 	public:
 		Engine()
@@ -20,17 +21,15 @@ namespace FOCUS
 
 		void initialize()
 		{
-			
+			_running = true;
 		}
 
 		void run()
 		{
-			while (!_globalContext->getNativeWindow()->checkForClose())
+			while (_running)
 			{
-				_globalContext->getNativeWindow()->update();
+				_running = _globalContext->getNativeWindow()->tick();
 			}
-
-			_globalContext->getNativeWindow()->cleanup();
 		}
 	};
 }

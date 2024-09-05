@@ -5,6 +5,7 @@ import Engine;
 int main()
 {
     FOCUS::Engine app;
+    app.initialize();
 
     try {
         app.run();

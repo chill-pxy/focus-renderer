@@ -21,10 +21,18 @@ namespace FOCUS
 
     public:
         NativeWindow() = delete;
-        NativeWindow(NativeWindowCreateInfo info) : _createInfo(info) {}
+        NativeWindow(NativeWindowCreateInfo info) : _createInfo(info) 
+        {
+            createWin32Windwow(); 
+        }
 
         void initialize();
         bool tick();
+
+        HWND getRawWindow()
+        {
+            return _hwnd;
+        }
 
     private:
         void createWin32Windwow();

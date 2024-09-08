@@ -5,6 +5,8 @@
 
 #include<tiny_obj_loader.h>
 
+#include"Mesh.h"
+
 namespace FOCUS
 {
 	class RenderResources
@@ -13,7 +15,7 @@ namespace FOCUS
 
 	public:
 
-		void loadModel(char* modelPath)
+		void loadModel(char* modelPath, std::vector<Vertex>* vertices, std::vector<uint32_t>* indices)
 		{
             tinyobj::attrib_t attrib;
             std::vector<tinyobj::shape_t> shapes;
@@ -49,11 +51,11 @@ namespace FOCUS
 
                     if (uniqueVertices.count(vertex) == 0) 
                     {
-                        uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-                        vertices.push_back(vertex);
+                        uniqueVertices[vertex] = static_cast<uint32_t>(vertices->size());
+                        vertices->push_back(vertex);
                     }
 
-                    indices.push_back(uniqueVertices[vertex]);
+                    indices->push_back(uniqueVertices[vertex]);
                 }
             }
 	    }

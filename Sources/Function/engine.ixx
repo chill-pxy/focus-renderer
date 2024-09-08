@@ -10,26 +10,27 @@ namespace FOCUS
 	export class Engine
 	{
 	private:
-		std::unique_ptr<GlobalContext> _globalContext;
+		GlobalContext _globalContext{};
 		bool _running = false;
 
 	public:
-		Engine()
-		{
-			_globalContext = std::make_unique<GlobalContext>();
-		}
+		Engine() = default;
 
 		void initialize()
 		{
 			_running = true;
+			_globalContext.initialize();
 		}
 
 		void run()
 		{
 			while (_running)
 			{
-				_running = _globalContext->getNativeWindow()->tick();
+				_running = _globalContext._window->tick();
+				_globalContext._renderSytem->tick();
 			}
+
+			_globalContext._renderSytem->clean();
 		}
 	};
 }

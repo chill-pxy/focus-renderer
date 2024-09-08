@@ -5,6 +5,7 @@
 
 #include"../../Include/InterfaceType.h"
 #include"VulkanQueueFamily.h"
+#include"VulkanSurface.h"
 
 namespace DRHI
 {
@@ -15,12 +16,12 @@ namespace DRHI
         std::vector<VkPresentModeKHR>   presentModes;
     };
 
-    void createSwapChain(VkSwapchainKHR* swapChain, VkPhysicalDevice* physicalDevice, VkDevice* device, VkSurfaceKHR* surface, GLFWwindow* window,
-        std::vector<VkImage> swapChainImages, VkFormat* swapChainImageFormat, VkExtent2D swapChainExtent);
+    void createSwapChain(VkSwapchainKHR* swapChain, VkPhysicalDevice* physicalDevice, VkDevice* device, VkSurfaceKHR* surface, HWND window,
+        std::vector<VkImage>* swapChainImages, VkFormat* swapChainImageFormat, VkExtent2D* swapChainExtent);
 
-    void createImageViews(VkDevice* device, std::vector<VkImageView> swapChainImageViews, std::vector<VkImage> swapChainImages, VkFormat* swapChainImageFormat);
+    void createImageViews(VkDevice* device, std::vector<VkImageView>* swapChainImageViews, std::vector<VkImage>* swapChainImages, VkFormat* swapChainImageFormat);
 
-    VkImageView createImageView(VkDevice* device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+    VkImageView createImageView(VkDevice* device, VkImage* image, VkFormat format, VkImageAspectFlags aspectFlags);
 
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice* device, VkSurfaceKHR* surface);
 
@@ -28,6 +29,10 @@ namespace DRHI
 
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, GLFWwindow* window);
+    VkExtent2D chooseSwapExtent(HWND window, const VkSurfaceCapabilitiesKHR& capabilities);
+
+    void cleanSwapChain(VkDevice* device, std::vector<VkFramebuffer>* swapChainFramebuffers, std::vector<VkImageView>* swapChainImageViews, VkSwapchainKHR* swapChain);
+
+    VkResult queuePresent(VkQueue* queue, VkSwapchainKHR* swapChain, uint32_t* imageIndex, VkSemaphore* waitSemaphore);
 }
 

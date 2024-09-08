@@ -57,7 +57,7 @@ namespace FOCUS
 
 	void NativeWindow::initialize()
 	{
-		createWin32Windwow();
+		
 	}
 
 	bool NativeWindow::tick()

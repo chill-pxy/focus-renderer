@@ -2,36 +2,20 @@
 
 #include<memory>
 
-//#include"Render/Renderer.h";
 #include"../Platform/NativeWindow.h";
+#include"Render/RenderSystem.h"
 
 namespace FOCUS
 {
 	class GlobalContext
 	{
-	private:
-		//std::shared_ptr<Renderer> _renderer;
-		std::shared_ptr<NativeWindow> _window;
+	public:
+		std::unique_ptr<RenderSystem> _renderSytem;
+		std::unique_ptr<NativeWindow> _window;
 
 	public:
 		GlobalContext()
 		{
-			//DRHI::VulkanGlfwWindowCreateInfo windowCreateInfo =
-			//{
-			//	"FOCUS",
-			//	1920,
-			//	1080
-			//};
-
-			//RendererCreateInfo renderCreateInfo =
-			//{
-			//	DRHI::API::VULKAN,
-			//	windowCreateInfo
-			//};
-
-			//_renderer = std::make_shared<Renderer>(renderCreateInfo);
-			//_renderer->initialize();
-
 			NativeWindowCreateInfo windowCreateInfo =
 			{
 				"FOCUS",
@@ -39,18 +23,15 @@ namespace FOCUS
 				1080
 			};
 
-			_window = std::make_shared<NativeWindow>(windowCreateInfo);
-			_window->initialize();
+			_window = std::make_unique<NativeWindow>(windowCreateInfo);
+
+			_renderSytem = std::make_unique<RenderSystem>(_window.get());
 		}
 
-		//Renderer* getRenderer()
-		//{
-			//return _renderer.get();
-		//}
-
-		NativeWindow* getNativeWindow()
+		void initialize()
 		{
-			return _window.get();
+			_window->initialize();
+			_renderSytem->initialize();
 		}
 	};
 }

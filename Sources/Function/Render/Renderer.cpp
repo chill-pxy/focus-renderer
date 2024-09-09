@@ -1,4 +1,6 @@
 #include"Renderer.h"
+#include"RenderResources.h"
+#include"Mesh.h"
 
 namespace FOCUS
 {
@@ -24,12 +26,18 @@ namespace FOCUS
 		pci.fragmentShader = "../../../Shaders/model_fragment.spv";
 
 		dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext)->createPipeline(pci);
-		_rhiContext->beginCommandBuffer();
+		_rhiContext->prepareCommandBuffer();
+
+		RenderResources res;
+		const char* modelPath = "../../../Asset/Models/viking_room.obj";
+		std::vector<Vertex> vertices;
+		std::vector<uint32_t> indices;
+		res.loadModel(modelPath, &vertices, &indices);
 	}
 
 	void Renderer::draw()
 	{
-		_rhiContext->draw();
+		_rhiContext->frameOnTick();
 	}
 
 	void Renderer::clean()

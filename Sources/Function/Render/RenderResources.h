@@ -15,7 +15,7 @@ namespace FOCUS
 
 	public:
 
-		void loadModel(char* modelPath, std::vector<Vertex>* vertices, std::vector<uint32_t>* indices)
+		void loadModel(const char* modelPath, std::vector<Vertex>* vertices, std::vector<uint32_t>* indices)
 		{
             tinyobj::attrib_t attrib;
             std::vector<tinyobj::shape_t> shapes;

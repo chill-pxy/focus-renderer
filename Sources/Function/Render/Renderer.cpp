@@ -26,8 +26,7 @@ namespace FOCUS
 		pci.fragmentShader = "../../../Shaders/model_fragment.spv";
 
 		dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext)->createPipeline(pci);
-		_rhiContext->prepareCommandBuffer();
-
+		
 		RenderResources res;
 		const char* modelPath = "../../../Asset/Models/viking_room.obj";
 		std::vector<Vertex> vertices;
@@ -39,14 +38,16 @@ namespace FOCUS
 		DRHI::DynamicDeviceMemory vertexDeviceMemory;
 		auto vertexBufferSize = sizeof(vertices[0]) * vertices.size();
 
-		_rhiContext->iCreateDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, vertices.data());
+		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, vertices.data());
 
 		//create index buffer
 		DRHI::DynamicBuffer indexBuffer;
 		DRHI::DynamicDeviceMemory indexDeviceMemory;
 		auto indexBufferSize = sizeof(indices[0]) * indices.size();
 
-		_rhiContext->iCreateDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, indices.data());
+		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, indices.data());
+
+		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer);
 	}
 
 	void Renderer::draw()

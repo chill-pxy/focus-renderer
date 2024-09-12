@@ -47,7 +47,14 @@ namespace FOCUS
 
 		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, indices.data());
 
-		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer);
+		//create uniform buffer
+		std::vector<DRHI::DynamicBuffer> uniformBuffers;
+		std::vector<DRHI::DynamicDeviceMemory> uniformBuffersMemory;
+		std::vector<void*> uniformBuffersMapped;
+
+		_rhiContext->createUniformBuffer(&uniformBuffers, &uniformBuffersMemory, &uniformBuffersMapped, sizeof(UniformBufferObject));
+
+		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(indices.size()));
 	}
 
 	void Renderer::draw()

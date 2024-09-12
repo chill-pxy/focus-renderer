@@ -14,6 +14,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanSemphores.h"
 #include "VulkanBuffer.h"
+#include "VulkanFence.h"
 
 namespace DRHI
 {
@@ -39,6 +40,8 @@ namespace DRHI
 		VkQueue                      _graphicQueue{ VK_NULL_HANDLE };
 		VkQueue                      _presentQueue{ VK_NULL_HANDLE };
 		VkSwapchainKHR               _swapChain{ VK_NULL_HANDLE };
+		VkFormat                     _depthFormat{ VK_FORMAT_D32_SFLOAT_S8_UINT };
+		DepthStencil                 _depthStencil{};
 		VkFormat                     _swapChainImageFormat{ VK_FORMAT_UNDEFINED };
 		VkExtent2D                   _swapChainExtent{ 0 };
 		std::vector<VkImage>         _swapChainImages;
@@ -49,12 +52,14 @@ namespace DRHI
 		VkDescriptorSetLayout        _descriptorSetLayout{ VK_NULL_HANDLE };
 		VkDescriptorPool             _descriptorPool{ VK_NULL_HANDLE };
 		VkDescriptorSet              _descriptorSet{ VK_NULL_HANDLE };
+		std::vector<VkDescriptorSet> _descriptorSets;
 		VkPipeline                   _graphicsPipeline{ VK_NULL_HANDLE };
 		VkPipelineLayout             _pipelineLayout{ VK_NULL_HANDLE };
 		PlatformInfo                 _platformInfo{};
 		Semaphores                   _semaphores{ VK_NULL_HANDLE, VK_NULL_HANDLE };
 		uint32_t                     _viewPortWidth{ 0 };
 		uint32_t                     _viewPortHeight{ 0 };
+		std::vector<VkFence>         _waitFences;
 
 		// Active frame buffer index
 		uint32_t _currentBuffer = 0;
@@ -70,12 +75,13 @@ namespace DRHI
 		//clean vulkan rhi member
 		virtual void clean();
 		//call vkCommandBegin function
-		virtual void prepareCommandBuffer(DynamicBuffer* vertexBuffer, DynamicBuffer* indexBuffer);
+		virtual void prepareCommandBuffer(DynamicBuffer* vertexBuffer, DynamicBuffer* indexBuffer, uint32_t indicesSize);
 		//call within render loop
 		virtual void frameOnTick();
 		//Buffer class
 		virtual void createDynamicBuffer(DynamicBuffer* vertexBuffer, DynamicDeviceMemory* deviceMemory, uint64_t bufferSize, void* bufferData);
-		
+		//unifrom buffer
+		virtual void createUniformBuffer(std::vector<DynamicBuffer>* uniformBuffers, std::vector<DynamicDeviceMemory>* uniformBuffersMemory, std::vector<void*>* uniformBuffersMapped, uint32_t bufferSize);
 		
 		
 		//create the particular pipeline

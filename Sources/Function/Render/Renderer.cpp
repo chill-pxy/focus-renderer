@@ -27,25 +27,24 @@ namespace FOCUS
 
 		dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext)->createPipeline(pci);
 		
-		RenderResources res;
 		const char* modelPath = "../../../Asset/Models/viking_room.obj";
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
-		res.loadModel(modelPath, &vertices, &indices);
+		RenderResources::loadModel(modelPath, &vertices, &indices);
 
 		//create vertex buffer
 		DRHI::DynamicBuffer vertexBuffer;
 		DRHI::DynamicDeviceMemory vertexDeviceMemory;
 		auto vertexBufferSize = sizeof(vertices[0]) * vertices.size();
 
-		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, vertices.data());
+		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, vertices.data(), "VertexBuffer");
 
 		//create index buffer
 		DRHI::DynamicBuffer indexBuffer;
 		DRHI::DynamicDeviceMemory indexDeviceMemory;
 		auto indexBufferSize = sizeof(indices[0]) * indices.size();
 
-		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, indices.data());
+		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, indices.data(), "IndexBuffer");
 
 		//create uniform buffer
 		std::vector<DRHI::DynamicBuffer> uniformBuffers;
@@ -53,6 +52,25 @@ namespace FOCUS
 		std::vector<void*> uniformBuffersMapped;
 
 		_rhiContext->createUniformBuffer(&uniformBuffers, &uniformBuffersMemory, &uniformBuffersMapped, sizeof(UniformBufferObject));
+
+		//texture loading
+		int textureWidth, textureHeight, textureChannels;
+		stbi_uc* pixels = RenderResources::loadTexture("../../../Asset/Models/viking_room.png", &textureWidth, &textureHeight, &textureChannels);
+		if (!pixels)
+		{
+			throw std::runtime_error("failed to load texture image!");
+		}
+
+		//binding sampler and image view
+		DRHI::DynamicImage textureImage;
+		DRHI::DynamicImageView textureImageView;
+		DRHI::DynamicSampler textureSampler;
+		DRHI::DynamicDeviceMemory textureMemory;
+		_rhiContext->createTextureImage(&textureImage, &textureMemory, textureWidth, textureHeight, textureChannels, pixels);
+		_rhiContext->createImageView(&textureImageView, &textureImage);
+		_rhiContext->createTextureSampler(&textureSampler);
+
+		_rhiContext->createDescriptorSets(&uniformBuffers, sizeof(UniformBufferObject), textureImageView, textureSampler);
 
 		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(indices.size()));
 	}

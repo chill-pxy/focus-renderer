@@ -8,6 +8,8 @@ namespace FOCUS
 	{
 		DRHI::PlatformInfo platformCI{};
 		platformCI.window = window->getRawWindow();
+		platformCI.width = window->getWindowWidth();
+		platformCI.height = window->getWindowHeight();
 
 		_renderer = std::make_unique<Renderer>(DRHI::VULKAN, platformCI);
 	}

@@ -43,7 +43,7 @@ namespace DRHI
 		VkSwapchainKHR               _swapChain{ VK_NULL_HANDLE };
 		VkFormat                     _depthFormat{ VK_FORMAT_D32_SFLOAT_S8_UINT };
 		DepthStencil                 _depthStencil{};
-		VkFormat                     _swapChainImageFormat{ VK_FORMAT_UNDEFINED };
+		VkFormat                     _swapChainImageFormat{ VK_FORMAT_B8G8R8A8_UNORM };
 		VkExtent2D                   _swapChainExtent{ 0 };
 		std::vector<VkImage>         _swapChainImages;
 		std::vector<VkImageView>     _swapChainImageViews;
@@ -56,8 +56,10 @@ namespace DRHI
 		std::vector<VkDescriptorSet> _descriptorSets;
 		VkPipeline                   _graphicsPipeline{ VK_NULL_HANDLE };
 		VkPipelineLayout             _pipelineLayout{ VK_NULL_HANDLE };
+		VkPipelineCache              _pipelineCache{ VK_NULL_HANDLE };
 		PlatformInfo                 _platformInfo{};
 		Semaphores                   _semaphores{ VK_NULL_HANDLE, VK_NULL_HANDLE };
+		VkPipelineStageFlags         _submitPipelineStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		uint32_t                     _viewPortWidth{ 0 };
 		uint32_t                     _viewPortHeight{ 0 };
 		std::vector<VkFence>         _waitFences;
@@ -80,7 +82,7 @@ namespace DRHI
 		//call within render loop
 		virtual void frameOnTick();
 		//Buffer class
-		virtual void createDynamicBuffer(DynamicBuffer* vertexBuffer, DynamicDeviceMemory* deviceMemory, uint64_t bufferSize, void* bufferData);
+		virtual void createDynamicBuffer(DynamicBuffer* vertexBuffer, DynamicDeviceMemory* deviceMemory, uint64_t bufferSize, void* bufferData, const char* type);
 		//unifrom buffer
 		virtual void createUniformBuffer(std::vector<DynamicBuffer>* uniformBuffers, std::vector<DynamicDeviceMemory>* uniformBuffersMemory, std::vector<void*>* uniformBuffersMapped, uint32_t bufferSize);
 		//create discriptor set

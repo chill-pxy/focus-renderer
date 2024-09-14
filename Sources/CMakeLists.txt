@@ -35,6 +35,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     volk
     tinyobjloader
     glm
+    stb
 )
 
 target_link_libraries(${TARGET_NAME} PRIVATE

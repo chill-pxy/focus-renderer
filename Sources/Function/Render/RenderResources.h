@@ -4,17 +4,14 @@
 #include<unordered_map>
 
 #include<tiny_obj_loader.h>
+#include<stb_image.h>
 
 #include"Mesh.h"
 
 namespace FOCUS
 {
-	class RenderResources
+	namespace RenderResources
 	{
-	private:
-
-	public:
-
 		void loadModel(const char* modelPath, std::vector<Vertex>* vertices, std::vector<uint32_t>* indices)
 		{
             tinyobj::attrib_t attrib;
@@ -59,5 +56,11 @@ namespace FOCUS
                 }
             }
 	    }
-	};
+
+        stbi_uc* loadTexture(const char* texturePath, int* texWidth, int* texHeight, int* texChannels)
+        {
+            return stbi_load(texturePath, texWidth, texHeight, texChannels, STBI_rgb_alpha);
+            
+        }
+	}
 }

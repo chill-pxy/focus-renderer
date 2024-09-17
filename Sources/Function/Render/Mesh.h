@@ -23,6 +23,15 @@ namespace FOCUS
         alignas(16) glm::mat4 proj;
     };
 
+    struct Mesh
+    {
+        tinyobj::attrib_t attrib;
+        std::vector<Vertex> vertices;
+        std::vector<uint32_t> indices;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+    };
+
 }
 
 namespace std {

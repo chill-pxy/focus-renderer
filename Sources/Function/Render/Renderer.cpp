@@ -28,23 +28,24 @@ namespace FOCUS
 		dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext)->createPipeline(pci);
 		
 		const char* modelPath = "../../../Asset/Models/viking_room.obj";
-		std::vector<Vertex> vertices;
-		std::vector<uint32_t> indices;
-		RenderResources::loadModel(modelPath, &vertices, &indices);
+		
+		//std::vector<Vertex> vertices;
+		//std::vector<uint32_t> indices;
+		Mesh obj = RenderResources::loadModel(modelPath);
 
 		//create vertex buffer
 		DRHI::DynamicBuffer vertexBuffer;
 		DRHI::DynamicDeviceMemory vertexDeviceMemory;
-		auto vertexBufferSize = sizeof(vertices[0]) * vertices.size();
+		auto vertexBufferSize = sizeof(obj.vertices[0]) * obj.vertices.size();
 
-		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, vertices.data(), "VertexBuffer");
+		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, obj.vertices.data(), "VertexBuffer");
 
 		//create index buffer
 		DRHI::DynamicBuffer indexBuffer;
 		DRHI::DynamicDeviceMemory indexDeviceMemory;
-		auto indexBufferSize = sizeof(indices[0]) * indices.size();
+		auto indexBufferSize = sizeof(obj.indices[0]) * obj.indices.size();
 
-		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, indices.data(), "IndexBuffer");
+		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, obj.indices.data(), "IndexBuffer");
 
 		//create uniform buffer
 		std::vector<DRHI::DynamicBuffer> uniformBuffers;
@@ -72,7 +73,7 @@ namespace FOCUS
 
 		_rhiContext->createDescriptorSets(&uniformBuffers, sizeof(UniformBufferObject), textureImageView, textureSampler);
 
-		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(indices.size()));
+		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(obj.indices.size()));
 	}
 
 	void Renderer::draw()

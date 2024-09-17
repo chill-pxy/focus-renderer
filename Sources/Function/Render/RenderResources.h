@@ -12,8 +12,11 @@ namespace FOCUS
 {
 	namespace RenderResources
 	{
-		void loadModel(const char* modelPath, std::vector<Vertex>* vertices, std::vector<uint32_t>* indices)
+		Mesh loadModel(const char* modelPath)
 		{
+            std::vector<Vertex> vertices;
+            std::vector<uint32_t> indices;
+
             tinyobj::attrib_t attrib;
             std::vector<tinyobj::shape_t> shapes;
             std::vector<tinyobj::material_t> materials;
@@ -48,13 +51,22 @@ namespace FOCUS
 
                     if (uniqueVertices.count(vertex) == 0) 
                     {
-                        uniqueVertices[vertex] = static_cast<uint32_t>(vertices->size());
-                        vertices->push_back(vertex);
+                        uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+                        vertices.push_back(vertex);
                     }
 
-                    indices->push_back(uniqueVertices[vertex]);
+                    indices.push_back(uniqueVertices[vertex]);
                 }
             }
+
+            Mesh mesh{};
+            mesh.attrib = attrib;
+            mesh.indices = indices;
+            mesh.materials = materials;
+            mesh.shapes = shapes;
+            mesh.vertices = vertices;
+
+            return mesh;
 	    }
 
         stbi_uc* loadTexture(const char* texturePath, int* texWidth, int* texHeight, int* texChannels)

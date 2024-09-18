@@ -11,11 +11,13 @@ namespace FOCUS
 	{
 	private:
 		DRHI::DynamicRHI* _rhiContext;
+		std::vector<void*> uniformBuffersMapped;
 
 	public:
 		Renderer() = delete;
 
 		Renderer(DRHI::API api, DRHI::PlatformInfo platformCI);
+		void updateUniformBuffer(uint32_t currentImage);
 
 		void initialize();
 		void draw();

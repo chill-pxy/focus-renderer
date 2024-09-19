@@ -36,24 +36,17 @@ namespace FOCUS
 		Mesh obj = RenderResources::loadModel(modelPath);
 
 		//create vertex buffer
-		DRHI::DynamicBuffer vertexBuffer;
-		DRHI::DynamicDeviceMemory vertexDeviceMemory;
 		auto vertexBufferSize = sizeof(obj.vertices[0]) * obj.vertices.size();
 
 		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, obj.vertices.data(), "VertexBuffer");
 
 		//create index buffer
-		DRHI::DynamicBuffer indexBuffer;
-		DRHI::DynamicDeviceMemory indexDeviceMemory;
+		
 		auto indexBufferSize = sizeof(obj.indices[0]) * obj.indices.size();
 
 		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, obj.indices.data(), "IndexBuffer");
 
 		//create uniform buffer
-		std::vector<DRHI::DynamicBuffer> uniformBuffers;
-		std::vector<DRHI::DynamicDeviceMemory> uniformBuffersMemory;
-		//std::vector<void*> uniformBuffersMapped;
-
 		_rhiContext->createUniformBuffer(&uniformBuffers, &uniformBuffersMemory, &uniformBuffersMapped, sizeof(UniformBufferObject));
 
 		//texture loading
@@ -65,10 +58,6 @@ namespace FOCUS
 		}
 
 		//binding sampler and image view
-		DRHI::DynamicImage textureImage;
-		DRHI::DynamicImageView textureImageView;
-		DRHI::DynamicSampler textureSampler;
-		DRHI::DynamicDeviceMemory textureMemory;
 		_rhiContext->createTextureImage(&textureImage, &textureMemory, textureWidth, textureHeight, textureChannels, pixels);
 		_rhiContext->createImageView(&textureImageView, &textureImage);
 		_rhiContext->createTextureSampler(&textureSampler);
@@ -93,7 +82,7 @@ namespace FOCUS
 
 	void Renderer::clean()
 	{
-		_rhiContext->clean();
+		_rhiContext->clean(&uniformBuffers, &uniformBuffersMemory, &textureImageView, &textureSampler, &textureImage, &textureMemory, &indexBuffer, &indexDeviceMemory, &vertexBuffer, &vertexDeviceMemory);
 	}
 
 	void Renderer::updateUniformBuffer(uint32_t currentImage)

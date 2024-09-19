@@ -11,7 +11,21 @@ namespace FOCUS
 	{
 	private:
 		DRHI::DynamicRHI* _rhiContext;
+
+		DRHI::DynamicBuffer vertexBuffer;
+		DRHI::DynamicDeviceMemory vertexDeviceMemory;
+
+		DRHI::DynamicBuffer indexBuffer;
+		DRHI::DynamicDeviceMemory indexDeviceMemory;
+
 		std::vector<void*> uniformBuffersMapped;
+		std::vector<DRHI::DynamicBuffer> uniformBuffers;
+		std::vector<DRHI::DynamicDeviceMemory> uniformBuffersMemory;
+
+		DRHI::DynamicImage textureImage;
+		DRHI::DynamicImageView textureImageView;
+		DRHI::DynamicSampler textureSampler;
+		DRHI::DynamicDeviceMemory textureMemory;
 
 	public:
 		Renderer() = delete;

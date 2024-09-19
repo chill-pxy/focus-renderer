@@ -73,10 +73,15 @@ namespace FOCUS
 		_rhiContext->createImageView(&textureImageView, &textureImage);
 		_rhiContext->createTextureSampler(&textureSampler);
 
-		DRHI::DynamicDescriptorBufferInfo descriptor;
-		descriptor.set(uniformBuffers[0], sizeof(UniformBufferObject));
+		std::vector<DRHI::DynamicDescriptorBufferInfo> descriptors;
+		for (int i = 0; i < uniformBuffers.size(); ++i)
+		{
+			DRHI::DynamicDescriptorBufferInfo descriptor;
+			descriptor.set(uniformBuffers[i], sizeof(UniformBufferObject));
+			descriptors.push_back(descriptor);
+		}
 		//_rhiContext->createDescriptorSets(&uniformBuffers, sizeof(UniformBufferObject), textureImageView, textureSampler);
-		_rhiContext->createDescriptorSet(&descriptor);
+		_rhiContext->createDescriptorSet(&descriptors);
 		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(obj.indices.size()));
 	}
 

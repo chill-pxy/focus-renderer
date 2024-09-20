@@ -29,12 +29,12 @@ namespace FOCUS
 		pci.vertexShader = "../../../Shaders/model_vertex.spv";
 		pci.fragmentShader = "../../../Shaders/model_fragment.spv";
 		pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
-		pci.vertexInputBinding.set(0, sizeof(Vertex));
+		pci.vertexInputBinding.set(_api, 0, sizeof(Vertex));
 		pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
 		pci.vertexInputAttributes.resize(3);
-		pci.vertexInputAttributes[0].set(0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
-		pci.vertexInputAttributes[1].set(1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
-		pci.vertexInputAttributes[2].set(2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
+		pci.vertexInputAttributes[0].set(_api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
+		pci.vertexInputAttributes[1].set(_api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
+		pci.vertexInputAttributes[2].set(_api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
 		dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext)->createPipeline(pci);
 		

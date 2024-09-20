@@ -62,8 +62,6 @@ namespace FOCUS
             Mesh mesh{};
             mesh.attrib = attrib;
             mesh.indices = indices;
-            mesh.materials = materials;
-            mesh.shapes = shapes;
             mesh.vertices = vertices;
 
             return mesh;

@@ -15,6 +15,7 @@ namespace FOCUS
 			DRHI::RHICreateInfo rhiCI{};
 			rhiCI.platformInfo = platformCI;
 			_rhiContext = new DRHI::VulkanDRHI(rhiCI);
+			_api = api;
 			break;
 		}
 	}
@@ -22,28 +23,31 @@ namespace FOCUS
 	void Renderer::initialize()
 	{
 		_rhiContext->initialize();
+		auto format = DRHI::DynamicFormat(_api);
 
 		DRHI::PipelineCreateInfo pci = {};
 		pci.vertexShader = "../../../Shaders/model_vertex.spv";
 		pci.fragmentShader = "../../../Shaders/model_fragment.spv";
+		pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+		pci.vertexInputBinding.set(0, sizeof(Vertex));
+		pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+		pci.vertexInputAttributes.resize(3);
+		pci.vertexInputAttributes[0].set(0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
+		pci.vertexInputAttributes[1].set(1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
+		pci.vertexInputAttributes[2].set(2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
 		dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext)->createPipeline(pci);
 		
 		const char* modelPath = "../../../Asset/Models/viking_room.obj";
-		
-		//std::vector<Vertex> vertices;
-		//std::vector<uint32_t> indices;
+
 		Mesh obj = RenderResources::loadModel(modelPath);
 
 		//create vertex buffer
 		auto vertexBufferSize = sizeof(obj.vertices[0]) * obj.vertices.size();
-
 		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, obj.vertices.data(), "VertexBuffer");
 
 		//create index buffer
-		
 		auto indexBufferSize = sizeof(obj.indices[0]) * obj.indices.size();
-
 		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, obj.indices.data(), "IndexBuffer");
 
 		//create uniform buffer
@@ -69,7 +73,7 @@ namespace FOCUS
 			descriptor.set(uniformBuffers[i], sizeof(UniformBufferObject));
 			descriptors.push_back(descriptor);
 		}
-		//_rhiContext->createDescriptorSets(&uniformBuffers, sizeof(UniformBufferObject), textureImageView, textureSampler);
+
 		_rhiContext->createDescriptorSet(&descriptors, textureImageView, textureSampler);
 		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(obj.indices.size()));
 	}

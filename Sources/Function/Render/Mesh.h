@@ -29,8 +29,6 @@ namespace FOCUS
         tinyobj::attrib_t attrib;
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
     };
 
 }

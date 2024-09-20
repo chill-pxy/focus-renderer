@@ -75,7 +75,16 @@ namespace FOCUS
 		}
 
 		_rhiContext->createDescriptorSet(&descriptors, textureImageView, textureSampler);
-		_rhiContext->prepareCommandBuffer(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(obj.indices.size()));
+		
+		//--------------------------prepare command buffer-------------------------------
+		auto commandBufferSize = _rhiContext->getCommandBufferSize();
+		for (int i = 0; i < commandBufferSize; ++i)
+		{
+			_rhiContext->beginCommandBuffer(i);
+			_rhiContext->modelDraw(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(obj.indices.size()), i);
+			_rhiContext->endCommandBuffer(i);
+		}
+		//-------------------------------------------------------------------------------
 	}
 
 	void Renderer::draw()

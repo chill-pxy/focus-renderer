@@ -36,7 +36,7 @@ namespace FOCUS
 		pci.vertexInputAttributes[1].set(_api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
 		pci.vertexInputAttributes[2].set(_api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
-		dynamic_cast<DRHI::VulkanDRHI*>(_rhiContext)->createPipeline(pci);
+		_rhiContext->createPipeline(pci);
 		
 		const char* modelPath = "../../../Asset/Models/viking_room.obj";
 
@@ -95,7 +95,16 @@ namespace FOCUS
 
 	void Renderer::clean()
 	{
-		_rhiContext->clean(&uniformBuffers, &uniformBuffersMemory, &textureImageView, &textureSampler, &textureImage, &textureMemory, &indexBuffer, &indexDeviceMemory, &vertexBuffer, &vertexDeviceMemory);
+		_rhiContext->clean();
+		
+		for (int i = 0; i < uniformBuffers.size(); ++i)
+		{
+			_rhiContext->clearBuffer(&uniformBuffers[i], &uniformBuffersMemory[i]);
+		}
+
+		_rhiContext->clearBuffer(&vertexBuffer, &vertexDeviceMemory);
+		_rhiContext->clearBuffer(&indexBuffer, &indexDeviceMemory);
+		_rhiContext->clearImage(&textureSampler, &textureImageView, &textureImage, &textureMemory);
 	}
 
 	void Renderer::updateUniformBuffer(uint32_t currentImage)

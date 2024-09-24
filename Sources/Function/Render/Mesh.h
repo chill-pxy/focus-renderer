@@ -13,12 +13,14 @@ namespace FOCUS
         glm::vec3 color;
         glm::vec2 texCoord;
 
-        bool operator==(const Vertex& other) const {
+        bool operator==(const Vertex& other) const 
+        {
             return pos == other.pos && color == other.color && texCoord == other.texCoord;
         }
 	};
 
-    struct UniformBufferObject {
+    struct UniformBufferObject 
+    {
         alignas(16) glm::mat4 model;
         alignas(16) glm::mat4 view;
         alignas(16) glm::mat4 proj;
@@ -34,8 +36,10 @@ namespace FOCUS
 }
 
 namespace std {
-    template<> struct hash<FOCUS::Vertex> {
-        size_t operator()(FOCUS::Vertex const& vertex) const {
+    template<> struct hash<FOCUS::Vertex> 
+    {
+        size_t operator()(FOCUS::Vertex const& vertex) const 
+        {
             return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
         }
     };

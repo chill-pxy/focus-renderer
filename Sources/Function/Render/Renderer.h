@@ -27,6 +27,8 @@ namespace FOCUS
 		DRHI::DynamicSampler textureSampler;
 		DRHI::DynamicDeviceMemory textureMemory;
 
+		DRHI::DynamicPipeline modelPipeline;
+
 		DRHI::API _api;
 
 	public:

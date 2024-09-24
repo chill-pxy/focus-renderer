@@ -36,7 +36,7 @@ namespace FOCUS
 		pci.vertexInputAttributes[1].set(_api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
 		pci.vertexInputAttributes[2].set(_api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
-		_rhiContext->createPipeline(pci);
+		_rhiContext->createPipeline(&modelPipeline ,pci);
 		
 		const char* modelPath = "../../../Asset/Models/viking_room.obj";
 
@@ -70,7 +70,7 @@ namespace FOCUS
 		for (int i = 0; i < uniformBuffers.size(); ++i)
 		{
 			DRHI::DynamicDescriptorBufferInfo descriptor;
-			descriptor.set(uniformBuffers[i], sizeof(UniformBufferObject));
+			descriptor.set(_api, uniformBuffers[i], sizeof(UniformBufferObject));
 			descriptors.push_back(descriptor);
 		}
 
@@ -78,9 +78,11 @@ namespace FOCUS
 		
 		//--------------------------prepare command buffer-------------------------------
 		auto commandBufferSize = _rhiContext->getCommandBufferSize();
+		DRHI::DynamicPipelineBindPoint bindPoint(_api);
 		for (int i = 0; i < commandBufferSize; ++i)
 		{
 			_rhiContext->beginCommandBuffer(i);
+			_rhiContext->bindPipeline(modelPipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, i);
 			_rhiContext->modelDraw(&vertexBuffer, &indexBuffer, static_cast<uint32_t>(obj.indices.size()), i);
 			_rhiContext->endCommandBuffer(i);
 		}

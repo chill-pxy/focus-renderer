@@ -4,6 +4,7 @@
 #include<vector>
 
 #include<drhi.h>
+#include<imgui.h>
 
 namespace FOCUS
 {
@@ -28,6 +29,12 @@ namespace FOCUS
 		DRHI::DynamicDeviceMemory textureMemory;
 
 		DRHI::DynamicPipeline modelPipeline;
+		DRHI::DynamicPipelineLayout modelPipelineLayout;
+
+		DRHI::DynamicDescriptorSet modelDescriptorSet;
+		DRHI::DynamicDescriptorSetLayout modelDescriptorSetLayout;
+
+		DRHI::DynamicPipeline uiPipeline;
 
 		DRHI::API _api;
 

@@ -36,7 +36,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     tinyobjloader
     glm
     stb
-    #imgui
+    imgui
 )
 
 target_link_libraries(${TARGET_NAME} PRIVATE

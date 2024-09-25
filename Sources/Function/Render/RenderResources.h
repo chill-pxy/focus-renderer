@@ -10,7 +10,7 @@
 
 namespace FOCUS
 {
-	namespace RenderResources
+	namespace RenderResourceFunctions
 	{
 		Mesh loadModel(const char* modelPath)
 		{
@@ -22,7 +22,8 @@ namespace FOCUS
             std::vector<tinyobj::material_t> materials;
             std::string warn, err;
 
-            if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath)) {
+            if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath)) 
+            {
                 throw std::runtime_error(warn + err);
             }
 
@@ -73,4 +74,10 @@ namespace FOCUS
             
         }
 	}
+
+    class RenderResource
+    {
+    public:
+        RenderResource() = default;
+    };
 }

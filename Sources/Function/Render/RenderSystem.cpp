@@ -1,6 +1,7 @@
 #include<drhi.h>
 
 #include"RenderSystem.h"
+#include"RenderScene.h"
 
 namespace FOCUS
 {
@@ -17,6 +18,7 @@ namespace FOCUS
 	void RenderSystem::initialize()
 	{
 		_renderer->initialize();
+
 	}
 
 	void RenderSystem::tick()

@@ -35,7 +35,8 @@ namespace FOCUS
 
 }
 
-namespace std {
+namespace std
+{
     template<> struct hash<FOCUS::Vertex> 
     {
         size_t operator()(FOCUS::Vertex const& vertex) const 

@@ -42,7 +42,7 @@ namespace FOCUS
 		
 		const char* modelPath = "../../../Asset/Models/viking_room.obj";
 
-		Mesh obj = RenderResources::loadModel(modelPath);
+		Mesh obj = RenderResourceFunctions::loadModel(modelPath);
 
 		//create vertex buffer
 		auto vertexBufferSize = sizeof(obj.vertices[0]) * obj.vertices.size();
@@ -57,7 +57,7 @@ namespace FOCUS
 
 		//texture loading
 		int textureWidth, textureHeight, textureChannels;
-		stbi_uc* pixels = RenderResources::loadTexture("../../../Asset/Models/viking_room.png", &textureWidth, &textureHeight, &textureChannels);
+		stbi_uc* pixels = RenderResourceFunctions::loadTexture("../../../Asset/Models/viking_room.png", &textureWidth, &textureHeight, &textureChannels);
 		if (!pixels)
 		{
 			throw std::runtime_error("failed to load texture image!");
@@ -89,6 +89,8 @@ namespace FOCUS
 			_rhiContext->bindVertexBuffers(&vertexBuffer, i);
 			_rhiContext->bindIndexBuffer(&indexBuffer, i);
 			_rhiContext->bindDescriptorSets(&modelDescriptorSet, modelPipelineLayout, 0, i);
+
+			//draw model
 			_rhiContext->drawIndexed(i, static_cast<uint32_t>(obj.indices.size()), 1, 0, 0, 0);
 
 			_rhiContext->endCommandBuffer(i);

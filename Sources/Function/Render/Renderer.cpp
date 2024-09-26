@@ -21,17 +21,26 @@ namespace FOCUS
 
 	void Renderer::initialize()
 	{
+		//-------------------------------initialize variant------------------------------------
 		auto api = _rhiContext->getCurrentAPI();
-
-		_rhiContext->initialize();
 		auto format = DRHI::DynamicFormat(api);
+		auto bindPoint = DRHI::DynamicPipelineBindPoint (api);
+		
+		_rhiContext->initialize();
+		//-------------------------------------------------------------------------------------
 
+
+
+		//--------------------------------build render resources-------------------------------
 		obj = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/viking_room.obj"));
 		std::shared_ptr<Texture> texture = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/viking_room.png"));
 		obj->_texture = texture;
-
 		obj->build(_rhiContext);
+		//-------------------------------------------------------------------------------------
 
+
+
+		//--------------------------------create pipeline--------------------------------------
 		DRHI::PipelineCreateInfo pci = {};
 		pci.vertexShader = "../../../Shaders/model_vertex.spv";
 		pci.fragmentShader = "../../../Shaders/model_fragment.spv";
@@ -44,11 +53,12 @@ namespace FOCUS
 		pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
 		_rhiContext->createPipeline(&modelPipeline, &modelPipelineLayout, &obj->_descriptorSetLayout, pci);
+		//------------------------------------------------------------------------------------
+		
 
-		//--------------------------prepare command buffer-------------------------------
-		auto commandBufferSize = _rhiContext->getCommandBufferSize();
-		DRHI::DynamicPipelineBindPoint bindPoint(api);
-		for (int i = 0; i < commandBufferSize; ++i)
+
+		//------------------------------prepare command buffer--------------------------------
+		for (int i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
 		{
 			_rhiContext->beginCommandBuffer(i);
 
@@ -62,7 +72,7 @@ namespace FOCUS
 
 			_rhiContext->endCommandBuffer(i);
 		}
-		//-------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------
 	}
 
 	void Renderer::draw()

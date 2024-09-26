@@ -18,6 +18,9 @@ namespace DRHI
 	class DynamicRHI
 	{
 	public:
+		//get current api type
+		virtual API getCurrentAPI() = 0;
+
 		//initialize function
 		virtual void initialize() = 0;
 
@@ -36,7 +39,6 @@ namespace DRHI
 		virtual void beginCommandBuffer(uint32_t index) = 0;
 		virtual void endCommandBuffer(uint32_t index) = 0;
 		virtual uint32_t getCommandBufferSize() = 0;
-		//virtual void modelDraw(DynamicBuffer* vertexBuffer, DynamicBuffer* indexBuffer, uint32_t indexSize, uint32_t index) = 0;
 
 		//buffer functions
 		virtual void bindVertexBuffers(DynamicBuffer* vertexBuffer, uint32_t index) = 0;

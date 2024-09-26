@@ -1,7 +1,7 @@
 #include<chrono>
 
 #include"Renderer.h"
-#include"RenderResources.h"
+#include"RenderResource.h"
 #include"Mesh.h"
 
 namespace FOCUS
@@ -14,84 +14,51 @@ namespace FOCUS
 		case DRHI::VULKAN:
 			DRHI::RHICreateInfo rhiCI{};
 			rhiCI.platformInfo = platformCI;
-			_rhiContext = new DRHI::VulkanDRHI(rhiCI);
-			_api = api;
+			_rhiContext = std::make_shared<DRHI::VulkanDRHI>(rhiCI);
 			break;
 		}
 	}
 
 	void Renderer::initialize()
 	{
+		auto api = _rhiContext->getCurrentAPI();
+
 		_rhiContext->initialize();
-		auto format = DRHI::DynamicFormat(_api);
+		auto format = DRHI::DynamicFormat(api);
+
+		obj = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/viking_room.obj"));
+		std::shared_ptr<Texture> texture = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/viking_room.png"));
+		obj->_texture = texture;
+
+		obj->build(_rhiContext);
 
 		DRHI::PipelineCreateInfo pci = {};
 		pci.vertexShader = "../../../Shaders/model_vertex.spv";
 		pci.fragmentShader = "../../../Shaders/model_fragment.spv";
 		pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
-		pci.vertexInputBinding.set(_api, 0, sizeof(Vertex));
+		pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 		pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
 		pci.vertexInputAttributes.resize(3);
-		pci.vertexInputAttributes[0].set(_api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
-		pci.vertexInputAttributes[1].set(_api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
-		pci.vertexInputAttributes[2].set(_api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
+		pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
+		pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
+		pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
-		_rhiContext->createDescriptorSetLayout(&modelDescriptorSetLayout);
+		_rhiContext->createPipeline(&modelPipeline, &modelPipelineLayout, &obj->_descriptorSetLayout, pci);
 
-		_rhiContext->createPipeline(&modelPipeline, &modelPipelineLayout, &modelDescriptorSetLayout, pci);
-		
-		const char* modelPath = "../../../Asset/Models/viking_room.obj";
-
-		Mesh obj = RenderResourceFunctions::loadModel(modelPath);
-
-		//create vertex buffer
-		auto vertexBufferSize = sizeof(obj.vertices[0]) * obj.vertices.size();
-		_rhiContext->createDynamicBuffer(&vertexBuffer, &vertexDeviceMemory, vertexBufferSize, obj.vertices.data(), "VertexBuffer");
-
-		//create index buffer
-		auto indexBufferSize = sizeof(obj.indices[0]) * obj.indices.size();
-		_rhiContext->createDynamicBuffer(&indexBuffer, &indexDeviceMemory, indexBufferSize, obj.indices.data(), "IndexBuffer");
-
-		//create uniform buffer
-		_rhiContext->createUniformBuffer(&uniformBuffers, &uniformBuffersMemory, &uniformBuffersMapped, sizeof(UniformBufferObject));
-
-		//texture loading
-		int textureWidth, textureHeight, textureChannels;
-		stbi_uc* pixels = RenderResourceFunctions::loadTexture("../../../Asset/Models/viking_room.png", &textureWidth, &textureHeight, &textureChannels);
-		if (!pixels)
-		{
-			throw std::runtime_error("failed to load texture image!");
-		}
-
-		//binding sampler and image view
-		_rhiContext->createTextureImage(&textureImage, &textureMemory, textureWidth, textureHeight, textureChannels, pixels);
-		_rhiContext->createImageView(&textureImageView, &textureImage);
-		_rhiContext->createTextureSampler(&textureSampler);
-
-		std::vector<DRHI::DynamicDescriptorBufferInfo> descriptors;
-		for (int i = 0; i < uniformBuffers.size(); ++i)
-		{
-			DRHI::DynamicDescriptorBufferInfo descriptor;
-			descriptor.set(_api, uniformBuffers[i], sizeof(UniformBufferObject));
-			descriptors.push_back(descriptor);
-		}
-
-		_rhiContext->createDescriptorSet(&modelDescriptorSet, &modelDescriptorSetLayout, &descriptors, textureImageView, textureSampler);
-		
 		//--------------------------prepare command buffer-------------------------------
 		auto commandBufferSize = _rhiContext->getCommandBufferSize();
-		DRHI::DynamicPipelineBindPoint bindPoint(_api);
+		DRHI::DynamicPipelineBindPoint bindPoint(api);
 		for (int i = 0; i < commandBufferSize; ++i)
 		{
 			_rhiContext->beginCommandBuffer(i);
 
 			_rhiContext->bindPipeline(modelPipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, i);
-			_rhiContext->bindVertexBuffers(&vertexBuffer, i);
-			_rhiContext->bindIndexBuffer(&indexBuffer, i);
-			_rhiContext->bindDescriptorSets(&modelDescriptorSet, modelPipelineLayout, 0, i);
+			_rhiContext->bindVertexBuffers(&obj->_vertexBuffer, i);
+			_rhiContext->bindIndexBuffer(&obj->_indexBuffer, i);
+			_rhiContext->bindDescriptorSets(&obj->_descriptorSet, modelPipelineLayout, 0, i);
 
 			//draw model
-			_rhiContext->drawIndexed(i, static_cast<uint32_t>(obj.indices.size()), 1, 0, 0, 0);
+			_rhiContext->drawIndexed(i, static_cast<uint32_t>(obj->_indices.size()), 1, 0, 0, 0);
 
 			_rhiContext->endCommandBuffer(i);
 		}
@@ -108,14 +75,14 @@ namespace FOCUS
 	{
 		_rhiContext->clean();
 		
-		for (int i = 0; i < uniformBuffers.size(); ++i)
+		for (int i = 0; i < obj->_uniformBuffers.size(); ++i)
 		{
-			_rhiContext->clearBuffer(&uniformBuffers[i], &uniformBuffersMemory[i]);
+			_rhiContext->clearBuffer(&obj->_uniformBuffers[i], &obj->_uniformBuffersMemory[i]);
 		}
 
-		_rhiContext->clearBuffer(&vertexBuffer, &vertexDeviceMemory);
-		_rhiContext->clearBuffer(&indexBuffer, &indexDeviceMemory);
-		_rhiContext->clearImage(&textureSampler, &textureImageView, &textureImage, &textureMemory);
+		_rhiContext->clearBuffer(&obj->_vertexBuffer, &obj->_vertexDeviceMemory);
+		_rhiContext->clearBuffer(&obj->_indexBuffer, &obj->_indexDeviceMemory);
+		_rhiContext->clearImage(&obj->_textureSampler, &obj->_textureImageView, &obj->_textureImage, &obj->_textureMemory);
 	}
 
 	void Renderer::updateUniformBuffer(uint32_t currentImage)
@@ -131,6 +98,6 @@ namespace FOCUS
 		ubo.proj = glm::perspective(glm::radians(45.0f), 1920 / (float)1080, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
 
-		memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+		memcpy(obj->_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 	}
 }

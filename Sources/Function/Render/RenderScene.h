@@ -1,3 +1,5 @@
+#pragma once
+
 #include<memory>
 
 #include"Renderer.h"
@@ -13,5 +15,6 @@ namespace FOCUS
 		RenderScene() = default;
 
 		void initialize();
+		void prepareRenderResources();
 	};
 }

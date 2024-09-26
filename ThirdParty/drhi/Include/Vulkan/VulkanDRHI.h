@@ -68,6 +68,9 @@ namespace DRHI
 		//-------------------------------------------------------------------------------------------------------------------------- 
 		//--------------------------------------------------------------------------------------------------------------------------  
 		
+		//get current api type
+		virtual API getCurrentAPI() { return API::VULKAN; };
+
 		//initialize function
 		virtual void initialize();
 
@@ -86,7 +89,6 @@ namespace DRHI
 		virtual void beginCommandBuffer(uint32_t index);
 		virtual void endCommandBuffer(uint32_t index);
 		virtual uint32_t getCommandBufferSize();
-		//virtual void modelDraw(DynamicBuffer* vertexBuffer, DynamicBuffer* indexBuffer, uint32_t indexSize, uint32_t index);
 
 		//buffer functions
 		virtual void bindVertexBuffers(DynamicBuffer* vertexBuffer, uint32_t index);

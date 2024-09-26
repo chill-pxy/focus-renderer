@@ -6,4 +6,9 @@ namespace FOCUS
 	{
 
 	}
+
+	void RenderScene::prepareRenderResources()
+	{
+
+	}
 }

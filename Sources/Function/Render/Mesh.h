@@ -4,6 +4,10 @@
 #include<tiny_obj_loader.h>
 
 #include<functional>
+#include<memory>
+
+#include"RenderResource.h"
+#include"Texture.h"
 
 namespace FOCUS
 {
@@ -26,13 +30,21 @@ namespace FOCUS
         alignas(16) glm::mat4 proj;
     };
 
-    struct Mesh
+    class Mesh : public RenderResource
     {
-        tinyobj::attrib_t attrib;
-        std::vector<Vertex> vertices;
-        std::vector<uint32_t> indices;
+    public:
+        tinyobj::attrib_t        _attrib;
+        std::vector<Vertex>      _vertices;
+        std::vector<uint32_t>    _indices;
+        std::shared_ptr<Texture> _texture;
+
+    public:
+        Mesh() = default;
+
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi);
     };
 
+    Mesh* loadModel(const char* modelPath);
 }
 
 namespace std

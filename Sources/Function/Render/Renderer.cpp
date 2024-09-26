@@ -2,7 +2,6 @@
 
 #include"Renderer.h"
 #include"RenderResource.h"
-#include"Mesh.h"
 
 namespace FOCUS
 {
@@ -25,6 +24,9 @@ namespace FOCUS
 		auto api = _rhiContext->getCurrentAPI();
 		auto format = DRHI::DynamicFormat(api);
 		auto bindPoint = DRHI::DynamicPipelineBindPoint (api);
+
+		ui = std::make_shared<EngineUI>();
+		ui->initialize();
 		
 		_rhiContext->initialize();
 		//-------------------------------------------------------------------------------------

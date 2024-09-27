@@ -12,13 +12,15 @@ namespace FOCUS
 		platformCI.width = window->getWindowWidth();
 		platformCI.height = window->getWindowHeight();
 
-		_renderer = std::make_unique<Renderer>(DRHI::VULKAN, platformCI);
+		_renderer = std::make_shared<Renderer>(DRHI::VULKAN, platformCI);
+
+		_ui = std::make_unique<EngineUI>(window->getRawWindow(), _renderer.get());
 	}
 
 	void RenderSystem::initialize()
 	{
 		_renderer->initialize();
-
+		_ui->initialize();
 	}
 
 	void RenderSystem::tick()

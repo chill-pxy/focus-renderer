@@ -2,7 +2,7 @@
 
 #include<memory>
 
-#include"../Platform/NativeWindow.h";
+#include"../Platform/NativeWindow.h"
 #include"Render/RenderSystem.h"
 
 namespace FOCUS

@@ -24,9 +24,6 @@ namespace FOCUS
 		auto api = _rhiContext->getCurrentAPI();
 		auto format = DRHI::DynamicFormat(api);
 		auto bindPoint = DRHI::DynamicPipelineBindPoint (api);
-
-		ui = std::make_shared<EngineUI>();
-		ui->initialize();
 		
 		_rhiContext->initialize();
 		//-------------------------------------------------------------------------------------
@@ -60,7 +57,7 @@ namespace FOCUS
 
 
 		//------------------------------prepare command buffer--------------------------------
-		for (int i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
+		for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
 		{
 			_rhiContext->beginCommandBuffer(i);
 

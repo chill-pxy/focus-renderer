@@ -3,6 +3,7 @@
 #include<memory>
 
 #include"Renderer.h"
+#include"Overlay.h"
 #include"../../Platform/NativeWindow.h"
 
 namespace FOCUS
@@ -10,7 +11,8 @@ namespace FOCUS
 	class RenderSystem
 	{
 	private:
-		std::unique_ptr<Renderer> _renderer;
+		std::shared_ptr<Renderer> _renderer;
+		std::unique_ptr<EngineUI> _ui;
 
 	public:
 		RenderSystem() = delete;

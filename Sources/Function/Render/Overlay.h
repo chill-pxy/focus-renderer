@@ -1,17 +1,25 @@
 #pragma once
 
+#include<Windows.h>
+#include<memory>
+
 #include<imgui.h>
+
+#include"Renderer.h"
 
 namespace FOCUS
 {
 	class EngineUI
 	{
-	public:
+	private:
+		Renderer* _renderer;
+		HWND _window;
 		float _scale{ 1.0f };
 
 	public:
 
-		EngineUI() = default;
+		EngineUI() = delete;
+		EngineUI(HWND window, Renderer* renderer);
 
 		void initialize();
 	};

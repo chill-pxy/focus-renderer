@@ -1,32 +1,44 @@
+#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
+#include<imgui_impl_vulkan.h>
+#include<imgui_impl_win32.h>
+
 #include"Overlay.h"
 
 namespace FOCUS
 {
+    EngineUI::EngineUI(HWND window, Renderer* renderer) :_window(window), _renderer(renderer) {}
+
 	void EngineUI::initialize()
 	{
-		ImGui::CreateContext();
+		// Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-		// Color scheme
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.Colors[ImGuiCol_TitleBg] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
-		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.0f, 0.0f, 0.0f, 0.1f);
-		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_Header] = ImVec4(0.8f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_HeaderActive] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_FrameBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.8f);
-		style.Colors[ImGuiCol_CheckMark] = ImVec4(1.0f, 0.0f, 0.0f, 0.8f);
-		style.Colors[ImGuiCol_SliderGrab] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(1.0f, 0.0f, 0.0f, 0.8f);
-		style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(1.0f, 1.0f, 1.0f, 0.1f);
-		style.Colors[ImGuiCol_FrameBgActive] = ImVec4(1.0f, 1.0f, 1.0f, 0.2f);
-		style.Colors[ImGuiCol_Button] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
-		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.0f, 0.0f, 0.0f, 0.6f);
-		style.Colors[ImGuiCol_ButtonActive] = ImVec4(1.0f, 0.0f, 0.0f, 0.8f);
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+        //ImGui::StyleColorsLight();
 
-		// Dimensions
-		ImGuiIO& io = ImGui::GetIO();
-		io.FontGlobalScale = _scale;
+        // Setup Platform/Renderer backends
+        ImGui_ImplWin32_Init(_window);
+    
+        DRHI::DynamicRHI* rhi = _renderer->_rhiContext.get();
+        DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi);
+    
+        ImGui_ImplVulkan_InitInfo initInfo{};
+        initInfo.Instance = vkrhi->_instance;
+        initInfo.PhysicalDevice = vkrhi->_physicalDevice;
+        initInfo.DescriptorPool = vkrhi->_descriptorPool;
+        initInfo.Device = vkrhi->_device;
+        initInfo.Queue = vkrhi->_graphicQueue;
+        initInfo.QueueFamily = vkrhi->_queueFamilyIndices.graphicsFamily.value();
+        initInfo.ImageCount = vkrhi->getCommandBufferSize();
+        initInfo.MinImageCount = vkrhi->getCommandBufferSize();
+        initInfo.UseDynamicRendering = true;
+
+        ImGui_ImplVulkan_Init(&initInfo);
+
 	}
 }

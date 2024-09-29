@@ -3,8 +3,6 @@
 #include<Windows.h>
 #include<memory>
 
-#include<imgui.h>
-
 #include"Renderer.h"
 
 namespace FOCUS

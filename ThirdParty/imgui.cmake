@@ -9,3 +9,4 @@ file(GLOB imgui_impl CONFIGURE_DEPENDS
 add_library(imgui STATIC ${imgui_sources} ${imgui_impl})
 target_include_directories(imgui PUBLIC $<BUILD_INTERFACE:${imgui_SOURCE_DIR_}>)
 target_link_libraries(imgui PUBLIC volk)
+target_include_directories(imgui PUBLIC ${third_party_folder}/volk)

@@ -81,7 +81,6 @@
 //  2016-11-13: Vulkan: Fix validation layer warnings and errors and redeclare gl_PerVertex.
 //  2016-10-18: Vulkan: Add location decorators & change to use structs as in/out in glsl, update embedded spv (produced with glslangValidator -x). Null the released resources.
 //  2016-08-27: Vulkan: Fix Vulkan example for use when a depth buffer is active.
-
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 #include "imgui_impl_vulkan.h"
@@ -1045,6 +1044,7 @@ void    ImGui_ImplVulkan_DestroyDeviceObjects()
     if (bd->Pipeline)             { vkDestroyPipeline(v->Device, bd->Pipeline, v->Allocator); bd->Pipeline = VK_NULL_HANDLE; }
 }
 
+
 bool    ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loader_func)(const char* function_name, void* user_data), void* user_data)
 {
     // Load function pointers
@@ -1075,6 +1075,8 @@ bool    ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loader_func)(const ch
 
 bool    ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info)
 {
+    volkInitialize();
+    volkLoadInstance(info->Instance);
     IM_ASSERT(g_FunctionsLoaded && "Need to call ImGui_ImplVulkan_LoadFunctions() if IMGUI_IMPL_VULKAN_NO_PROTOTYPES or VK_NO_PROTOTYPES are set!");
 
     if (info->UseDynamicRendering)

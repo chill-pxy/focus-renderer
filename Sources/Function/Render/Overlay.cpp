@@ -47,6 +47,22 @@ namespace FOCUS
         ImGui_ImplVulkan_Init(&initInfo);
 	}
 
+    void EngineUI::draw(uint32_t index)
+    {
+        ImDrawData* imDrawData = ImGui::GetDrawData();
+        int32_t vertexOffset = 0;
+        int32_t indexOffset = 0;
+
+        if ((!imDrawData) || (imDrawData->CmdListsCount == 0)) { return; }
+
+        ImGuiIO& io = ImGui::GetIO();
+
+        auto bindPoint = DRHI::DynamicPipelineBindPoint(_renderer->_rhiContext->getCurrentAPI());
+        _renderer->_rhiContext->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
+        _renderer->_rhiContext->bindDescriptorSets(&_descriptorSet, _pipelineLayout, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
+
+    }
+
     void EngineUI::tick()
     {
         ImGui_ImplVulkan_NewFrame();

@@ -26,6 +26,7 @@ namespace FOCUS
 	void RenderSystem::tick()
 	{
 		_renderer->draw();
+		_ui->tick();
 	}
 
 	void RenderSystem::clean()

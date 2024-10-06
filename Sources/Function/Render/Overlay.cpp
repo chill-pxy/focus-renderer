@@ -63,6 +63,33 @@ namespace FOCUS
 
         _renderer->_rhiContext->bindVertexBuffers(&_vertexBuffer, index);
         _renderer->_rhiContext->bindIndexBuffer(&_indexBuffer, index);
+
+        for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
+        {
+            const ImDrawList* cmd_list = imDrawData->CmdLists[i];
+            for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
+            {
+                const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[j];
+
+                DRHI::DynamicExtent2D extent{};
+                extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
+                extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);
+                
+                DRHI::DynamicOffset2D offset{};
+                offset.x = std::max((int32_t)(pcmd->ClipRect.x), 0);
+                offset.y = std::max((int32_t)(pcmd->ClipRect.y), 0);
+
+                DRHI::DynamicRect2D rect{};
+                rect.extent = extent;
+                rect.offset = offset;
+
+                _renderer->_rhiContext->setScissor(index, 0, 1, rect);
+                _renderer->_rhiContext->drawIndexed(index, pcmd->ElemCount, 1, indexOffset, vertexOffset, 0);
+
+                indexOffset += pcmd->ElemCount;
+            }
+            vertexOffset += cmd_list->VtxBuffer.Size;
+        }
     }
 
     void EngineUI::tick()

@@ -61,6 +61,8 @@ namespace FOCUS
         _renderer->_rhiContext->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
         _renderer->_rhiContext->bindDescriptorSets(&_descriptorSet, _pipelineLayout, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
 
+        _renderer->_rhiContext->bindVertexBuffers(&_vertexBuffer, index);
+        _renderer->_rhiContext->bindIndexBuffer(&_indexBuffer, index);
     }
 
     void EngineUI::tick()

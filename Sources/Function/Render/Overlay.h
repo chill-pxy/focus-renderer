@@ -17,6 +17,9 @@ namespace FOCUS
 		DRHI::DynamicPipelineLayout _pipelineLayout{};
 		DRHI::DynamicDescriptorSet _descriptorSet{};
 
+		DRHI::DynamicBuffer _vertexBuffer{};
+		DRHI::DynamicBuffer _indexBuffer{};
+
 		float _scale{ 1.0f };
 		bool _show_demo_window = true;
 		bool _show_another_window = false;

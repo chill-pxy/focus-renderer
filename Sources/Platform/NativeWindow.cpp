@@ -2,34 +2,16 @@
 
 namespace FOCUS
 {
-	LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		if (uMsg == WM_CLOSE)
-		{
-			DestroyWindow(hWnd);
-		}
-		if (uMsg == WM_DESTROY)
-		{
-			PostQuitMessage(0);
-		}
-		if (uMsg == WM_SIZE)
-		{
-			UINT width = LOWORD(lParam);
-			UINT height = HIWORD(lParam);
-		}
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-
-	void NativeWindow::createWin32Windwow()
+	void NativeWindow::createWin32Windwow(WNDPROC wndproc)
 	{
 		WNDCLASSEX wndclass = {};
 		wndclass.cbSize = sizeof(wndclass);
 		wndclass.hInstance = GetModuleHandleA(NULL);
 		wndclass.lpszClassName = _createInfo.title;
-		wndclass.lpfnWndProc = WndProc;
+		wndclass.lpfnWndProc = wndproc;
 		RegisterClassEx(&wndclass);
 
-		RECT winRect;
+		RECT winRect{0};
 		winRect.left = 0;
 		winRect.right = _createInfo.width;
 		winRect.top = 0;
@@ -71,5 +53,10 @@ namespace FOCUS
 		}
 
 		return true;
+	}
+
+	int NativeWindow::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		return 0;
 	}
 }

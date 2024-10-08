@@ -2,7 +2,7 @@
 
 #include<memory>
 
-#include"../Platform/NativeWindow.h"
+#include"../Platform/WindowSystem.h"
 #include"Render/RenderSystem.h"
 
 namespace FOCUS
@@ -11,19 +11,19 @@ namespace FOCUS
 	{
 	public:
 		std::unique_ptr<RenderSystem> _renderSytem;
-		std::unique_ptr<NativeWindow> _window;
+		std::unique_ptr<WindowSystem> _window;
 
 	public:
 		GlobalContext()
 		{
-			NativeWindowCreateInfo windowCreateInfo =
+			WindowSystemCreateInfo windowCreateInfo =
 			{
 				"FOCUS",
 				1920,
 				1080
 			};
 
-			_window = std::make_unique<NativeWindow>(windowCreateInfo);
+			_window = std::make_unique<WindowSystem>(windowCreateInfo);
 
 			_renderSytem = std::make_unique<RenderSystem>(_window.get());
 		}

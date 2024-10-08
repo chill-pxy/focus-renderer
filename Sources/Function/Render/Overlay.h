@@ -24,6 +24,11 @@ namespace FOCUS
 		bool _show_demo_window = true;
 		bool _show_another_window = false;
 		
+		struct PushConstBlock 
+		{
+			glm::vec2 scale;
+			glm::vec2 translate;
+		} pushConstBlock;
 
 	public:
 

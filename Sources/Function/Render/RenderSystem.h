@@ -1,6 +1,7 @@
 #pragma once
 
 #include<memory>
+#include<mutex>
 
 #include"Renderer.h"
 #include"Overlay.h"
@@ -20,13 +21,34 @@ namespace FOCUS
 	private:
 		std::shared_ptr<Renderer> _renderer;
 		std::unique_ptr<EngineUI> _ui;
+		static std::shared_ptr<RenderSystem> _instance;
+		static std::mutex _mutex;
+
+		RenderSystem() = default;
 
 	public:
-		RenderSystem() = delete;
-		RenderSystem(RenderSystemCreateInfo rsci);
+		RenderSystem(const RenderSystem&) = delete;
+		RenderSystem& operator=(const RenderSystem&) = delete;
 
-		void initialize();
+		static std::shared_ptr<RenderSystem> getInstance()
+		{
+			if (!_instance)
+			{
+				std::lock_guard<std::mutex> lock(_mutex);
+				if (!_instance)
+				{
+					_instance.reset(new RenderSystem());
+				}
+			}
+
+			return _instance;
+		}
+
+		void initialize(RenderSystemCreateInfo rsci);
 		void tick();
 		void clean();
 	};
+
+	std::shared_ptr<RenderSystem> RenderSystem::_instance = nullptr;
+	std::mutex RenderSystem::_mutex;
 }

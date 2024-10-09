@@ -10,9 +10,6 @@ namespace FOCUS
 	class GlobalContext
 	{
 	public:
-		std::unique_ptr<RenderSystem> _renderSytem;
-
-	public:
 		GlobalContext()
 		{
 			WindowSystemCreateInfo windowCreateInfo{};
@@ -27,12 +24,7 @@ namespace FOCUS
 			renderSystemCreateInfo.width = WindowSystem::getInstance()->getWindowWidth();
 			renderSystemCreateInfo.height = WindowSystem::getInstance()->getWindowHeight();
 
-			_renderSytem = std::make_unique<RenderSystem>(renderSystemCreateInfo);
-		}
-
-		void initialize()
-		{
-			_renderSytem->initialize();
+			RenderSystem::getInstance()->initialize(renderSystemCreateInfo);
 		}
 	};
 }

@@ -5,7 +5,7 @@
 
 namespace FOCUS
 {
-	RenderSystem::RenderSystem(RenderSystemCreateInfo rsci)
+	void RenderSystem::initialize(RenderSystemCreateInfo rsci)
 	{
 		DRHI::PlatformInfo platformCI{};
 		platformCI.window = rsci.window;
@@ -15,10 +15,7 @@ namespace FOCUS
 		_renderer = std::make_shared<Renderer>(DRHI::VULKAN, platformCI);
 
 		_ui = std::make_unique<EngineUI>(rsci.window, _renderer.get());
-	}
 
-	void RenderSystem::initialize()
-	{
 		_renderer->initialize();
 		_ui->initialize();
 	}

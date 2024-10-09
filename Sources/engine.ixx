@@ -19,7 +19,6 @@ namespace FOCUS
 		void initialize()
 		{
 			_running = true;
-			_globalContext.initialize();
 		}
 
 		void run()
@@ -27,10 +26,10 @@ namespace FOCUS
 			while (_running)
 			{
 				_running = WindowSystem::getInstance()->tick();
-				_globalContext._renderSytem->tick();
+				RenderSystem::getInstance()->tick();
 			}
 
-			_globalContext._renderSytem->clean();
+			RenderSystem::getInstance()->clean();
 		}
 	};
 }

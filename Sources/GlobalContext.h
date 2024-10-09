@@ -2,8 +2,8 @@
 
 #include<memory>
 
-#include"../Platform/WindowSystem.h"
-#include"Render/RenderSystem.h"
+#include"Platform/WindowSystem.h"
+#include"Function/Render/RenderSystem.h"
 
 namespace FOCUS
 {

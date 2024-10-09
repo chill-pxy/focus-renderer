@@ -1,4 +1,5 @@
 #include"WindowSystem.h"
+#include"../Function/IO/KeyCallback.h"
 
 namespace FOCUS
 {
@@ -23,6 +24,7 @@ namespace FOCUS
 			UINT height = HIWORD(lParam);
 
 			WindowSystem::getInstance()->setWindowSize(width, height);
+			onRenderCanvasSizeChanged(width, height);
 		}
 
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);

@@ -49,7 +49,4 @@ namespace FOCUS
 		uint32_t getWindowHeight();
 		NativeWindow* getNativeWindow();	
 	};
-
-	std::shared_ptr<WindowSystem> WindowSystem::_instance = nullptr;
-	std::mutex WindowSystem::_mutex;
 }

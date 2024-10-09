@@ -47,8 +47,6 @@ namespace FOCUS
 		void initialize(RenderSystemCreateInfo rsci);
 		void tick();
 		void clean();
+		void setViewportSize(uint32_t width, uint32_t height);
 	};
-
-	std::shared_ptr<RenderSystem> RenderSystem::_instance = nullptr;
-	std::mutex RenderSystem::_mutex;
 }

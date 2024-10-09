@@ -29,4 +29,14 @@ namespace FOCUS
 	{
 		_renderer->clean();
 	}
+
+	void RenderSystem::setViewportSize(uint32_t width, uint32_t height)
+	{
+		if (_renderer)
+		{
+			auto vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
+			vkrhi->_viewPortWidth = width;
+			vkrhi->_viewPortHeight = height;
+		}
+	}
 }

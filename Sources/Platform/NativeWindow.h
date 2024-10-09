@@ -31,7 +31,6 @@ namespace FOCUS
 
         void initialize();
         bool tick();
-        virtual int HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
         HWND getRawWindow()
         {
@@ -50,25 +49,5 @@ namespace FOCUS
 
     private:
         void createWin32Windwow(WNDPROC wndproc);
-
-        //LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-
-        //static LRESULT CALLBACK InitialWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
-        //    if (Msg == WM_NCCREATE) {
-        //        LPCREATESTRUCT create_struct = reinterpret_cast<LPCREATESTRUCT>(lParam);
-        //        void* lpCreateParam = create_struct->lpCreateParams;
-        //        NativeWindow* this_window = reinterpret_cast<NativeWindow*>(lpCreateParam);
-        //        SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this_window));
-        //        SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&NativeWindow::StaticWndProc));
-        //        return this_window->WndProc(hWnd, Msg, wParam, lParam);
-        //    }
-        //    return DefWindowProc(hWnd, Msg, wParam, lParam);
-        //}
-
-        //static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) {
-        //    LONG_PTR user_data = GetWindowLongPtr(hWnd, GWLP_USERDATA);
-        //    NativeWindow* this_window = reinterpret_cast<NativeWindow*>(user_data);
-        //    return this_window->WndProc(hWnd, Msg, wParam, lParam);
-        //}
     };
 }

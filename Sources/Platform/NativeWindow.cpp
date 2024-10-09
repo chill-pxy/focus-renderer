@@ -54,9 +54,4 @@ namespace FOCUS
 
 		return true;
 	}
-
-	int NativeWindow::HandleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-	{
-		return 0;
-	}
 }

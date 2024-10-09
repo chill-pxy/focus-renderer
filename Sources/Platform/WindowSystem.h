@@ -1,5 +1,8 @@
 #pragma once
 
+#include<memory>
+#include<mutex>
+
 #include"NativeWindow.h"
 
 namespace FOCUS
@@ -11,21 +14,42 @@ namespace FOCUS
 		uint32_t height;
 	};
 
-	class WindowSystem : public NativeWindow
+	class WindowSystem
 	{
+	private:
+		std::shared_ptr<NativeWindow> _nativeWindow;
+		WindowSystemCreateInfo _wsci{};
+		static std::shared_ptr<WindowSystem> _instance;
+		static std::mutex _mutex;
+
+		WindowSystem() = default;
+
 	public:
-		WindowSystem() = delete;
-		WindowSystem(WindowSystemCreateInfo wsci)
+		WindowSystem(const WindowSystem&) = delete;
+		WindowSystem& operator=(const WindowSystem&) = delete;
+
+		static std::shared_ptr<WindowSystem> getInstance()
 		{
-			NativeWindowCreateInfo nwci{};
-			nwci.title = wsci.title;
-			nwci.width = wsci.width;
-			nwci.height = wsci.height;
-			nwci.wndproc = this->handleMessage;
-			NativeWindow(nwci);
+			if (!_instance) 
+			{
+				std::lock_guard<std::mutex> lock(_mutex);
+				if (!_instance) 
+				{
+					_instance.reset(new WindowSystem());
+				}
+			}
+
+			return _instance;
 		}
 
-	private:
-		LRESULT CALLBACK handleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+		bool tick();
+		void initialize(WindowSystemCreateInfo wsci);
+		void setWindowSize(uint32_t width, uint32_t height);
+		uint32_t getWindowWidth();
+		uint32_t getWindowHeight();
+		NativeWindow* getNativeWindow();	
 	};
+
+	std::shared_ptr<WindowSystem> WindowSystem::_instance = nullptr;
+	std::mutex WindowSystem::_mutex;
 }

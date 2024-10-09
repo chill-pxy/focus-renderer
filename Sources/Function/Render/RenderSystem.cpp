@@ -5,16 +5,16 @@
 
 namespace FOCUS
 {
-	RenderSystem::RenderSystem(NativeWindow* window)
+	RenderSystem::RenderSystem(RenderSystemCreateInfo rsci)
 	{
 		DRHI::PlatformInfo platformCI{};
-		platformCI.window = window->getRawWindow();
-		platformCI.width = window->getWindowWidth();
-		platformCI.height = window->getWindowHeight();
+		platformCI.window = rsci.window;
+		platformCI.width = rsci.width;
+		platformCI.height = rsci.height;
 
 		_renderer = std::make_shared<Renderer>(DRHI::VULKAN, platformCI);
 
-		_ui = std::make_unique<EngineUI>(window->getRawWindow(), _renderer.get());
+		_ui = std::make_unique<EngineUI>(rsci.window, _renderer.get());
 	}
 
 	void RenderSystem::initialize()

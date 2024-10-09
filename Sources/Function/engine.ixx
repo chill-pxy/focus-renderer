@@ -26,7 +26,7 @@ namespace FOCUS
 		{
 			while (_running)
 			{
-				_running = _globalContext._window->tick();
+				_running = WindowSystem::getInstance()->tick();
 				_globalContext._renderSytem->tick();
 			}
 

@@ -8,6 +8,13 @@
 
 namespace FOCUS
 {
+	struct RenderSystemCreateInfo
+	{
+		HWND window;
+		uint32_t width;
+		uint32_t height;
+	};
+
 	class RenderSystem
 	{
 	private:
@@ -16,7 +23,7 @@ namespace FOCUS
 
 	public:
 		RenderSystem() = delete;
-		RenderSystem(NativeWindow* window);
+		RenderSystem(RenderSystemCreateInfo rsci);
 
 		void initialize();
 		void tick();

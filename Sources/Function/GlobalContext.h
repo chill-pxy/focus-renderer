@@ -11,26 +11,27 @@ namespace FOCUS
 	{
 	public:
 		std::unique_ptr<RenderSystem> _renderSytem;
-		std::unique_ptr<WindowSystem> _window;
 
 	public:
 		GlobalContext()
 		{
-			WindowSystemCreateInfo windowCreateInfo =
-			{
-				"FOCUS",
-				1920,
-				1080
-			};
+			WindowSystemCreateInfo windowCreateInfo{};
+			windowCreateInfo.title = "FOCUS";
+			windowCreateInfo.width = 1920;
+			windowCreateInfo.height = 1080;
 
-			_window = std::make_unique<WindowSystem>(windowCreateInfo);
+			WindowSystem::getInstance()->initialize(windowCreateInfo);
 
-			_renderSytem = std::make_unique<RenderSystem>(_window.get());
+			RenderSystemCreateInfo renderSystemCreateInfo{};
+			renderSystemCreateInfo.window = WindowSystem::getInstance()->getNativeWindow()->getRawWindow();
+			renderSystemCreateInfo.width = WindowSystem::getInstance()->getWindowWidth();
+			renderSystemCreateInfo.height = WindowSystem::getInstance()->getWindowHeight();
+
+			_renderSytem = std::make_unique<RenderSystem>(renderSystemCreateInfo);
 		}
 
 		void initialize()
 		{
-			_window->initialize();
 			_renderSytem->initialize();
 		}
 	};

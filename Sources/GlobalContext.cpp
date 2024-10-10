@@ -19,13 +19,12 @@ namespace FOCUS
 		RenderSystem::getInstance()->initialize(renderSystemCreateInfo);
 	}
 
-	void GlobalContext::tick(bool* runnning)
+	void GlobalContext::tick(bool* running)
 	{
 		while (running)
 		{
-			running = WindowSystem::getInstance()->tick();
+			*running = WindowSystem::getInstance()->tick();
 			RenderSystem::getInstance()->tick();
-			RenderSystem::getInstance()->getRenderer()->_rhiContext->frameOnTick();
 		}
 
 		RenderSystem::getInstance()->clean();

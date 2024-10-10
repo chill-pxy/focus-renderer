@@ -19,14 +19,15 @@ namespace FOCUS
 	class RenderSystem
 	{
 	private:
-		std::shared_ptr<Renderer> _renderer;
-		std::unique_ptr<EngineUI> _ui;
 		static std::shared_ptr<RenderSystem> _instance;
 		static std::mutex _mutex;
 
 		RenderSystem() = default;
 
 	public:
+		std::shared_ptr<Renderer> _renderer;
+		std::unique_ptr<EngineUI> _ui;
+
 		RenderSystem(const RenderSystem&) = delete;
 		RenderSystem& operator=(const RenderSystem&) = delete;
 

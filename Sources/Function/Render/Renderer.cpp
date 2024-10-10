@@ -23,7 +23,6 @@ namespace FOCUS
 		//-------------------------------initialize variant------------------------------------
 		auto api = _rhiContext->getCurrentAPI();
 		auto format = DRHI::DynamicFormat(api);
-		auto bindPoint = DRHI::DynamicPipelineBindPoint (api);
 		
 		_rhiContext->initialize();
 		//-------------------------------------------------------------------------------------
@@ -54,9 +53,14 @@ namespace FOCUS
 		_rhiContext->createPipeline(&modelPipeline, &modelPipelineLayout, &obj->_descriptorSetLayout, pci);
 		//------------------------------------------------------------------------------------
 		
+		buildCommandBuffer();
+	}
 
+	void Renderer::buildCommandBuffer()
+	{
+		auto api = _rhiContext->getCurrentAPI();
+		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-		//------------------------------prepare command buffer--------------------------------
 		for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
 		{
 			_rhiContext->beginCommandBuffer(i);
@@ -71,12 +75,11 @@ namespace FOCUS
 
 			_rhiContext->endCommandBuffer(i);
 		}
-		//------------------------------------------------------------------------------------
 	}
 
 	void Renderer::draw()
 	{
-		_rhiContext->frameOnTick();
+		//_rhiContext->frameOnTick(buildCommandBuffer);
 		updateUniformBuffer(_rhiContext->getCurrentBuffer());
 	}
 

@@ -23,13 +23,7 @@ namespace FOCUS
 
 		void run()
 		{
-			while (_running)
-			{
-				_running = WindowSystem::getInstance()->tick();
-				RenderSystem::getInstance()->tick();
-			}
-
-			RenderSystem::getInstance()->clean();
+			_globalContext.tick(&_running);
 		}
 	};
 }

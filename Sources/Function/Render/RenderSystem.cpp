@@ -39,4 +39,9 @@ namespace FOCUS
 			vkrhi->_viewPortHeight = height;
 		}
 	}
+
+	std::shared_ptr<Renderer> RenderSystem::getRenderer()
+	{
+		return _renderer;
+	}
 }

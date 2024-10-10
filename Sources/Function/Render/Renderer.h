@@ -28,6 +28,7 @@ namespace FOCUS
 		void updateUniformBuffer(uint32_t currentImage);
 
 		void initialize();
+		void buildCommandBuffer();
 		void draw();
 		void clean();
 	};

@@ -48,5 +48,7 @@ namespace FOCUS
 		void tick();
 		void clean();
 		void setViewportSize(uint32_t width, uint32_t height);
+
+		std::shared_ptr<Renderer> getRenderer();
 	};
 }

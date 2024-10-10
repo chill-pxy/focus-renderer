@@ -22,8 +22,8 @@ namespace FOCUS
 
 	void RenderSystem::tick()
 	{
-		_renderer->draw();
 		_renderer->_rhiContext->frameOnTick(std::bind(&Renderer::buildCommandBuffer, _renderer));
+		_renderer->draw();
 	}
 
 	void RenderSystem::clean()

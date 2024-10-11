@@ -7,6 +7,12 @@
 
 namespace FOCUS
 {
+	struct PushConstBlock
+	{
+		glm::vec2 scale;
+		glm::vec2 translate;
+	};
+
 	class EngineUI
 	{
 	private:
@@ -20,15 +26,14 @@ namespace FOCUS
 		DRHI::DynamicBuffer _vertexBuffer{};
 		DRHI::DynamicBuffer _indexBuffer{};
 
+		PushConstBlock _pushConstBlock{};
+
+		DRHI::DynamicImage _fontImage{};
+		DRHI::DynamicDeviceMemory _fontMemory{};
+		DRHI::DynamicImageView _fontImageView{};
+		DRHI::DynamicBuffer _fontBuffer{};
+
 		float _scale{ 1.0f };
-		bool _show_demo_window = true;
-		bool _show_another_window = false;
-		
-		struct PushConstBlock 
-		{
-			glm::vec2 scale;
-			glm::vec2 translate;
-		} pushConstBlock;
 
 	public:
 
@@ -37,6 +42,5 @@ namespace FOCUS
 
 		void initialize();
 		void draw(uint32_t index);
-		void tick();
 	};
 }

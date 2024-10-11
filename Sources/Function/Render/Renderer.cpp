@@ -77,7 +77,7 @@ namespace FOCUS
 		}
 	}
 
-	void Renderer::draw()
+	void Renderer::tick()
 	{
 		//_rhiContext->frameOnTick(buildCommandBuffer);
 		updateUniformBuffer(_rhiContext->getCurrentBuffer());

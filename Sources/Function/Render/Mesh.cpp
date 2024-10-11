@@ -4,15 +4,17 @@ namespace FOCUS
 {
 	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi)
 	{
+        auto bufferUsage = DRHI::DynamicBufferUsageFlags(rhi->getCurrentAPI());
+
         rhi->createDescriptorSetLayout(&_descriptorSetLayout);
 
 		//create vertex buffer
 		auto vertexBufferSize = sizeof(_vertices[0]) * _vertices.size();
-		rhi->createDynamicBuffer(&_vertexBuffer, &_vertexDeviceMemory, vertexBufferSize, _vertices.data(), "VertexBuffer");
+		rhi->createDynamicBuffer(&_vertexBuffer, &_vertexDeviceMemory, vertexBufferSize, _vertices.data(), bufferUsage.BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
 		//create index buffer
 		auto indexBufferSize = sizeof(_indices[0]) * _indices.size();
-		rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, indexBufferSize, _indices.data(), "IndexBuffer");
+		rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT);
 
         //create uniform buffer
         rhi->createUniformBuffer(&_uniformBuffers, &_uniformBuffersMemory, &_uniformBuffersMapped, sizeof(UniformBufferObject));

@@ -9,42 +9,41 @@
 
 namespace FOCUS
 {
-    EngineUI::EngineUI(HWND window, Renderer* renderer) :_window(window), _renderer(renderer) {}
+    EngineUI::EngineUI(HWND window, Renderer* renderer) :_window(window), _renderer(renderer){}
 
 	void EngineUI::initialize()
 	{
-		// Setup Dear ImGui context
-        IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        ImGuiIO& io = ImGui::GetIO();
 
-        // Setup Dear ImGui style
-        ImGui::StyleColorsDark();
-        //ImGui::StyleColorsLight();
+        // create font texture
+        unsigned char* fontData;
+        int texWidth, texHeight;
 
-        // Setup Platform/Renderer backends
-        ImGui_ImplWin32_Init(_window);
-    
-        DRHI::DynamicRHI* rhi = _renderer->_rhiContext.get();
-        DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi);
-    
-        ImGui_ImplVulkan_InitInfo initInfo{};
-        initInfo.Instance = vkrhi->_instance;
-        initInfo.PhysicalDevice = vkrhi->_physicalDevice;
-        initInfo.DescriptorPool = vkrhi->_descriptorPool;
-        initInfo.Device = vkrhi->_device;
-        initInfo.Queue = vkrhi->_graphicQueue;
-        initInfo.QueueFamily = vkrhi->_queueFamilyIndices.graphicsFamily.value();
-		initInfo.PipelineRenderingCreateInfo = vkrhi->getPipelineRenderingCreateInfo();
-		initInfo.PipelineCache = vkrhi->_pipelineCache;
-        initInfo.ImageCount = vkrhi->getCommandBufferSize();
-        initInfo.MinImageCount = vkrhi->getCommandBufferSize();
-        initInfo.Allocator = nullptr;
-        initInfo.UseDynamicRendering = true;
+        const std::string filename = "../../../Asset/Fonts/arial.ttf";
+        io.Fonts->AddFontFromFileTTF(filename.c_str(), 16.0f * _scale);
 
-        ImGui_ImplVulkan_Init(&initInfo);
+        io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
+        uint32_t uploadSize = texWidth * texHeight * 4 * sizeof(char);
+
+        //SRS - Set ImGui style scale factor to handle retina and other HiDPI displays (same as font scaling above)
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.ScaleAllSizes(_scale);
+
+        // create target image for copy
+        auto api = _renderer->_rhiContext->getCurrentAPI();
+        auto format = DRHI::DynamicFormat(api);
+        auto imageTiling = DRHI::DynamicImageTiling(api);
+        auto imageUsage = DRHI::DynamicImageUsageFlagBits(api);
+        auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+
+        _renderer->_rhiContext->createImage(&_fontImage, texWidth, texHeight,
+            format.FORMAT_R8G8B8A8_UNORM, imageTiling.IMAGE_TILING_OPTIMAL, imageUsage.IMAGE_USAGE_SAMPLED_BIT | imageUsage.IMAGE_USAGE_TRANSFER_DST_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            &_fontMemory);
+
+        _renderer->_rhiContext->createImageView(&_fontImageView, &_fontImage);
+
+        //_renderer->_rhiContext->createb
 	}
 
     void EngineUI::draw(uint32_t index)
@@ -66,9 +65,9 @@ namespace FOCUS
         {
             VkPipelineLayout pipelineLayout{};
             auto vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
-            pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
-            pushConstBlock.translate = glm::vec2(-1.0f);
-            vkCmdPushConstants(vkrhi->_commandBuffers[index], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &pushConstBlock);
+            _pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
+            _pushConstBlock.translate = glm::vec2(-1.0f);
+            vkCmdPushConstants(vkrhi->_commandBuffers[index], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &_pushConstBlock);
         }
 
         _renderer->_rhiContext->bindVertexBuffers(&_vertexBuffer, index);

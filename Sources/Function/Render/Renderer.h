@@ -29,7 +29,7 @@ namespace FOCUS
 
 		void initialize();
 		void buildCommandBuffer();
-		void draw();
+		void tick();
 		void clean();
 	};
 }

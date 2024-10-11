@@ -5,6 +5,7 @@ namespace FOCUS
 	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi)
 	{
         auto bufferUsage = DRHI::DynamicBufferUsageFlags(rhi->getCurrentAPI());
+        auto format = DRHI::DynamicFormat(rhi->getCurrentAPI());
 
         rhi->createDescriptorSetLayout(&_descriptorSetLayout);
 
@@ -21,7 +22,7 @@ namespace FOCUS
 	
         //binding sampler and image view
         rhi->createTextureImage(&_textureImage, &_textureMemory, _texture->_width, _texture->_height, _texture->_channels, _texture->_pixels);
-        rhi->createImageView(&_textureImageView, &_textureImage);
+        rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB);
         rhi->createTextureSampler(&_textureSampler);
 
         for (int i = 0; i < _uniformBuffers.size(); ++i)

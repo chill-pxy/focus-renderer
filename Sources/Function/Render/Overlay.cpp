@@ -36,14 +36,15 @@ namespace FOCUS
         auto imageTiling = DRHI::DynamicImageTiling(api);
         auto imageUsage = DRHI::DynamicImageUsageFlagBits(api);
         auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+        auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
 
         _renderer->_rhiContext->createImage(&_fontImage, texWidth, texHeight,
             format.FORMAT_R8G8B8A8_UNORM, imageTiling.IMAGE_TILING_OPTIMAL, imageUsage.IMAGE_USAGE_SAMPLED_BIT | imageUsage.IMAGE_USAGE_TRANSFER_DST_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             &_fontMemory);
 
-        _renderer->_rhiContext->createImageView(&_fontImageView, &_fontImage);
+        _renderer->_rhiContext->createImageView(&_fontImageView, &_fontImage, format.FORMAT_R8G8B8A8_UNORM);
 
-        //_renderer->_rhiContext->createb
+        _renderer->_rhiContext->createDynamicBuffer(&_fontBuffer, &_fontMemory, uploadSize, fontData, bufferUsage.BUFFER_USAGE_TRANSFER_SRC_BIT);
 	}
 
     void EngineUI::draw(uint32_t index)

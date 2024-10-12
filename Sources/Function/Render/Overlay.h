@@ -31,7 +31,6 @@ namespace FOCUS
 		DRHI::DynamicImage        _fontImage{};
 		DRHI::DynamicDeviceMemory _fontMemory{};
 		DRHI::DynamicImageView    _fontImageView{};
-		DRHI::DynamicBuffer       _fontBuffer{};
 		DRHI::DynamicSampler      _fontSampler{};
 
 		float _scale{ 1.0f };

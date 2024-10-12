@@ -39,11 +39,12 @@ namespace FOCUS
         auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
 
         // create font image and image view
-        _renderer->_rhiContext->createImage(&_fontImage, texWidth, texHeight,
+       /* _renderer->_rhiContext->createImage(&_fontImage, texWidth, texHeight,
             format.FORMAT_R8G8B8A8_UNORM, imageTiling.IMAGE_TILING_OPTIMAL, imageUsage.IMAGE_USAGE_SAMPLED_BIT | imageUsage.IMAGE_USAGE_TRANSFER_DST_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            &_fontMemory);
-        _renderer->_rhiContext->createImageView(&_fontImageView, &_fontImage, format.FORMAT_R8G8B8A8_UNORM);
-        _renderer->_rhiContext->createDynamicBuffer(&_fontBuffer, &_fontMemory, uploadSize, fontData, bufferUsage.BUFFER_USAGE_TRANSFER_SRC_BIT);
+            &_fontMemory);*/
+        _renderer->_rhiContext->createTextureImage(&_fontImage, &_fontMemory, texWidth, texHeight, 4, fontData);
+        _renderer->_rhiContext->createImageView(&_fontImageView, &_fontImage, format.FORMAT_R8G8B8A8_SRGB);
+        //_renderer->_rhiContext->createDynamicBuffer(&_fontBuffer, &_fontMemory, uploadSize, fontData, bufferUsage.BUFFER_USAGE_TRANSFER_SRC_BIT);
         //_renderer->_rhiContext->copyBufferToImage(&_fontBuffer, &_fontImage, texWidth, texHeight);
 
         //create font texture sampler
@@ -52,7 +53,7 @@ namespace FOCUS
         DRHI::DynamicSmplerCreateInfo samplerCreateInfo{};
         samplerCreateInfo.sampleraAddressMode = samplerMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         samplerCreateInfo.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-        //_renderer->_rhiContext->createSampler(&_fontSampler, samplerCreateInfo);
+        _renderer->_rhiContext->createSampler(&_fontSampler, samplerCreateInfo);
     }
 
     void EngineUI::draw(uint32_t index)

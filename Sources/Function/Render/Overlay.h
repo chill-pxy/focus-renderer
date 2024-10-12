@@ -4,6 +4,7 @@
 #include<memory>
 
 #include"Renderer.h"
+#include"RenderResource.h"
 
 namespace FOCUS
 {
@@ -13,36 +14,28 @@ namespace FOCUS
 		glm::vec2 translate;
 	};
 
-	class EngineUI
+	class EngineUI : public RenderResource
 	{
 	private:
-		Renderer* _renderer;
-		HWND _window;
-
-		DRHI::DynamicPipeline _pipeline{};
-		DRHI::DynamicPipelineLayout _pipelineLayout{};
-		DRHI::DynamicDescriptorSet _descriptorSet{};
-
-		DRHI::DynamicBuffer _vertexBuffer{};
-		DRHI::DynamicBuffer _indexBuffer{};
-
+		HWND           _window;
 		PushConstBlock _pushConstBlock{};
 
-		DRHI::DynamicImage        _fontImage{};
-		DRHI::DynamicDeviceMemory _fontMemory{};
-		DRHI::DynamicImageView    _fontImageView{};
-		DRHI::DynamicSampler      _fontSampler{};
-
+		DRHI::DynamicPipeline       _pipeline;
+		DRHI::DynamicPipelineLayout _pipelineLayout;
 	
-
-		float _scale{ 1.0f };
+		float          _scale{ 1.0f };
+		int            _fontTexWidth{ 0 };
+		int            _fontTexHeight{ 0 };
+		unsigned char* _fontData{nullptr};
+		uint32_t       _fontDataSize{ 0 };
 
 	public:
 
 		EngineUI() = delete;
-		EngineUI(HWND window, Renderer* renderer);
+		EngineUI(HWND window);
 
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void initialize();
-		void draw(uint32_t index);
+		void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
 	};
 }

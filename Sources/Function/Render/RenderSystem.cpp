@@ -14,10 +14,11 @@ namespace FOCUS
 
 		_renderer = std::make_shared<Renderer>(DRHI::VULKAN, platformCI);
 
-		_ui = std::make_unique<EngineUI>(rsci.window, _renderer.get());
+		_ui = std::make_unique<EngineUI>(rsci.window);
 
 		_renderer->initialize();
 		_ui->initialize();
+		_ui->build(_renderer->_rhiContext);
 	}
 
 	void RenderSystem::tick()

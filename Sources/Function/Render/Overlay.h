@@ -33,6 +33,8 @@ namespace FOCUS
 		DRHI::DynamicImageView    _fontImageView{};
 		DRHI::DynamicSampler      _fontSampler{};
 
+	
+
 		float _scale{ 1.0f };
 
 	public:

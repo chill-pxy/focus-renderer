@@ -28,6 +28,7 @@ namespace FOCUS
         DRHI::DynamicDeviceMemory _textureMemory;
         
         std::vector<DRHI::DynamicDescriptorBufferInfo> _descriptorBufferInfos;
+        DRHI::DynamicDescriptorPool                    _descriptorPool;
         DRHI::DynamicDescriptorSet                     _descriptorSet;
         DRHI::DynamicDescriptorSetLayout               _descriptorSetLayout;
 

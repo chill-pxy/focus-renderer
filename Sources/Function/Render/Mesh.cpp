@@ -7,6 +7,8 @@ namespace FOCUS
         auto bufferUsage = DRHI::DynamicBufferUsageFlags(rhi->getCurrentAPI());
         auto format = DRHI::DynamicFormat(rhi->getCurrentAPI());
 
+        rhi->createDescriptorPool(&_descriptorPool);
+
         rhi->createDescriptorSetLayout(&_descriptorSetLayout);
 
 		//create vertex buffer
@@ -32,7 +34,7 @@ namespace FOCUS
             _descriptorBufferInfos.push_back(descriptor);
         }
 
-        rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorBufferInfos, _textureImageView, _textureSampler);
+        rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &_descriptorBufferInfos, _textureImageView, _textureSampler);
     }
 
     Mesh* loadModel(const char* modelPath)

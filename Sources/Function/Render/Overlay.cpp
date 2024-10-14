@@ -37,6 +37,11 @@ namespace FOCUS
         samplerCreateInfo.sampleraAddressMode = samplerMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         samplerCreateInfo.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
         rhi->createSampler(&_textureSampler, samplerCreateInfo);
+
+        rhi->createDescriptorPool(&_descriptorPool);
+        rhi->createDescriptorSetLayout(&_descriptorSetLayout);
+
+        //rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, , _textureImageView, _textureSampler);
     }
 
 	void EngineUI::initialize()

@@ -20,28 +20,46 @@ namespace FOCUS
         auto imageUsage = DRHI::DynamicImageUsageFlagBits(api);
         auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
         auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
+        auto imageLayout = DRHI::DynamicImageLayout(api);
+        auto descriptorType = DRHI::DynamicDescriptorType(api);
+        auto stageFlags = DRHI::DynamicShaderStageFlags(api);
+        auto samplerMode = DRHI::DynamicSamplerAddressMode(api);
+        auto borderColor = DRHI::DynamicBorderColor(api);
 
         // create font image and image view
-       /* _renderer->_rhiContext->createImage(&_fontImage, texWidth, texHeight,
-            format.FORMAT_R8G8B8A8_UNORM, imageTiling.IMAGE_TILING_OPTIMAL, imageUsage.IMAGE_USAGE_SAMPLED_BIT | imageUsage.IMAGE_USAGE_TRANSFER_DST_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            &_fontMemory);*/
         rhi->createTextureImage(&_textureImage, &_textureMemory, _fontTexWidth, _fontTexHeight, 4, _fontData);
         rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB);
-        //_renderer->_rhiContext->createDynamicBuffer(&_fontBuffer, &_fontMemory, uploadSize, fontData, bufferUsage.BUFFER_USAGE_TRANSFER_SRC_BIT);
-        //_renderer->_rhiContext->copyBufferToImage(&_fontBuffer, &_fontImage, texWidth, texHeight);
 
         //create font texture sampler
-        DRHI::DynamicSamplerAddressMode samplerMode(rhi->getCurrentAPI());
-        DRHI::DynamicBorderColor borderColor(rhi->getCurrentAPI());
         DRHI::DynamicSmplerCreateInfo samplerCreateInfo{};
         samplerCreateInfo.sampleraAddressMode = samplerMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         samplerCreateInfo.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
         rhi->createSampler(&_textureSampler, samplerCreateInfo);
 
+        //create descriptor
         rhi->createDescriptorPool(&_descriptorPool);
-        rhi->createDescriptorSetLayout(&_descriptorSetLayout);
 
-        //rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, , _textureImageView, _textureSampler);
+        std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
+        dsbs[0].binding = 0;
+        dsbs[0].descriptorCount = 1;
+        dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        dsbs[0].pImmutableSamplers = nullptr;
+        dsbs[0].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
+        rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
+
+        DRHI::DynamicDescriptorImageInfo dii{};
+        dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        dii.imageView = _textureImageView;
+        dii.sampler = _textureSampler;
+        
+        std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
+        wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        wds[0].dstBinding = 0;
+        wds[0].pImageInfo = &dii;
+        wds[0].descriptorCount = 1;
+
+        rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
     }
 
 	void EngineUI::initialize()

@@ -6,10 +6,26 @@ namespace FOCUS
 	{
         auto bufferUsage = DRHI::DynamicBufferUsageFlags(rhi->getCurrentAPI());
         auto format = DRHI::DynamicFormat(rhi->getCurrentAPI());
+        auto descriptorType = DRHI::DynamicDescriptorType(rhi->getCurrentAPI());
+        auto imageLayout = DRHI::DynamicImageLayout(rhi->getCurrentAPI());
+        auto stageFlags = DRHI::DynamicShaderStageFlags(rhi->getCurrentAPI());
 
         rhi->createDescriptorPool(&_descriptorPool);
 
-        rhi->createDescriptorSetLayout(&_descriptorSetLayout);
+        std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);
+        dsbs[0].binding = 0;
+        dsbs[0].descriptorCount = 1;
+        dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        dsbs[0].pImmutableSamplers = nullptr;
+        dsbs[0].stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
+
+        dsbs[1].binding = 1;
+        dsbs[1].descriptorCount = 1;
+        dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        dsbs[1].pImmutableSamplers = nullptr;
+        dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
+        rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
 		//create vertex buffer
 		auto vertexBufferSize = sizeof(_vertices[0]) * _vertices.size();
@@ -34,15 +50,12 @@ namespace FOCUS
             _descriptorBufferInfos.push_back(bufferInfo);
         }
 
-        auto descriptorType = DRHI::DynamicDescriptorType(rhi->getCurrentAPI());
-
         std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
         wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         wds[0].dstBinding = 0;
         wds[0].pBufferInfo = &_descriptorBufferInfos[0];
         wds[0].descriptorCount = 1;
-
-        auto imageLayout = DRHI::DynamicImageLayout(rhi->getCurrentAPI());
+        
         DRHI::DynamicDescriptorImageInfo dii{};
         dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         dii.imageView = _textureImageView;

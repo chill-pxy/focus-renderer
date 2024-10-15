@@ -29,12 +29,32 @@ namespace FOCUS
 
         for (int i = 0; i < _uniformBuffers.size(); ++i)
         {
-            DRHI::DynamicDescriptorBufferInfo descriptor;
-            descriptor.set(rhi->getCurrentAPI(), _uniformBuffers[i], sizeof(UniformBufferObject));
-            _descriptorBufferInfos.push_back(descriptor);
+            DRHI::DynamicDescriptorBufferInfo bufferInfo;
+            bufferInfo.set(rhi->getCurrentAPI(), _uniformBuffers[i], sizeof(UniformBufferObject));
+            _descriptorBufferInfos.push_back(bufferInfo);
         }
 
-        rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &_descriptorBufferInfos, _textureImageView, _textureSampler);
+        auto descriptorType = DRHI::DynamicDescriptorType(rhi->getCurrentAPI());
+
+        std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
+        wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        wds[0].dstBinding = 0;
+        wds[0].pBufferInfo = &_descriptorBufferInfos[0];
+        wds[0].descriptorCount = 1;
+
+        auto imageLayout = DRHI::DynamicImageLayout(rhi->getCurrentAPI());
+        DRHI::DynamicDescriptorImageInfo dii{};
+        dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        dii.imageView = _textureImageView;
+        dii.sampler = _textureSampler;
+
+        wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        wds[1].dstBinding = 1;
+        wds[1].pBufferInfo = &_descriptorBufferInfos[1];
+        wds[1].descriptorCount = 1;
+        wds[1].pImageInfo = &dii;
+
+        rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
     }
 
     Mesh* loadModel(const char* modelPath)

@@ -19,8 +19,6 @@ namespace FOCUS
 		DRHI::DynamicPipeline modelPipeline;
 		DRHI::DynamicPipelineLayout modelPipelineLayout;
 
-		DRHI::DynamicPipeline uiPipeline;
-
 	public:
 		Renderer() = delete;
 

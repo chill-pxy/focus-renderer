@@ -50,7 +50,15 @@ namespace FOCUS
 		pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
 		pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
-		_rhiContext->createPipeline(&modelPipeline, &modelPipelineLayout, &obj->_descriptorSetLayout, pci);
+		DRHI::DynamicPipelineLayoutCreateInfo plci{};
+		plci.pSetLayouts = &obj->_descriptorSetLayout;
+		plci.setLayoutCount = 1;
+		plci.pushConstantRangeCount = 0;
+
+		_rhiContext->createPipelineLayout(&modelPipelineLayout, &plci);
+
+
+		_rhiContext->createPipeline(&modelPipeline, &modelPipelineLayout, pci);
 		//------------------------------------------------------------------------------------
 		
 		buildCommandBuffer();

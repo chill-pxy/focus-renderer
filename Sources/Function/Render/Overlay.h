@@ -37,5 +37,6 @@ namespace FOCUS
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void initialize();
 		void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
+		void preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi);
 	};
 }

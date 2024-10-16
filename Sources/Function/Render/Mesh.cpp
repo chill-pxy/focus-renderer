@@ -10,6 +10,7 @@ namespace FOCUS
         auto imageLayout = DRHI::DynamicImageLayout(rhi->getCurrentAPI());
         auto stageFlags = DRHI::DynamicShaderStageFlags(rhi->getCurrentAPI());
 
+        // create descriptor
         rhi->createDescriptorPool(&_descriptorPool);
 
         std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);

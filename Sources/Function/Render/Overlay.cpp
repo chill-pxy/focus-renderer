@@ -133,4 +133,13 @@ namespace FOCUS
             vertexOffset += cmd_list->VtxBuffer.Size;
         }
     }
+
+    void EngineUI::preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi)
+    {
+
+
+        //DRHI::PipelineCreateInfo pci{};
+        
+       // rhi->createPipeline(&_pipeline, &_pipelineLayout, _descriptorSetLayout, );
+    }
 }

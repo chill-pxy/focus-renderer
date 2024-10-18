@@ -17,8 +17,10 @@ namespace FOCUS
 		_ui = std::make_unique<EngineUI>(rsci.window);
 
 		_renderer->initialize();
+
 		_ui->initialize();
 		_ui->build(_renderer->_rhiContext);
+		_ui->preparePipeline(_renderer->_rhiContext);
 	}
 
 	void RenderSystem::tick()

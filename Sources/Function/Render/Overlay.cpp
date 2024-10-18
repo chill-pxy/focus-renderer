@@ -136,10 +136,34 @@ namespace FOCUS
 
     void EngineUI::preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
+        auto api = rhi->getCurrentAPI();
+        auto stageFlags = DRHI::DynamicShaderStageFlags(api);
+        auto format = DRHI::DynamicFormat(api);
 
+        DRHI::DynamicPushConstantRange push{};
+        push.offset = 0;
+        push.size = sizeof(PushConstBlock);
+        push.stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
 
-        //DRHI::PipelineCreateInfo pci{};
-        
-       // rhi->createPipeline(&_pipeline, &_pipelineLayout, _descriptorSetLayout, );
+        DRHI::DynamicPipelineLayoutCreateInfo plci{};
+        plci.pSetLayouts = &_descriptorSetLayout;
+        plci.setLayoutCount = 1;
+        plci.pushConstantRangeCount = 1;
+        plci.pPushConstantRanges = &push;
+
+        rhi->createPipelineLayout(&_pipelineLayout, &plci);
+
+        DRHI::PipelineCreateInfo pci{};
+        pci.vertexShader = "../../../Shaders/uioverlay.vert.spv";
+        pci.fragmentShader = "../../../Shaders/uioverlay.frag.spv";
+        pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+        pci.vertexInputBinding.set(api, 0, sizeof(ImDrawVert));
+        pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+        pci.vertexInputAttributes.resize(3);
+        pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, ImDrawVert::pos));
+        pci.vertexInputAttributes[1].set(api, 0, 1, format.FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, ImDrawVert::uv));
+        pci.vertexInputAttributes[2].set(api, 0, 2, format.FORMAT_R8G8B8A8_UNORM, offsetof(ImDrawVert, ImDrawVert::col));
+
+        rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
     }
 }

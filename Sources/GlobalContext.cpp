@@ -6,8 +6,8 @@ namespace FOCUS
 	{
 		WindowSystemCreateInfo windowCreateInfo{};
 		windowCreateInfo.title = "FOCUS";
-		windowCreateInfo.width = 1920;
-		windowCreateInfo.height = 1080;
+		windowCreateInfo.width = 1280;
+		windowCreateInfo.height = 720;
 
 		WindowSystem::getInstance()->initialize(windowCreateInfo);
 

@@ -161,8 +161,8 @@ namespace FOCUS
         pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
         pci.vertexInputAttributes.resize(3);
         pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, ImDrawVert::pos));
-        pci.vertexInputAttributes[1].set(api, 0, 1, format.FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, ImDrawVert::uv));
-        pci.vertexInputAttributes[2].set(api, 0, 2, format.FORMAT_R8G8B8A8_UNORM, offsetof(ImDrawVert, ImDrawVert::col));
+        pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, ImDrawVert::uv));
+        pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R8G8B8A8_UNORM, offsetof(ImDrawVert, ImDrawVert::col));
 
         rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
     }

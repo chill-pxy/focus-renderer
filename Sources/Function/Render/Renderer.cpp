@@ -14,6 +14,8 @@ namespace FOCUS
 			DRHI::RHICreateInfo rhiCI{};
 			rhiCI.platformInfo = platformCI;
 			_rhiContext = std::make_shared<DRHI::VulkanDRHI>(rhiCI);
+
+			_ui = std::make_shared<EngineUI>(platformCI.window);
 			break;
 		}
 	}
@@ -34,6 +36,10 @@ namespace FOCUS
 		std::shared_ptr<Texture> texture = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/viking_room.png"));
 		obj->_texture = texture;
 		obj->build(_rhiContext);
+
+		_ui->initialize();
+		_ui->build(_rhiContext);
+		_ui->preparePipeline(_rhiContext);
 		//-------------------------------------------------------------------------------------
 
 
@@ -80,6 +86,8 @@ namespace FOCUS
 
 			//draw model
 			_rhiContext->drawIndexed(i, static_cast<uint32_t>(obj->_indices.size()), 1, 0, 0, 0);
+
+			_ui->draw(i, _rhiContext);
 
 			_rhiContext->endCommandBuffer(i);
 		}

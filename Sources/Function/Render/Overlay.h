@@ -3,7 +3,8 @@
 #include<Windows.h>
 #include<memory>
 
-#include"Renderer.h"
+#include<glm/glm.hpp>
+
 #include"RenderResource.h"
 
 namespace FOCUS

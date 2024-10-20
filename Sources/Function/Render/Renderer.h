@@ -6,6 +6,7 @@
 #include<drhi.h>
 
 #include"Mesh.h"
+#include"Overlay.h"
 
 namespace FOCUS
 {
@@ -15,6 +16,7 @@ namespace FOCUS
 		std::shared_ptr<DRHI::DynamicRHI> _rhiContext;
 
 		std::shared_ptr<Mesh> obj;
+		std::shared_ptr<EngineUI> _ui;
 
 		DRHI::DynamicPipeline modelPipeline;
 		DRHI::DynamicPipelineLayout modelPipelineLayout;

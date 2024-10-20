@@ -4,7 +4,6 @@
 #include<mutex>
 
 #include"Renderer.h"
-#include"Overlay.h"
 #include"../../Platform/NativeWindow.h"
 
 namespace FOCUS
@@ -20,7 +19,6 @@ namespace FOCUS
 	{
 	private:
 		std::shared_ptr<Renderer> _renderer;
-		std::unique_ptr<EngineUI> _ui;
 		static std::shared_ptr<RenderSystem> _instance;
 		static std::mutex _mutex;
 

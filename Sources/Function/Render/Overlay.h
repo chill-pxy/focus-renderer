@@ -17,6 +17,9 @@ namespace FOCUS
 
 	class EngineUI : public RenderResource
 	{
+	public:
+		bool     _updated{ false };
+
 	private:
 		HWND           _window;
 		PushConstBlock _pushConstBlock{};
@@ -24,11 +27,16 @@ namespace FOCUS
 		DRHI::DynamicPipeline       _pipeline;
 		DRHI::DynamicPipelineLayout _pipelineLayout;
 	
-		float          _scale{ 1.0f };
 		int            _fontTexWidth{ 0 };
 		int            _fontTexHeight{ 0 };
 		unsigned char* _fontData{nullptr};
 		uint32_t       _fontDataSize{ 0 };
+
+		bool     _visible{ true };
+		float    _scale{ 1.0f };
+		float    _updateTimer{ 0.0f };
+		uint32_t _vertexCount{ 0 };
+		uint32_t _indexCount{0};
 
 	public:
 
@@ -39,5 +47,7 @@ namespace FOCUS
 		void initialize();
 		void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi);
+		void tick();
+		bool update(std::shared_ptr<DRHI::DynamicRHI> rhi);
 	};
 }

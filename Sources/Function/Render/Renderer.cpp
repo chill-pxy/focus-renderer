@@ -97,6 +97,12 @@ namespace FOCUS
 	{
 		//_rhiContext->frameOnTick(buildCommandBuffer);
 		updateUniformBuffer(_rhiContext->getCurrentBuffer());
+		_ui->tick();
+		if (_ui->update(_rhiContext) || _ui->_updated)
+		{
+			buildCommandBuffer();
+			_ui->_updated = false;
+		}
 	}
 
 	void Renderer::clean()

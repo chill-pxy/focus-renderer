@@ -166,4 +166,99 @@ namespace FOCUS
 
         rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
     }
+
+    void EngineUI::tick()
+    {
+        ImGuiIO& io = ImGui::GetIO();
+
+        io.DisplaySize = ImVec2((float)1280, (float)720);
+        
+        ImGui::NewFrame();
+
+        // 设置窗口的初始位置
+        ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+
+        // 开始窗口
+        ImGui::Begin("Basic UI Example");
+
+        // 设置每个元素的宽度
+        ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.5f);
+
+        // 添加一个文本标签
+        ImGui::Text("Hello, world!");
+
+        // 添加一个按钮
+        if (ImGui::Button("Click Me")) {
+            // 按钮点击时执行的操作
+        }
+
+        // 添加一个滑动条
+        //ImGui::SliderFloat("Slider", &someValue, 0.0f, 1.0f);
+
+        // 撤销宽度设置
+        ImGui::PopItemWidth();
+
+        // 结束窗口
+        ImGui::End();
+
+        ImGui::Render();
+    }
+
+    bool EngineUI::update(std::shared_ptr<DRHI::DynamicRHI> rhi)
+    {
+        ImDrawData* imDrawData = ImGui::GetDrawData();
+        bool updateCmdBuffers = false;
+
+        if (!imDrawData) { return false; };
+
+        // Upload data
+        ImDrawVert* vtxDst = new ImDrawVert[imDrawData->TotalVtxCount];
+        ImDrawIdx* idxDst = new ImDrawIdx[imDrawData->TotalVtxCount];
+
+        for (int n = 0; n < imDrawData->CmdListsCount; n++)
+        {
+            const ImDrawList* cmd_list = imDrawData->CmdLists[n];
+            memcpy(vtxDst, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
+            memcpy(idxDst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+            vtxDst += cmd_list->VtxBuffer.Size;
+            idxDst += cmd_list->IdxBuffer.Size;
+        }
+
+        // Note: Alignment is done inside buffer creation
+        uint32_t vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
+        uint32_t indexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawIdx);
+
+        // Update buffers only if vertex or index count has been changed compared to current buffer size
+        if ((vertexBufferSize == 0) || (indexBufferSize == 0)) {
+            return false;
+        }
+
+        auto usage = DRHI::DynamicBufferUsageFlags(rhi->getCurrentAPI());
+
+        // Vertex buffer
+        if (( !_vertexBuffer.vaild() ) || (_vertexCount != imDrawData->TotalVtxCount)) 
+        {
+            rhi->clearBuffer(&_vertexBuffer, &_vertexDeviceMemory);
+            rhi->createDynamicBuffer(&_vertexBuffer, &_vertexDeviceMemory, vertexBufferSize, vtxDst, usage.BUFFER_USAGE_VERTEX_BUFFER_BIT);
+            _vertexCount = imDrawData->TotalVtxCount;
+            rhi->mapMemory(&_vertexDeviceMemory, 0, vertexBufferSize, vtxDst);
+            updateCmdBuffers = true;
+        }
+
+        // Index buffer
+        if ((!_indexBuffer.vaild()) || (_indexCount < imDrawData->TotalIdxCount)) 
+        {
+            rhi->clearBuffer(&_indexBuffer, &_indexDeviceMemory);
+            rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, indexBufferSize, idxDst, usage.BUFFER_USAGE_INDEX_BUFFER_BIT);
+            _indexCount = imDrawData->TotalIdxCount;
+            rhi->mapMemory(&_indexDeviceMemory, 0, indexBufferSize, idxDst);
+            updateCmdBuffers = true;
+        }
+
+        // Flush to make writes visible to GPU
+        //rhi->flushBuffer(&_vertexDeviceMemory, vertexBufferSize, 0);
+        //rhi->flushBuffer(& _indexDeviceMemory, indexBufferSize, 0);
+
+        return updateCmdBuffers;
+    }
 }

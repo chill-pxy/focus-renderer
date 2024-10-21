@@ -81,6 +81,10 @@ namespace FOCUS
 
     void EngineUI::draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
+        auto api = rhi->getCurrentAPI();
+        auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+        auto stage = DRHI::DynamicShaderStageFlags(api);
+
         ImDrawData* imDrawData = ImGui::GetDrawData();
         int32_t vertexOffset = 0;
         int32_t indexOffset = 0;
@@ -89,19 +93,13 @@ namespace FOCUS
 
         ImGuiIO& io = ImGui::GetIO();
 
-        auto bindPoint = DRHI::DynamicPipelineBindPoint(rhi->getCurrentAPI());
         rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
         rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
 
         //if api is vulkan
-        if (rhi->getCurrentAPI() == DRHI::VULKAN)
-        {
-            VkPipelineLayout pipelineLayout{};
-            auto vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
-            _pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
-            _pushConstBlock.translate = glm::vec2(-1.0f);
-            vkCmdPushConstants(vkrhi->_commandBuffers[index], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &_pushConstBlock);
-        }
+        _pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
+        _pushConstBlock.translate = glm::vec2(-1.0f);
+        rhi->cmdPushConstants(index, &_pipelineLayout, stage.SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &_pushConstBlock);
 
         rhi->bindVertexBuffers(&_vertexBuffer, index);
         rhi->bindIndexBuffer(&_indexBuffer, index);
@@ -233,13 +231,15 @@ namespace FOCUS
             return false;
         }
 
-        auto usage = DRHI::DynamicBufferUsageFlags(rhi->getCurrentAPI());
+        auto api = rhi->getCurrentAPI();
+        auto usage = DRHI::DynamicBufferUsageFlags(api);
+        auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 
         // Vertex buffer
         if (( !_vertexBuffer.vaild() ) || (_vertexCount != imDrawData->TotalVtxCount)) 
         {
             rhi->clearBuffer(&_vertexBuffer, &_vertexDeviceMemory);
-            rhi->createDynamicBuffer(&_vertexBuffer, &_vertexDeviceMemory, vertexBufferSize, vtxDst, usage.BUFFER_USAGE_VERTEX_BUFFER_BIT);
+            rhi->createDynamicBuffer(&_vertexBuffer, &_vertexDeviceMemory, vertexBufferSize, vtxDst, usage.BUFFER_USAGE_VERTEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_HOST_VISIBLE_BIT);
             _vertexCount = imDrawData->TotalVtxCount;
             rhi->mapMemory(&_vertexDeviceMemory, 0, vertexBufferSize, vtxDst);
             updateCmdBuffers = true;
@@ -249,15 +249,15 @@ namespace FOCUS
         if ((!_indexBuffer.vaild()) || (_indexCount < imDrawData->TotalIdxCount)) 
         {
             rhi->clearBuffer(&_indexBuffer, &_indexDeviceMemory);
-            rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, indexBufferSize, idxDst, usage.BUFFER_USAGE_INDEX_BUFFER_BIT);
+            rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, indexBufferSize, idxDst, usage.BUFFER_USAGE_INDEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_HOST_VISIBLE_BIT);
             _indexCount = imDrawData->TotalIdxCount;
             rhi->mapMemory(&_indexDeviceMemory, 0, indexBufferSize, idxDst);
             updateCmdBuffers = true;
         }
 
         // Flush to make writes visible to GPU
-        //rhi->flushBuffer(&_vertexDeviceMemory, vertexBufferSize, 0);
-        //rhi->flushBuffer(& _indexDeviceMemory, indexBufferSize, 0);
+        rhi->flushBuffer(&_vertexDeviceMemory, vertexBufferSize, 0);
+        rhi->flushBuffer(& _indexDeviceMemory, indexBufferSize, 0);
 
         return updateCmdBuffers;
     }

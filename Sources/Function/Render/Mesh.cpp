@@ -4,11 +4,13 @@ namespace FOCUS
 {
 	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi)
 	{
-        auto bufferUsage = DRHI::DynamicBufferUsageFlags(rhi->getCurrentAPI());
-        auto format = DRHI::DynamicFormat(rhi->getCurrentAPI());
-        auto descriptorType = DRHI::DynamicDescriptorType(rhi->getCurrentAPI());
-        auto imageLayout = DRHI::DynamicImageLayout(rhi->getCurrentAPI());
-        auto stageFlags = DRHI::DynamicShaderStageFlags(rhi->getCurrentAPI());
+        auto api = rhi->getCurrentAPI();
+        auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
+        auto format = DRHI::DynamicFormat(api);
+        auto descriptorType = DRHI::DynamicDescriptorType(api);
+        auto imageLayout = DRHI::DynamicImageLayout(api);
+        auto stageFlags = DRHI::DynamicShaderStageFlags(api);
+        auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 
         // create descriptor
         rhi->createDescriptorPool(&_descriptorPool);
@@ -30,11 +32,11 @@ namespace FOCUS
 
 		//create vertex buffer
 		auto vertexBufferSize = sizeof(_vertices[0]) * _vertices.size();
-		rhi->createDynamicBuffer(&_vertexBuffer, &_vertexDeviceMemory, vertexBufferSize, _vertices.data(), bufferUsage.BUFFER_USAGE_VERTEX_BUFFER_BIT);
+		rhi->createDynamicBuffer(&_vertexBuffer, &_vertexDeviceMemory, vertexBufferSize, _vertices.data(), bufferUsage.BUFFER_USAGE_VERTEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		//create index buffer
 		auto indexBufferSize = sizeof(_indices[0]) * _indices.size();
-		rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT);
+		rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
         //create uniform buffer
         rhi->createUniformBuffer(&_uniformBuffers, &_uniformBuffersMemory, &_uniformBuffersMapped, sizeof(UniformBufferObject));

@@ -84,6 +84,7 @@ namespace FOCUS
         auto api = rhi->getCurrentAPI();
         auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
         auto stage = DRHI::DynamicShaderStageFlags(api);
+        auto indexType = DRHI::DynamicIndexType(api);
 
         ImDrawData* imDrawData = ImGui::GetDrawData();
         int32_t vertexOffset = 0;
@@ -96,13 +97,12 @@ namespace FOCUS
         rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
         rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
 
-        //if api is vulkan
         _pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
         _pushConstBlock.translate = glm::vec2(-1.0f);
         rhi->cmdPushConstants(index, &_pipelineLayout, stage.SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &_pushConstBlock);
 
         rhi->bindVertexBuffers(&_vertexBuffer, index);
-        rhi->bindIndexBuffer(&_indexBuffer, index);
+        rhi->bindIndexBuffer(&_indexBuffer, index, indexType.INDEX_TYPE_UINT16);
 
         for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
         {
@@ -141,7 +141,7 @@ namespace FOCUS
         DRHI::DynamicPushConstantRange push{};
         push.offset = 0;
         push.size = sizeof(PushConstBlock);
-        push.stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
+        push.stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;   
 
         DRHI::DynamicPipelineLayoutCreateInfo plci{};
         plci.pSetLayouts = &_descriptorSetLayout;
@@ -209,9 +209,18 @@ namespace FOCUS
 
         if (!imDrawData) { return false; };
 
+        // Note: Alignment is done inside buffer creation
+        uint32_t vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
+        uint32_t indexBufferSize = imDrawData->TotalIdxCount * sizeof(ImDrawIdx);
+
+        // Update buffers only if vertex or index count has been changed compared to current buffer size
+        if ((vertexBufferSize == 0) || (indexBufferSize == 0)) {
+            return false;
+        }
+
         // Upload data
-        ImDrawVert* vtxDst = new ImDrawVert[imDrawData->TotalVtxCount];
-        ImDrawIdx* idxDst = new ImDrawIdx[imDrawData->TotalVtxCount];
+        ImDrawVert* vtxDst = new ImDrawVert[vertexBufferSize];
+        ImDrawIdx* idxDst = new ImDrawIdx[indexBufferSize];
 
         for (int n = 0; n < imDrawData->CmdListsCount; n++)
         {
@@ -220,15 +229,6 @@ namespace FOCUS
             memcpy(idxDst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
             vtxDst += cmd_list->VtxBuffer.Size;
             idxDst += cmd_list->IdxBuffer.Size;
-        }
-
-        // Note: Alignment is done inside buffer creation
-        uint32_t vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
-        uint32_t indexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawIdx);
-
-        // Update buffers only if vertex or index count has been changed compared to current buffer size
-        if ((vertexBufferSize == 0) || (indexBufferSize == 0)) {
-            return false;
         }
 
         auto api = rhi->getCurrentAPI();

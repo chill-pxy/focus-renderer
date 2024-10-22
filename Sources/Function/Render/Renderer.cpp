@@ -74,6 +74,7 @@ namespace FOCUS
 	{
 		auto api = _rhiContext->getCurrentAPI();
 		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+		auto indexType = DRHI::DynamicIndexType(api);
 
 		for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
 		{
@@ -81,7 +82,7 @@ namespace FOCUS
 
 			_rhiContext->bindPipeline(modelPipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, i);
 			_rhiContext->bindVertexBuffers(&obj->_vertexBuffer, i);
-			_rhiContext->bindIndexBuffer(&obj->_indexBuffer, i);
+			_rhiContext->bindIndexBuffer(&obj->_indexBuffer, i, indexType.INDEX_TYPE_UINT32);
 			_rhiContext->bindDescriptorSets(&obj->_descriptorSet, modelPipelineLayout, 0, i);
 
 			//draw model

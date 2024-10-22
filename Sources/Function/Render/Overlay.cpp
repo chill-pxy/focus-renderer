@@ -9,10 +9,10 @@
 
 namespace FOCUS
 {
-    EngineUI::EngineUI(HWND window) :_window(window){}
+    EngineUI::EngineUI(HWND window) :_window(window) {}
 
-	void EngineUI::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
-	{
+    void EngineUI::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
+    {
         //create descriptor
         rhi->createDescriptorPool(&_descriptorPool);
 
@@ -48,18 +48,13 @@ namespace FOCUS
 
     void EngineUI::draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
-        auto api = rhi->getCurrentAPI();
-        auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
-        auto stage = DRHI::DynamicShaderStageFlags(api);
-        auto indexType = DRHI::DynamicIndexType(api);
-
         ImDrawData* imDrawData = ImGui::GetDrawData();
-        int32_t vertexOffset = 0;
-        int32_t indexOffset = 0;
 
         if ((!imDrawData) || (imDrawData->CmdListsCount == 0)) { return; }
 
         ImGui_ImplVulkan_RenderDrawData(imDrawData, static_cast<DRHI::VulkanDRHI*>(rhi.get())->_commandBuffers[index]);
+
+        _drawCommandCount = imDrawData->CmdListsCount;
     }
 
     void EngineUI::tick()
@@ -69,7 +64,18 @@ namespace FOCUS
         ImGui::NewFrame();
 
         ImGui::ShowDemoWindow();
-        
+
         ImGui::Render();
+    }
+
+    bool EngineUI::needUpdate()
+    {
+        ImDrawData* imDrawData = ImGui::GetDrawData();
+        if (_drawCommandCount != imDrawData->CmdListsCount)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

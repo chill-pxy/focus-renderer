@@ -38,8 +38,6 @@ namespace FOCUS
 		obj->build(_rhiContext);
 
 		_ui->initialize(_rhiContext);
-		//_ui->build(_rhiContext);
-		//_ui->preparePipeline(_rhiContext);
 		//-------------------------------------------------------------------------------------
 
 
@@ -96,13 +94,12 @@ namespace FOCUS
 
 	void Renderer::tick()
 	{
-		//_rhiContext->frameOnTick(buildCommandBuffer);
 		updateUniformBuffer(_rhiContext->getCurrentBuffer());
 		_ui->tick();
-		if (true || _ui->_updated)
+
+		if (_ui->needUpdate())
 		{
 			buildCommandBuffer();
-			_ui->_updated = false;
 		}
 	}
 

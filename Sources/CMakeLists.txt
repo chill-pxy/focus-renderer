@@ -17,7 +17,7 @@ add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
 set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "engine")
 
 #---------------------------------#
-#--------- 调用原生Vulkan --------#
+#--------- Use raw Vulkan --------#
 #---------------------------------#
 #find_package(Vulkan REQUIRED)
 #if(Vulkan_FOUND)

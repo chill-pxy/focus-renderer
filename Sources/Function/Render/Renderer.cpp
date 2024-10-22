@@ -37,9 +37,9 @@ namespace FOCUS
 		obj->_texture = texture;
 		obj->build(_rhiContext);
 
-		_ui->initialize();
+		_ui->initialize(_rhiContext);
 		_ui->build(_rhiContext);
-		_ui->preparePipeline(_rhiContext);
+		//_ui->preparePipeline(_rhiContext);
 		//-------------------------------------------------------------------------------------
 
 

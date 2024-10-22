@@ -60,12 +60,61 @@ namespace FOCUS
         wds[0].descriptorCount = 1;
 
         rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
+
+
+
+
+
+        // Setup Platform/Renderer backends
+        ImGui_ImplWin32_Init(_window);
+
+        DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
+
+        ImGui_ImplVulkan_InitInfo initInfo{};
+        initInfo.Instance = vkrhi->_instance;
+        initInfo.PhysicalDevice = vkrhi->_physicalDevice;
+        initInfo.DescriptorPool = _descriptorPool.getVulkanDescriptorPool();
+        initInfo.Device = vkrhi->_device;
+        initInfo.Queue = vkrhi->_graphicQueue;
+        initInfo.QueueFamily = vkrhi->_queueFamilyIndices.graphicsFamily.value();
+        initInfo.PipelineRenderingCreateInfo = vkrhi->getPipelineRenderingCreateInfo();
+        initInfo.PipelineCache = vkrhi->_pipelineCache;
+        initInfo.ImageCount = vkrhi->getCommandBufferSize();
+        initInfo.MinImageCount = vkrhi->getCommandBufferSize();
+        initInfo.Allocator = nullptr;
+        initInfo.UseDynamicRendering = true;
+
+        ImGui_ImplVulkan_Init(&initInfo);
     }
 
-	void EngineUI::initialize()
+	void EngineUI::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
 	{
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
+
+
+        //// Setup Platform/Renderer backends
+        //ImGui_ImplWin32_Init(_window);
+
+        //DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
+
+        //ImGui_ImplVulkan_InitInfo initInfo{};
+        //initInfo.Instance = vkrhi->_instance;
+        //initInfo.PhysicalDevice = vkrhi->_physicalDevice;
+        //initInfo.DescriptorPool = _descriptorPool.getVulkanDescriptorPool();
+        //initInfo.Device = vkrhi->_device;
+        //initInfo.Queue = vkrhi->_graphicQueue;
+        //initInfo.QueueFamily = vkrhi->_queueFamilyIndices.graphicsFamily.value();
+        //initInfo.PipelineRenderingCreateInfo = vkrhi->getPipelineRenderingCreateInfo();
+        //initInfo.PipelineCache = vkrhi->_pipelineCache;
+        //initInfo.ImageCount = vkrhi->getCommandBufferSize();
+        //initInfo.MinImageCount = vkrhi->getCommandBufferSize();
+        //initInfo.Allocator = nullptr;
+        //initInfo.UseDynamicRendering = true;
+
+        //ImGui_ImplVulkan_Init(&initInfo);
+
+
 
         // create font texture
         const std::string filename = "../../../Asset/Fonts/arial.ttf";
@@ -92,44 +141,50 @@ namespace FOCUS
 
         if ((!imDrawData) || (imDrawData->CmdListsCount == 0)) { return; }
 
-        ImGuiIO& io = ImGui::GetIO();
+        //ImGuiIO& io = ImGui::GetIO();
 
-        rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
-        rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
+        //rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
+        //rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
 
-        _pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
-        _pushConstBlock.translate = glm::vec2(-1.0f);
-        rhi->cmdPushConstants(index, &_pipelineLayout, stage.SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &_pushConstBlock);
+        //_pushConstBlock.scale = glm::vec2(2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y);
+        //_pushConstBlock.translate = glm::vec2(-1.0f);
+        //rhi->cmdPushConstants(index, &_pipelineLayout, stage.SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &_pushConstBlock);
 
-        rhi->bindVertexBuffers(&_vertexBuffer, index);
-        rhi->bindIndexBuffer(&_indexBuffer, index, indexType.INDEX_TYPE_UINT16);
+        //rhi->bindVertexBuffers(&_vertexBuffer, index);
+        //rhi->bindIndexBuffer(&_indexBuffer, index, indexType.INDEX_TYPE_UINT16);
 
-        for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
-        {
-            const ImDrawList* cmd_list = imDrawData->CmdLists[i];
-            for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
-            {
-                const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[j];
+        ImGui_ImplVulkan_RenderDrawData(imDrawData, static_cast<DRHI::VulkanDRHI*>(rhi.get())->_commandBuffers[index]);
 
-                DRHI::DynamicExtent2D extent{};
-                extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
-                extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);
-                
-                DRHI::DynamicOffset2D offset{};
-                offset.x = std::max((int32_t)(pcmd->ClipRect.x), 0);
-                offset.y = std::max((int32_t)(pcmd->ClipRect.y), 0);
+        //for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
+        //{
+        //    const ImDrawList* cmd_list = imDrawData->CmdLists[i];
+        //    for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
+        //    {
+        //        const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[j];
 
-                DRHI::DynamicRect2D rect{};
-                rect.extent = extent;
-                rect.offset = offset;
+        //        DRHI::DynamicExtent2D extent{};
+        //        extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
+        //        extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y);
+        //        
+        //        DRHI::DynamicOffset2D offset{};
+        //        offset.x = std::max((int32_t)(pcmd->ClipRect.x), 0);
+        //        offset.y = std::max((int32_t)(pcmd->ClipRect.y), 0);
 
-                rhi->setScissor(index, 0, 1, rect);
-                rhi->drawIndexed(index, pcmd->ElemCount, 1, indexOffset, vertexOffset, 0);
+        //        DRHI::DynamicRect2D rect{};
+        //        rect.extent = extent;
+        //        rect.offset = offset;
 
-                indexOffset += pcmd->ElemCount;
-            }
-            vertexOffset += cmd_list->VtxBuffer.Size;
-        }
+        //        //rhi->setScissor(index, 0, 1, rect);
+        //        //rhi->drawIndexed(index, pcmd->ElemCount, 1, indexOffset, vertexOffset, 0);
+
+        //        
+
+        //        indexOffset += pcmd->ElemCount;
+        //    }
+        //    vertexOffset += cmd_list->VtxBuffer.Size;
+        //}
+
+   
     }
 
     void EngineUI::preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi)
@@ -167,36 +222,32 @@ namespace FOCUS
 
     void EngineUI::tick()
     {
-        ImGuiIO& io = ImGui::GetIO();
+        //ImGuiIO& io = ImGui::GetIO();
 
-        io.DisplaySize = ImVec2((float)1280, (float)720);
-        
+        //io.DisplaySize = ImVec2((float)1920, (float)1080);
+        //
+        //ImGui::NewFrame();
+
+        //// 设置窗口的初始位置
+        ////ImGui::SetNextWindowPos(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+        //ImGui::SetNextWindowSize(ImVec2(500, 500));
+        //// 开始窗口
+        //ImGui::Begin("Basic UI Example");
+
+        //// 添加一个文本标签
+        //ImGui::Text("Helloworld!");
+
+        //// 结束窗口
+        //ImGui::End();
+        //ImGui::EndFrame();
+        //ImGui::Render();
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-
-        // 设置窗口的初始位置
-        ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
-
-        // 开始窗口
-        ImGui::Begin("Basic UI Example");
-
-        // 设置每个元素的宽度
-        ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.5f);
-
-        // 添加一个文本标签
-        ImGui::Text("Hello, world!");
-
-        // 添加一个按钮
-        if (ImGui::Button("Click Me")) {
-            // 按钮点击时执行的操作
-        }
-
-        // 添加一个滑动条
-        //ImGui::SliderFloat("Slider", &someValue, 0.0f, 1.0f);
-
-        // 撤销宽度设置
-        ImGui::PopItemWidth();
-
-        // 结束窗口
+        //ImGui::ShowDemoWindow();
+        //ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Test");
+        ImGui::Text("Aa");
         ImGui::End();
 
         ImGui::Render();

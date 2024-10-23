@@ -128,4 +128,46 @@ namespace FOCUS
 
         return mesh;
     }
+
+    void Mesh::preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi)
+    {
+        auto api = rhi->getCurrentAPI();
+        auto format = DRHI::DynamicFormat(api);
+
+        DRHI::PipelineCreateInfo pci = {};
+        pci.vertexShader = "../../../Shaders/model_vertex.spv";
+        pci.fragmentShader = "../../../Shaders/model_fragment.spv";
+        pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+        pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
+        pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+        pci.vertexInputAttributes.resize(3);
+        pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
+        pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
+        pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
+
+        DRHI::DynamicPipelineLayoutCreateInfo plci{};
+        plci.pSetLayouts = &_descriptorSetLayout;
+        plci.setLayoutCount = 1;
+        plci.pushConstantRangeCount = 0;
+
+        rhi->createPipelineLayout(&_pipelineLayout, &plci);
+
+
+        rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
+    }
+
+    void Mesh::draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
+    {
+        auto api = rhi->getCurrentAPI();
+        auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+        auto indexType = DRHI::DynamicIndexType(api);
+
+        rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
+        rhi->bindVertexBuffers(&_vertexBuffer, index);
+        rhi->bindIndexBuffer(&_indexBuffer, index, indexType.INDEX_TYPE_UINT32);
+        rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, 0, index);
+
+        //draw model
+        rhi->drawIndexed(index, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
+    }
 }

@@ -18,15 +18,12 @@ namespace FOCUS
 		std::shared_ptr<Mesh> obj;
 		std::shared_ptr<EngineUI> _ui;
 
-		DRHI::DynamicPipeline modelPipeline;
-		DRHI::DynamicPipelineLayout modelPipelineLayout;
-
 	public:
 		Renderer() = delete;
 
 		Renderer(DRHI::API api, DRHI::PlatformInfo platformCI);
+		
 		void updateUniformBuffer(uint32_t currentImage);
-
 		void initialize();
 		void buildCommandBuffer();
 		void tick();

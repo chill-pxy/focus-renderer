@@ -1,5 +1,10 @@
+#include"imgui.h"
+#include"imgui_impl_win32.h"
+
 #include"WindowSystem.h"
 #include"../Function/IO/KeyCallback.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace FOCUS
 {
@@ -10,6 +15,9 @@ namespace FOCUS
 	//------------------------------------------------------------------------------
 	static LRESULT handleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
+		if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+			return true;
+
 		if (uMsg == WM_CLOSE)
 		{
 			DestroyWindow(hWnd);

@@ -23,69 +23,30 @@ namespace FOCUS
 	void Renderer::initialize()
 	{
 		//-------------------------------initialize variant------------------------------------
-		auto api = _rhiContext->getCurrentAPI();
-		auto format = DRHI::DynamicFormat(api);
-		
 		_rhiContext->initialize();
 		//-------------------------------------------------------------------------------------
-
-
 
 		//--------------------------------build render resources-------------------------------
 		obj = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/viking_room.obj"));
 		std::shared_ptr<Texture> texture = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/viking_room.png"));
 		obj->_texture = texture;
+		
 		obj->build(_rhiContext);
+		obj->preparePipeline(_rhiContext);
 
 		_ui->initialize(_rhiContext);
 		//-------------------------------------------------------------------------------------
-
-
-
-		//--------------------------------create pipeline--------------------------------------
-		DRHI::PipelineCreateInfo pci = {};
-		pci.vertexShader = "../../../Shaders/model_vertex.spv";
-		pci.fragmentShader = "../../../Shaders/model_fragment.spv";
-		pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
-		pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
-		pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
-		pci.vertexInputAttributes.resize(3);
-		pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
-		pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
-		pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
-
-		DRHI::DynamicPipelineLayoutCreateInfo plci{};
-		plci.pSetLayouts = &obj->_descriptorSetLayout;
-		plci.setLayoutCount = 1;
-		plci.pushConstantRangeCount = 0;
-
-		_rhiContext->createPipelineLayout(&modelPipelineLayout, &plci);
-
-
-		_rhiContext->createPipeline(&modelPipeline, &modelPipelineLayout, pci);
-		//------------------------------------------------------------------------------------
 		
 		buildCommandBuffer();
 	}
 
 	void Renderer::buildCommandBuffer()
 	{
-		auto api = _rhiContext->getCurrentAPI();
-		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
-		auto indexType = DRHI::DynamicIndexType(api);
-
 		for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
 		{
 			_rhiContext->beginCommandBuffer(i);
 
-			_rhiContext->bindPipeline(modelPipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, i);
-			_rhiContext->bindVertexBuffers(&obj->_vertexBuffer, i);
-			_rhiContext->bindIndexBuffer(&obj->_indexBuffer, i, indexType.INDEX_TYPE_UINT32);
-			_rhiContext->bindDescriptorSets(&obj->_descriptorSet, modelPipelineLayout, 0, i);
-
-			//draw model
-			_rhiContext->drawIndexed(i, static_cast<uint32_t>(obj->_indices.size()), 1, 0, 0, 0);
-
+			obj->draw(i, _rhiContext);
 			_ui->draw(i, _rhiContext);
 
 			_rhiContext->endCommandBuffer(i);
@@ -96,11 +57,7 @@ namespace FOCUS
 	{
 		updateUniformBuffer(_rhiContext->getCurrentBuffer());
 		_ui->tick();
-
-		if (_ui->needUpdate())
-		{
-			buildCommandBuffer();
-		}
+		buildCommandBuffer();
 	}
 
 	void Renderer::clean()

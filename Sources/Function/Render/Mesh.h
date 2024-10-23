@@ -38,10 +38,19 @@ namespace FOCUS
         std::vector<uint32_t>    _indices;
         std::shared_ptr<Texture> _texture;
 
+        bool _needInit{ true };
+
+    private:
+        DRHI::DynamicPipeline _pipeline;
+        DRHI::DynamicPipelineLayout _pipelineLayout;
+
     public:
         Mesh() = default;
 
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi);
+
+        void preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi);
+        void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
     };
 
     Mesh* loadModel(const char* modelPath);

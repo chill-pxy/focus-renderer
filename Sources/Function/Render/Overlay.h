@@ -3,7 +3,6 @@
 #include<Windows.h>
 #include<memory>
 
-#include<glm/glm.hpp>
 #include<imgui.h>
 
 #include"RenderResource.h"
@@ -15,6 +14,7 @@ namespace FOCUS
 	private:
 		HWND           _window;
 		uint32_t       _drawCommandCount{ 0 };
+		DRHI::API      _backend{ DRHI::VULKAN };
 		 
 	public:
 

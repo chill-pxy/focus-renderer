@@ -1,6 +1,5 @@
 #pragma once
-#include<glm/glm.hpp>
-#include<glm/gtx/hash.hpp>
+
 #include<tiny_obj_loader.h>
 
 #include<functional>
@@ -8,14 +7,15 @@
 
 #include"RenderResource.h"
 #include"Texture.h"
+#include"../../Core/Math.h"
 
 namespace FOCUS
 {
 	struct Vertex
 	{
-        glm::vec3 pos;
-        glm::vec3 color;
-        glm::vec2 texCoord;
+        Vector3 pos;
+        Vector3 color;
+        Vector2 texCoord;
 
         bool operator==(const Vertex& other) const 
         {
@@ -25,9 +25,9 @@ namespace FOCUS
 
     struct UniformBufferObject 
     {
-        alignas(16) glm::mat4 model;
-        alignas(16) glm::mat4 view;
-        alignas(16) glm::mat4 proj;
+        alignas(16) Matrix4 model;
+        alignas(16) Matrix4 view;
+        alignas(16) Matrix4 proj;
     };
 
     class Mesh : public RenderResource
@@ -62,7 +62,7 @@ namespace std
     {
         size_t operator()(FOCUS::Vertex const& vertex) const 
         {
-            return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
+            return ((hash<FOCUS::Vector3>()(vertex.pos) ^ (hash<FOCUS::Vector3>()(vertex.color) << 1)) >> 1) ^ (hash<FOCUS::Vector2>()(vertex.texCoord) << 1);
         }
     };
 }

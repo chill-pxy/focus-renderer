@@ -16,13 +16,25 @@ namespace FOCUS
 
 		_renderer->initialize();
 
-
+		_camera = std::make_shared<RenderCamera>();
 	}
 
 	void RenderSystem::tick()
 	{
+		auto tStart = std::chrono::high_resolution_clock::now();
+
 		_renderer->_rhiContext->frameOnTick(std::bind(&Renderer::buildCommandBuffer, _renderer));
 		_renderer->tick();
+		_frameCounter++;
+		
+		auto tEnd = std::chrono::high_resolution_clock::now();
+		auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
+		
+		_frameTimer = (float)tDiff / 1000.0f;
+
+		
+		_camera->handleMovement();
+		
 	}
 
 	void RenderSystem::clean()

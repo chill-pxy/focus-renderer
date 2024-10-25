@@ -4,7 +4,7 @@
 #include<mutex>
 
 #include"Renderer.h"
-#include"../../Platform/NativeWindow.h"
+#include"RenderCamera.h"
 
 namespace FOCUS
 {
@@ -21,6 +21,11 @@ namespace FOCUS
 		std::shared_ptr<Renderer> _renderer;
 		static std::shared_ptr<RenderSystem> _instance;
 		static std::mutex _mutex;
+
+		std::shared_ptr<RenderCamera> _camera;
+		uint32_t _frameCounter = 0;
+		uint32_t _lastFPS = 0;
+		float    _frameTimer = 1.0f;
 
 		RenderSystem() = default;
 

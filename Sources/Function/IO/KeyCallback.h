@@ -8,4 +8,6 @@ namespace FOCUS
 	{
 		RenderSystem::getInstance()->setViewportSize(width, height);
 	}
+
+	
 }

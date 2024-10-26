@@ -33,7 +33,7 @@ namespace FOCUS
 		if (_pitch > 89.0f)
 			_pitch = 89.0f;
 		if (_pitch < -89.0f)
-			_Pitch = -89.0f;
+			_pitch = -89.0f;
 
 		// update Front, Right and Up Vectors using the updated Euler angles
 		updateCameraVectors();

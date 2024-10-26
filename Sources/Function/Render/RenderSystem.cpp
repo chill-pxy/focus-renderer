@@ -32,7 +32,6 @@ namespace FOCUS
 		
 		_frameTimer = (float)tDiff / 1000.0f;
 
-		
 		_camera->handleMovement();
 		
 	}

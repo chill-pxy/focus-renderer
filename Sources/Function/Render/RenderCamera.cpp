@@ -22,25 +22,6 @@ namespace FOCUS
 		updateViewMatrix();
 	}
 
-	void RenderCamera::handleMovement(float xoffset, float yoffset)
-	{
-		xoffset *= _sensitivity;
-		yoffset *= _sensitivity;
-
-		_yaw += xoffset;
-		_pitch += yoffset;
-
-		// make sure that when pitch is out of bounds, screen doesn't get flipped
-
-		if (_pitch > 89.0f)
-			_pitch = 89.0f;
-		if (_pitch < -89.0f)
-			_pitch = -89.0f;
-
-		// update Front, Right and Up Vectors using the updated Euler angles
-		updateCameraVectors();
-	}
-
 	void RenderCamera::updateCameraVectors()
 	{
 		Vector3 front{};
@@ -57,10 +38,24 @@ namespace FOCUS
 	{
 		Matrix4 currentMatrix = _view;
 		Matrix4 transM;
+		Matrix4 rotM = Matrix4(1.0f);
+
+		if (_isRotate)
+		{
+			rotM = rotate(rotM, radians(_rotation.x * 1.0f), Vector3(1.0f, 0.0f, 0.0f));
+			rotM = rotate(rotM, radians(_rotation.y), Vector3(0.0f, 1.0f, 0.0f));
+			rotM = rotate(rotM, radians(_rotation.z), Vector3(0.0f, 0.0f, 1.0f));
+		}
 
 		Vector3 translation = _position;
 		transM = translate(Matrix4(1.0f), -translation);
 
-		_view = transM;
+		_view = rotM * transM;
+	}
+
+	void RenderCamera::makeRotate(Vector3 delta)
+	{
+		_rotation += delta;
+		updateViewMatrix();
 	}
 }

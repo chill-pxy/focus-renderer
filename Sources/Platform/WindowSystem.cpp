@@ -18,24 +18,46 @@ namespace FOCUS
 		if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 			return true;
 
-		if (uMsg == WM_CLOSE)
+		switch (uMsg)
 		{
+
+
+
+
+
+		case WM_CLOSE:
 			DestroyWindow(hWnd);
-		}
-		if (uMsg == WM_DESTROY)
-		{
+			break;
+
+
+
+
+
+
+		case WM_DESTROY:
 			PostQuitMessage(0);
-		}
-		if (uMsg == WM_SIZE)
+			break;
+
+
+
+
+
+
+		case WM_SIZE:
 		{
 			UINT width = LOWORD(lParam);
 			UINT height = HIWORD(lParam);
 
 			WindowSystem::getInstance()->setWindowSize(width, height);
 			onRenderCanvasSizeChanged(width, height);
+			break;
 		}
 
-		if (uMsg == WM_KEYDOWN)
+
+
+
+
+		case WM_KEYDOWN:
 		{
 			wchar_t key = (wchar_t)wParam;
 
@@ -58,15 +80,58 @@ namespace FOCUS
 				RenderSystem::getInstance()->_camera->_state = CameraMovement::RIGHT;
 				break;
 			}
+
+			break;
 		}
 
-		if (uMsg == WM_KEYUP)
+
+
+
+
+		case WM_KEYUP:
 		{
 			wchar_t key = (wchar_t)wParam;
 
 			RenderSystem::getInstance()->_camera->_state = CameraMovement::NONE;
+
+			break;
 		}
-	
+
+
+		
+		case WM_LBUTTONDOWN:
+		{
+			RenderSystem::getInstance()->_camera->_isRotate = true;
+			RenderSystem::getInstance()->_camera->_mousePosition = Vector2((float)LOWORD(lParam), (float)HIWORD(lParam));
+			break;
+		}
+
+
+
+
+		case WM_LBUTTONUP:
+		{
+			RenderSystem::getInstance()->_camera->_isRotate = false;
+			break;
+		}
+
+
+
+
+		case WM_MOUSEMOVE:
+		{
+			float x = LOWORD(lParam);
+			float y = HIWORD(lParam);
+			int32_t dx = (int32_t)RenderSystem::getInstance()->_camera->_mousePosition.x - x;
+			int32_t dy = (int32_t)RenderSystem::getInstance()->_camera->_mousePosition.y - y;
+			RenderSystem::getInstance()->_camera->makeRotate(Vector3(-dy * 1.0f, -dx * 1.0f, 0.0f));
+
+			RenderSystem::getInstance()->_camera->_mousePosition = Vector2(x, y);
+
+			break;
+		}
+
+		}
 
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}

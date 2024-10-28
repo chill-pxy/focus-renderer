@@ -15,18 +15,22 @@ namespace FOCUS
 	class RenderCamera
 	{
 	public:
+		Vector3 _rotation{};
 		Vector3 _position{};
 		Vector3 _front{};
 		Vector3 _up{};
 		Vector3 _right{};
 		Vector3 _worldUp{};
-		
+		Vector2 _mousePosition{};
+
 		float _yaw;
 		float _pitch;
 		
 		float _speed;
-		float _sensitivity;
+		float _rotateSpeed;
 		float _zoom;
+
+		bool _isRotate = false;
 
 		Matrix4 _view;
 
@@ -42,7 +46,7 @@ namespace FOCUS
 			_yaw = -90.0f;
 			_pitch = 0.0f;
 			_speed = 2.5f;
-			_sensitivity = 0.1f;
+			_rotateSpeed = 1.0f;
 			_zoom = 45.0f;
 
 			updateCameraVectors();
@@ -51,9 +55,8 @@ namespace FOCUS
 
 		Matrix4 getViewMatrix();
 		void handleMovement(float deltaTime);
-		void handleMovement(float xoffset, float yoffset);
 		void updateViewMatrix();
-		//void handleMovement(float yoffset);
+		void makeRotate(Vector3 delta);
 
 	private:
 		void updateCameraVectors();

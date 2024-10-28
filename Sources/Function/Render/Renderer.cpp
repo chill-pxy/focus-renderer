@@ -53,9 +53,9 @@ namespace FOCUS
 		}
 	}
 
-	void Renderer::tick()
+	void Renderer::tick(Matrix4 view)
 	{
-		updateUniformBuffer(_rhiContext->getCurrentBuffer());
+		updateUniformBuffer(_rhiContext->getCurrentBuffer(), view);
 		_ui->tick();
 		buildCommandBuffer();
 	}
@@ -74,7 +74,7 @@ namespace FOCUS
 		_rhiContext->clearImage(&obj->_textureSampler, &obj->_textureImageView, &obj->_textureImage, &obj->_textureMemory);
 	}
 
-	void Renderer::updateUniformBuffer(uint32_t currentImage)
+	void Renderer::updateUniformBuffer(uint32_t currentImage, Matrix4 view)
 	{
 		static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -82,9 +82,9 @@ namespace FOCUS
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.proj = glm::perspective(glm::radians(45.0f), 1920 / (float)1080, 0.1f, 10.0f);
+		ubo.model = glm::mat4(1.0f);
+		ubo.view = view;
+		ubo.proj = glm::perspective(glm::radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
 		ubo.proj[1][1] *= -1;
 
 		memcpy(obj->_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));

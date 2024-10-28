@@ -24,7 +24,7 @@ namespace FOCUS
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		_renderer->_rhiContext->frameOnTick(std::bind(&Renderer::buildCommandBuffer, _renderer));
-		_renderer->tick();
+		_renderer->tick(_camera->getViewMatrix());
 		_frameCounter++;
 		
 		auto tEnd = std::chrono::high_resolution_clock::now();
@@ -32,8 +32,24 @@ namespace FOCUS
 		
 		_frameTimer = (float)tDiff / 1000.0f;
 
-		_camera->handleMovement();
+		_camera->handleMovement(_frameTimer);
 		
+		// Convert to clamped timer value
+		_timer += _timerSpeed * _frameTimer;
+		if (_timer > 1.0)
+		{
+			_timer -= 1.0f;
+		}
+
+		float fpsTimer = (float)(std::chrono::duration<double, std::milli>(tEnd - _lastTimestamp).count());
+		if (fpsTimer > 1000.0f)
+		{
+			_lastFPS = static_cast<uint32_t>((float)_frameCounter * (1000.0f / fpsTimer));
+
+			_frameCounter = 0;
+			_lastTimestamp = tEnd;
+		}
+		_tPrevEnd = tEnd;
 	}
 
 	void RenderSystem::clean()

@@ -17,15 +17,22 @@ namespace FOCUS
 
 	class RenderSystem
 	{
+	public:
+		std::shared_ptr<RenderCamera> _camera;
+
 	private:
 		std::shared_ptr<Renderer> _renderer;
 		static std::shared_ptr<RenderSystem> _instance;
 		static std::mutex _mutex;
-
-		std::shared_ptr<RenderCamera> _camera;
+		
 		uint32_t _frameCounter = 0;
 		uint32_t _lastFPS = 0;
 		float    _frameTimer = 1.0f;
+		float    _timer = 0.0f;
+		float    _timerSpeed = 0.25f;
+
+		std::chrono::time_point<std::chrono::high_resolution_clock> _lastTimestamp;
+		std::chrono::time_point<std::chrono::high_resolution_clock>	_tPrevEnd;
 
 		RenderSystem() = default;
 

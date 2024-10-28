@@ -5,6 +5,7 @@
 
 #include<drhi.h>
 
+#include"../../Core/Math.h"
 #include"Mesh.h"
 #include"Overlay.h"
 
@@ -23,10 +24,10 @@ namespace FOCUS
 
 		Renderer(DRHI::API api, DRHI::PlatformInfo platformCI);
 		
-		void updateUniformBuffer(uint32_t currentImage);
+		void updateUniformBuffer(uint32_t currentImage, Matrix4 view);
 		void initialize();
 		void buildCommandBuffer();
-		void tick();
+		void tick(Matrix4 view);
 		void clean();
 	};
 }

@@ -28,12 +28,14 @@ namespace FOCUS
 		float _sensitivity;
 		float _zoom;
 
+		Matrix4 _view;
+
 		CameraMovement _state{ NONE };
 
 	public:
 		RenderCamera()
 		{
-			_position = { 0.0f, 0.0f, 0.0f };
+			_position = { 0.0f, 0.0f, 1.0f };
 			_front = { 0.0f,0.0f,1.0f };
 			_up = { 0.0f, 1.0f,0.0f };
 
@@ -44,12 +46,14 @@ namespace FOCUS
 			_zoom = 45.0f;
 
 			updateCameraVectors();
+			updateViewMatrix();
 		}
 
 		Matrix4 getViewMatrix();
-		void handleMovement(CameraMovement movement, float deltaTime);
+		void handleMovement(float deltaTime);
 		void handleMovement(float xoffset, float yoffset);
-		void handleMovement(float yoffset);
+		void updateViewMatrix();
+		//void handleMovement(float yoffset);
 
 	private:
 		void updateCameraVectors();

@@ -35,6 +35,39 @@ namespace FOCUS
 			onRenderCanvasSizeChanged(width, height);
 		}
 
+		if (uMsg == WM_KEYDOWN)
+		{
+			wchar_t key = (wchar_t)wParam;
+
+			switch (key)
+			{
+			case 'W':
+				std::cout << "camera w" << std::endl;
+				RenderSystem::getInstance()->_camera->_state = CameraMovement::FORWARD;
+				break;
+			case 'A':
+				std::cout << "camera a" << std::endl;
+				RenderSystem::getInstance()->_camera->_state = CameraMovement::LEFT;
+				break;
+			case 'S':
+				std::cout << "camera s" << std::endl;
+				RenderSystem::getInstance()->_camera->_state = CameraMovement::BACKWARD;
+				break;
+			case 'D':
+				std::cout << "camera d" << std::endl;
+				RenderSystem::getInstance()->_camera->_state = CameraMovement::RIGHT;
+				break;
+			}
+		}
+
+		if (uMsg == WM_KEYUP)
+		{
+			wchar_t key = (wchar_t)wParam;
+
+			RenderSystem::getInstance()->_camera->_state = CameraMovement::NONE;
+		}
+	
+
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 

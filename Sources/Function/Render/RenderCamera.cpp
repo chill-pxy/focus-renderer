@@ -4,20 +4,22 @@ namespace FOCUS
 {
 	Matrix4 RenderCamera::getViewMatrix()
 	{
-		return lookAt(_position, _position + _front, _up);
+		return _view;
 	}
 
-	void RenderCamera::handleMovement(CameraMovement movement, float deltaTime)
+	void RenderCamera::handleMovement(float deltaTime)
 	{
 		float velocity = _speed * deltaTime;
-		if (movement == FORWARD)
+		if (_state == FORWARD)
 			_position += _front * velocity;
-		if (movement == BACKWARD)
+		if (_state == BACKWARD)
 			_position -= _front * velocity;
-		if (movement == LEFT)
-			_position -= _right * velocity;
-		if (movement == RIGHT)
-			_position += _right * velocity;
+		if (_state == LEFT)
+			_position -= normalize(cross(_front, Vector3(0.0f, 1.0f, 0.0f))) * velocity;
+		if (_state == RIGHT)
+			_position += normalize(cross(_front, Vector3(0.0f, 1.0f, 0.0f))) * velocity;
+
+		updateViewMatrix();
 	}
 
 	void RenderCamera::handleMovement(float xoffset, float yoffset)
@@ -39,15 +41,6 @@ namespace FOCUS
 		updateCameraVectors();
 	}
 
-	void RenderCamera::handleMovement(float yoffset)
-	{
-		_zoom -= (float)yoffset;
-		if (_zoom < 1.0f)
-			_zoom = 1.0f;
-		if (_zoom > 45.0f)
-			_zoom = 45.0f;
-	}
-
 	void RenderCamera::updateCameraVectors()
 	{
 		Vector3 front{};
@@ -58,5 +51,16 @@ namespace FOCUS
 		_front = normalize(front);
 		_right = normalize(cross(_front, _worldUp));
 		_up    = normalize(cross(_right, _front));
+	}
+
+	void RenderCamera::updateViewMatrix()
+	{
+		Matrix4 currentMatrix = _view;
+		Matrix4 transM;
+
+		Vector3 translation = _position;
+		transM = translate(Matrix4(1.0f), -translation);
+
+		_view = transM;
 	}
 }

@@ -46,7 +46,7 @@ namespace FOCUS
 			_yaw = -90.0f;
 			_pitch = 0.0f;
 			_speed = 2.5f;
-			_rotateSpeed = 1.0f;
+			_rotateSpeed = 0.25f;
 			_zoom = 45.0f;
 
 			updateCameraVectors();

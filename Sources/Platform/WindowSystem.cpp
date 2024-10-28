@@ -124,7 +124,7 @@ namespace FOCUS
 			float y = HIWORD(lParam);
 			int32_t dx = (int32_t)RenderSystem::getInstance()->_camera->_mousePosition.x - x;
 			int32_t dy = (int32_t)RenderSystem::getInstance()->_camera->_mousePosition.y - y;
-			RenderSystem::getInstance()->_camera->makeRotate(Vector3(-dy * 1.0f, -dx * 1.0f, 0.0f));
+			RenderSystem::getInstance()->_camera->makeRotate(Vector3(dy * 1.0f, -dx * 1.0f, 0.0f));
 
 			RenderSystem::getInstance()->_camera->_mousePosition = Vector2(x, y);
 

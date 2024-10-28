@@ -9,15 +9,20 @@ namespace FOCUS
 
 	void RenderCamera::handleMovement(float deltaTime)
 	{
+		_front.x = -cos(radians(_rotation.x)) * sin(radians(_rotation.y));
+		_front.y = sin(radians(_rotation.x));
+		_front.z = cos(radians(_rotation.x)) * cos(radians(_rotation.y));
+		_front = normalize(_front);
+
 		float velocity = _speed * deltaTime;
 		if (_state == FORWARD)
-			_position += _front * velocity;
-		if (_state == BACKWARD)
 			_position -= _front * velocity;
+		if (_state == BACKWARD)
+			_position += _front * velocity;
 		if (_state == LEFT)
-			_position -= normalize(cross(_front, Vector3(0.0f, 1.0f, 0.0f))) * velocity;
-		if (_state == RIGHT)
 			_position += normalize(cross(_front, Vector3(0.0f, 1.0f, 0.0f))) * velocity;
+		if (_state == RIGHT)
+			_position -= normalize(cross(_front, Vector3(0.0f, 1.0f, 0.0f))) * velocity;
 
 		updateViewMatrix();
 	}
@@ -40,12 +45,12 @@ namespace FOCUS
 		Matrix4 transM;
 		Matrix4 rotM = Matrix4(1.0f);
 
-		if (_isRotate)
-		{
-			rotM = rotate(rotM, radians(_rotation.x * 1.0f), Vector3(1.0f, 0.0f, 0.0f));
+		//if (_isRotate)
+		//{
+			rotM = rotate(rotM, radians(_rotation.x * -1.0f), Vector3(1.0f, 0.0f, 0.0f));
 			rotM = rotate(rotM, radians(_rotation.y), Vector3(0.0f, 1.0f, 0.0f));
 			rotM = rotate(rotM, radians(_rotation.z), Vector3(0.0f, 0.0f, 1.0f));
-		}
+		//}
 
 		Vector3 translation = _position;
 		transM = translate(Matrix4(1.0f), -translation);
@@ -57,5 +62,6 @@ namespace FOCUS
 	{
 		_rotation += delta;
 		updateViewMatrix();
+		
 	}
 }

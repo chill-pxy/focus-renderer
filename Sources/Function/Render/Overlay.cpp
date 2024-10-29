@@ -68,7 +68,7 @@ namespace FOCUS
         _drawCommandCount = imDrawData->CmdListsCount;
     }
 
-    void EngineUI::tick()
+    void EngineUI::tick(uint32_t fps)
     {
         if (_backend == DRHI::VULKAN)
         {
@@ -78,7 +78,8 @@ namespace FOCUS
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
+        ImGui::Text("%d fps", fps);
 
         ImGui::Render();
     }

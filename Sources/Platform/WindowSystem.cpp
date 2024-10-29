@@ -79,12 +79,12 @@ namespace FOCUS
 
 
 		
-		case WM_LBUTTONDOWN:
+		case WM_RBUTTONDOWN:
 		{
 			float mouseX = (float)LOWORD(lParam);
 			float mouseY = (float)HIWORD(lParam);
 
-			onLeftMouseButtonDown(RenderSystem::getInstance()->_camera.get(), mouseX, mouseY);
+			onRightMouseButtonDown(RenderSystem::getInstance()->_camera.get(), mouseX, mouseY);
 
 			break;
 		}
@@ -92,9 +92,9 @@ namespace FOCUS
 
 
 
-		case WM_LBUTTONUP:
+		case WM_RBUTTONUP:
 		{
-			onLeftMouseButtonUp(RenderSystem::getInstance()->_camera.get());
+			onRightMouseButtonUp(RenderSystem::getInstance()->_camera.get());
 			break;
 		}
 

@@ -25,7 +25,7 @@ namespace FOCUS
 		virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
 
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
-		void tick();
+		void tick(uint32_t fps);
 		bool needUpdate();
 	};
 }

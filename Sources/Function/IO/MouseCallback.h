@@ -3,13 +3,13 @@
 #include"../Render/RenderCamera.h"
 namespace FOCUS
 {
-	void onLeftMouseButtonDown(RenderCamera* camera, float x, float y)
+	void onRightMouseButtonDown(RenderCamera* camera, float x, float y)
 	{
 		camera->_isRotate = true;
 		camera->_mousePosition = Vector2(x, y);
 	}
 
-	void onLeftMouseButtonUp(RenderCamera* camera)
+	void onRightMouseButtonUp(RenderCamera* camera)
 	{
 		camera->_isRotate = false;
 	}

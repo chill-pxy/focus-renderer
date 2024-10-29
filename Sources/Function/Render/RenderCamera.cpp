@@ -15,13 +15,13 @@ namespace FOCUS
 		_front = normalize(_front);
 
 		float velocity = _speed * deltaTime;
-		if (_state == FORWARD)
+		if (_forward)
 			_position += _front * velocity;
-		if (_state == BACKWARD)
+		if (_backward)
 			_position -= _front * velocity;
-		if (_state == LEFT)
+		if (_moveleft)
 			_position -= normalize(cross(_front, Vector3(0.0f, 1.0f, 0.0f))) * velocity;
-		if (_state == RIGHT)
+		if (_moveright)
 			_position += normalize(cross(_front, Vector3(0.0f, 1.0f, 0.0f))) * velocity;
 
 		updateViewMatrix();

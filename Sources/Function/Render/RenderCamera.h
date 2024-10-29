@@ -4,14 +4,6 @@
 
 namespace FOCUS
 {
-	enum CameraMovement {
-		NONE,
-		FORWARD,
-		BACKWARD,
-		LEFT,
-		RIGHT
-	};
-
 	class RenderCamera
 	{
 	public:
@@ -19,16 +11,18 @@ namespace FOCUS
 		Vector3 _position{};
 		Vector3 _front{};
 		Vector2 _mousePosition{};
+		Matrix4 _view;
 
 		float _speed;
 		float _rotateSpeed;
 
 		bool _isRotate = false;
-		bool _filpY = true;
-
-		Matrix4 _view;
-
-		CameraMovement _state{ NONE };
+		bool _filpY    = true;
+		
+		bool _forward   = false;
+		bool _backward  = false;
+		bool _moveleft  = false;
+		bool _moveright = false;
 
 	public:
 		RenderCamera()

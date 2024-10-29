@@ -2,7 +2,9 @@
 #include"imgui_impl_win32.h"
 
 #include"WindowSystem.h"
+#include"../Function/IO/WindowCallback.h"
 #include"../Function/IO/KeyCallback.h"
+#include"../Function/IO/MouseCallback.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -60,23 +62,7 @@ namespace FOCUS
 		case WM_KEYDOWN:
 		{
 			wchar_t key = (wchar_t)wParam;
-
-			switch (key)
-			{
-			case 'W':
-				RenderSystem::getInstance()->_camera->_state = CameraMovement::FORWARD;
-				break;
-			case 'A':
-				RenderSystem::getInstance()->_camera->_state = CameraMovement::LEFT;
-				break;
-			case 'S':
-				RenderSystem::getInstance()->_camera->_state = CameraMovement::BACKWARD;
-				break;
-			case 'D':
-				RenderSystem::getInstance()->_camera->_state = CameraMovement::RIGHT;
-				break;
-			}
-
+			onKeyDown(RenderSystem::getInstance()->_camera.get(), key);
 			break;
 		}
 
@@ -87,9 +73,7 @@ namespace FOCUS
 		case WM_KEYUP:
 		{
 			wchar_t key = (wchar_t)wParam;
-
-			RenderSystem::getInstance()->_camera->_state = CameraMovement::NONE;
-
+			onKeyUp(RenderSystem::getInstance()->_camera.get(), key);
 			break;
 		}
 
@@ -97,8 +81,11 @@ namespace FOCUS
 		
 		case WM_LBUTTONDOWN:
 		{
-			RenderSystem::getInstance()->_camera->_isRotate = true;
-			RenderSystem::getInstance()->_camera->_mousePosition = Vector2((float)LOWORD(lParam), (float)HIWORD(lParam));
+			float mouseX = (float)LOWORD(lParam);
+			float mouseY = (float)HIWORD(lParam);
+
+			onLeftMouseButtonDown(RenderSystem::getInstance()->_camera.get(), mouseX, mouseY);
+
 			break;
 		}
 
@@ -107,7 +94,7 @@ namespace FOCUS
 
 		case WM_LBUTTONUP:
 		{
-			RenderSystem::getInstance()->_camera->_isRotate = false;
+			onLeftMouseButtonUp(RenderSystem::getInstance()->_camera.get());
 			break;
 		}
 
@@ -116,17 +103,10 @@ namespace FOCUS
 
 		case WM_MOUSEMOVE:
 		{
-			if (RenderSystem::getInstance()->_camera->_isRotate)
-			{
-				float x = LOWORD(lParam);
-				float y = HIWORD(lParam);
+			float x = LOWORD(lParam);
+			float y = HIWORD(lParam);
 
-				int32_t dx = (int32_t)RenderSystem::getInstance()->_camera->_mousePosition.x - x;
-				int32_t dy = (int32_t)RenderSystem::getInstance()->_camera->_mousePosition.y - y;
-				RenderSystem::getInstance()->_camera->makeRotate(Vector3(dy * 1.0f, -dx * 1.0f, 0.0f));
-
-				RenderSystem::getInstance()->_camera->_mousePosition = Vector2(x, y);
-			}
+			onMouseMove(RenderSystem::getInstance()->_camera.get(), x, y);
 			break;
 		}
 

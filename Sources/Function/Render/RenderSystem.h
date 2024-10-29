@@ -4,6 +4,7 @@
 #include<mutex>
 
 #include"Renderer.h"
+#include"RenderScene.h"
 #include"RenderCamera.h"
 
 namespace FOCUS
@@ -22,6 +23,9 @@ namespace FOCUS
 
 	private:
 		std::shared_ptr<Renderer> _renderer;
+		std::shared_ptr<RenderScene> _scene;
+		std::shared_ptr<EngineUI> _ui;
+
 		static std::shared_ptr<RenderSystem> _instance;
 		static std::mutex _mutex;
 		

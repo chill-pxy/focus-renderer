@@ -35,5 +35,6 @@ namespace FOCUS
     public:
         RenderResource() = default;
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
+        virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
     };
 }

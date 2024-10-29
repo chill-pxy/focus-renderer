@@ -1,20 +1,27 @@
 #pragma once
 
 #include<memory>
+#include<vector>
 
-#include"Renderer.h"
+#include"../../Core/Math.h"
+#include"Mesh.h"
+#include"Overlay.h"
+#include"RenderResource.h"
 
 namespace FOCUS
 {
 	class RenderScene
 	{
-	private:
-		std::unique_ptr<Renderer> _renderer;
+	public:
+		std::vector<RenderResource*> _group;
+		std::shared_ptr<Mesh> _obj;
 
 	public:
 		RenderScene() = default;
 
 		void initialize();
 		void prepareRenderResources();
+		void add(RenderResource* resource);
+		void tick(uint32_t currentImage, Matrix4 view);
 	};
 }

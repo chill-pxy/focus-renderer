@@ -71,6 +71,8 @@ namespace FOCUS
         wds[1].pImageInfo = &dii;
 
         rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
+    
+        preparePipeline(rhi);
     }
 
     Mesh* loadModel(const char* modelPath)
@@ -129,6 +131,21 @@ namespace FOCUS
         return mesh;
     }
 
+    void Mesh::draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
+    {
+        auto api = rhi->getCurrentAPI();
+        auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+        auto indexType = DRHI::DynamicIndexType(api);
+
+        rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
+        rhi->bindVertexBuffers(&_vertexBuffer, index);
+        rhi->bindIndexBuffer(&_indexBuffer, index, indexType.INDEX_TYPE_UINT32);
+        rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, 0, index);
+
+        //draw model
+        rhi->drawIndexed(index, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
+    }
+
     void Mesh::preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
         auto api = rhi->getCurrentAPI();
@@ -156,18 +173,14 @@ namespace FOCUS
         rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
     }
 
-    void Mesh::draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
+    void Mesh::updateUniformBuffer(uint32_t currentImage, Matrix4 view)
     {
-        auto api = rhi->getCurrentAPI();
-        auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
-        auto indexType = DRHI::DynamicIndexType(api);
+        UniformBufferObject ubo{};
+        ubo.model = glm::mat4(1.0f);
+        ubo.view = view;
+        ubo.proj = glm::perspective(glm::radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
+        ubo.proj[1][1] *= -1;
 
-        rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
-        rhi->bindVertexBuffers(&_vertexBuffer, index);
-        rhi->bindIndexBuffer(&_indexBuffer, index, indexType.INDEX_TYPE_UINT32);
-        rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, 0, index);
-
-        //draw model
-        rhi->drawIndexed(index, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
+        memcpy(_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }
 }

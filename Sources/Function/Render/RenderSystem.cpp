@@ -12,10 +12,23 @@ namespace FOCUS
 		platformCI.width = rsci.width;
 		platformCI.height = rsci.height;
 
+		// initialize renderer
 		_renderer = std::make_shared<Renderer>(DRHI::VULKAN, platformCI);
-
 		_renderer->initialize();
 
+		// initialize scene
+		_scene = std::make_shared<RenderScene>();
+		_scene->initialize();
+
+		// initialize ui
+		_ui = std::make_shared<EngineUI>(rsci.window);
+		_ui->initialize(_renderer->_rhiContext);
+		_scene->add(_ui.get());
+
+		// submit renderable resources
+		_renderer->buildAndSubmit(_scene->_group);
+
+		// initialize camera
 		_camera = std::make_shared<RenderCamera>();
 	}
 
@@ -23,8 +36,17 @@ namespace FOCUS
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
 
+		// renderer tick
 		_renderer->_rhiContext->frameOnTick(std::bind(&Renderer::buildCommandBuffer, _renderer));
-		_renderer->tick(_camera->getViewMatrix());
+		_renderer->buildCommandBuffer();
+
+		// scene tick
+		_scene->tick(_renderer->_rhiContext->getCurrentBuffer(), _camera->getViewMatrix());
+
+		// ui tick
+		_ui->tick();
+
+		// compute time on every frame cost
 		_frameCounter++;
 		
 		auto tEnd = std::chrono::high_resolution_clock::now();
@@ -32,6 +54,7 @@ namespace FOCUS
 		
 		_frameTimer = (float)tDiff / 1000.0f;
 
+		// camera tick
 		_camera->handleMovement(_frameTimer);
 		
 		// Convert to clamped timer value

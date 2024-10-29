@@ -15,19 +15,16 @@ namespace FOCUS
 	{
 	public:
 		std::shared_ptr<DRHI::DynamicRHI> _rhiContext;
-
-		std::shared_ptr<Mesh> obj;
-		std::shared_ptr<EngineUI> _ui;
+		std::vector<RenderResource*> _submitRenderlist;
 
 	public:
 		Renderer() = delete;
 
 		Renderer(DRHI::API api, DRHI::PlatformInfo platformCI);
 		
-		void updateUniformBuffer(uint32_t currentImage, Matrix4 view);
 		void initialize();
 		void buildCommandBuffer();
-		void tick(Matrix4 view);
+		void buildAndSubmit(std::vector<RenderResource*> renderlist);
 		void clean();
 	};
 }

@@ -2,6 +2,7 @@
 
 #include"Material.h"
 #include"../Texture.h"
+#include"../MeshVertex.h"
 
 namespace FOCUS
 {
@@ -110,9 +111,9 @@ namespace FOCUS
         virtual void updateUniformBuffer(uint32_t currentImage, Matrix4 view)
         {
             UniformBufferObject ubo{};
-            ubo.model = glm::mat4(1.0f);
+            ubo.model = Matrix4(1.0f);
             ubo.view = view;
-            ubo.proj = glm::perspective(glm::radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
+            ubo.proj = perspective(radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
             ubo.proj[1][1] *= -1;
 
             memcpy(_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));

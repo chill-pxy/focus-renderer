@@ -7,22 +7,10 @@
 
 #include"Materials/Material.h"
 #include"RenderResource.h"
-#include"../../Core/Math.h"
+#include"MeshVertex.h"
 
 namespace FOCUS
 {
-	struct Vertex
-	{
-        Vector3 pos;
-        Vector3 color;
-        Vector2 texCoord;
-
-        bool operator==(const Vertex& other) const 
-        {
-            return pos == other.pos && color == other.color && texCoord == other.texCoord;
-        }
-	};
-
     class Mesh : public RenderResource
     {
     public:
@@ -42,15 +30,4 @@ namespace FOCUS
     };
 
     Mesh* loadModel(const char* modelPath);
-}
-
-namespace std
-{
-    template<> struct hash<FOCUS::Vertex> 
-    {
-        size_t operator()(FOCUS::Vertex const& vertex) const 
-        {
-            return ((hash<FOCUS::Vector3>()(vertex.pos) ^ (hash<FOCUS::Vector3>()(vertex.color) << 1)) >> 1) ^ (hash<FOCUS::Vector2>()(vertex.texCoord) << 1);
-        }
-    };
 }

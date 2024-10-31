@@ -5,8 +5,8 @@
 #include<functional>
 #include<memory>
 
+#include"Materials/Material.h"
 #include"RenderResource.h"
-#include"Texture.h"
 #include"../../Core/Math.h"
 
 namespace FOCUS
@@ -23,26 +23,14 @@ namespace FOCUS
         }
 	};
 
-    struct UniformBufferObject 
-    {
-        alignas(16) Matrix4 model;
-        alignas(16) Matrix4 view;
-        alignas(16) Matrix4 proj;
-    };
-
     class Mesh : public RenderResource
     {
     public:
         tinyobj::attrib_t        _attrib;
         std::vector<Vertex>      _vertices;
         std::vector<uint32_t>    _indices;
-        std::shared_ptr<Texture> _texture;
 
         bool _needInit{ true };
-
-    private:
-        DRHI::DynamicPipeline _pipeline;
-        DRHI::DynamicPipelineLayout _pipelineLayout;
 
     public:
         Mesh() = default;
@@ -51,7 +39,6 @@ namespace FOCUS
         virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
        
         void updateUniformBuffer(uint32_t currentImage, Matrix4 view);
-        void preparePipeline(std::shared_ptr<DRHI::DynamicRHI> rhi);
     };
 
     Mesh* loadModel(const char* modelPath);

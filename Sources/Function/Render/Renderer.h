@@ -15,7 +15,7 @@ namespace FOCUS
 	{
 	public:
 		std::shared_ptr<DRHI::DynamicRHI> _rhiContext;
-		std::vector<RenderResource*> _submitRenderlist;
+		std::vector<RenderResource*>      _submitRenderlist;
 
 	public:
 		Renderer() = delete;

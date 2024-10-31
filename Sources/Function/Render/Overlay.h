@@ -14,7 +14,9 @@ namespace FOCUS
 	private:
 		HWND           _window;
 		uint32_t       _drawCommandCount{ 0 };
-		DRHI::API      _backend{ DRHI::VULKAN };
+
+		DRHI::API                   _backend{ DRHI::VULKAN };
+		DRHI::DynamicDescriptorPool _descriptorPool{};
 		 
 	public:
 

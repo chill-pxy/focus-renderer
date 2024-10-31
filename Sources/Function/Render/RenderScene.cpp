@@ -1,5 +1,5 @@
 #include"RenderScene.h"
-
+#include"Materials/BasicMaterial.h"
 
 namespace FOCUS
 {
@@ -12,8 +12,9 @@ namespace FOCUS
 	{
 		// prepare obj
 		_obj = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/viking_room.obj"));
+
 		std::shared_ptr<Texture> texture = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/viking_room.png"));
-		_obj->_texture = texture;
+		_obj->_material = new BasicMaterial(texture);
 
 		add(_obj.get());
 	}

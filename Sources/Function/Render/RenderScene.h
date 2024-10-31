@@ -14,7 +14,7 @@ namespace FOCUS
 	{
 	public:
 		std::vector<RenderResource*> _group;
-		std::shared_ptr<Mesh> _obj;
+		std::vector<std::shared_ptr<Mesh>> _objs;
 
 	public:
 		RenderScene() = default;

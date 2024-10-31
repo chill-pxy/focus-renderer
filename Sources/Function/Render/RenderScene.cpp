@@ -11,12 +11,24 @@ namespace FOCUS
 	void RenderScene::prepareRenderResources()
 	{
 		// prepare obj
-		_obj = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/viking_room.obj"));
+		auto obj = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/viking_room.obj"));
 
 		std::shared_ptr<Texture> texture = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/viking_room.png"));
-		_obj->_material = new BasicMaterial(texture);
+		obj->_material = new BasicMaterial(texture);
 
-		add(_obj.get());
+		_objs.push_back(obj);
+
+		auto plane = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/plane.obj"));
+
+		std::shared_ptr<Texture> texture2 = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/plane.png"));
+		plane->_material = new BasicMaterial(texture2);
+
+		_objs.push_back(plane);
+
+		for (auto value : _objs)
+		{
+			add(value.get());
+		}
 	}
 
 	void RenderScene::add(RenderResource* resource)
@@ -26,6 +38,9 @@ namespace FOCUS
 
 	void RenderScene::tick(uint32_t currentImage, Matrix4 view)
 	{
-		_obj->updateUniformBuffer(currentImage, view);
+		for (auto object : _objs)
+		{
+			object->updateUniformBuffer(currentImage, view);
+		}
 	}
 }

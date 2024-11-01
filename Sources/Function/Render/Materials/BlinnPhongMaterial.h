@@ -52,9 +52,6 @@ namespace FOCUS
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 
-            // create descriptor
-            rhi->createDescriptorPool(&_descriptorPool);
-
             std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(3);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
@@ -80,23 +77,34 @@ namespace FOCUS
             rhi->createUniformBuffer(&_vuniformBuffers, &_vuniformBuffersMemory, &_vuniformBuffersMapped, sizeof(VertexUniformBufferObject));
             for (int i = 0; i < _vuniformBuffers.size(); ++i)
             {
-                DRHI::DynamicDescriptorBufferInfo bufferInfo;
-                bufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffers[i], sizeof(VertexUniformBufferObject));
-                _vdescriptorBufferInfos.push_back(bufferInfo);
+                DRHI::DynamicDescriptorBufferInfo vbufferInfo;
+                vbufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffers[i], sizeof(VertexUniformBufferObject));
+                _vdescriptorBufferInfos.push_back(vbufferInfo);
             }
             
             rhi->createUniformBuffer(&_funiformBuffers, &_funiformBuffersMemory, &_funiformBuffersMapped, sizeof(FragmentUniformBufferObject));
             for (int i = 0; i < _funiformBuffers.size(); ++i)
             {
-                DRHI::DynamicDescriptorBufferInfo bufferInfo;
-                bufferInfo.set(rhi->getCurrentAPI(), _funiformBuffers[i], sizeof(FragmentUniformBufferObject));
-                _fdescriptorBufferInfos.push_back(bufferInfo);
+                DRHI::DynamicDescriptorBufferInfo fbufferInfo;
+                fbufferInfo.set(rhi->getCurrentAPI(), _funiformBuffers[i], sizeof(FragmentUniformBufferObject));
+                _fdescriptorBufferInfos.push_back(fbufferInfo);
             }
 
             //binding sampler and image view
             rhi->createTextureImage(&_textureImage, &_textureMemory, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB);
             rhi->createTextureSampler(&_textureSampler);
+
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
+            poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSizes[0].descriptorCount = 3;
+            poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[1].descriptorCount = 3;
+            poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSizes[2].descriptorCount = 3;
+
+            // create descriptor
+            rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
             std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -111,7 +119,6 @@ namespace FOCUS
 
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             wds[1].dstBinding = 1;
-            wds[1].pBufferInfo = &_vdescriptorBufferInfos[1];
             wds[1].descriptorCount = 1;
             wds[1].pImageInfo = &dii;
 

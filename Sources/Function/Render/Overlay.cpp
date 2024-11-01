@@ -13,7 +13,6 @@ namespace FOCUS
 
     void EngineUI::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
-        //create descriptor
         rhi->createDescriptorPool(&_descriptorPool);
 
         ImGui::CreateContext();

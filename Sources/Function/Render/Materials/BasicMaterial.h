@@ -39,9 +39,6 @@ namespace FOCUS
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 
-            // create descriptor
-            rhi->createDescriptorPool(&_descriptorPool);
-
             std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
@@ -72,6 +69,15 @@ namespace FOCUS
                 _descriptorBufferInfos.push_back(bufferInfo);
             }
 
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
+            poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSizes[0].descriptorCount = 3;
+            poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[1].descriptorCount = 3;
+
+            // create descriptor
+            rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
+
             std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
@@ -85,7 +91,6 @@ namespace FOCUS
 
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             wds[1].dstBinding = 1;
-            wds[1].pBufferInfo = &_descriptorBufferInfos[1];
             wds[1].descriptorCount = 1;
             wds[1].pImageInfo = &dii;
 

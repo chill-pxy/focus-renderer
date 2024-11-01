@@ -36,11 +36,11 @@ namespace FOCUS
 		_group.push_back(resource);
 	}
 
-	void RenderScene::tick(uint32_t currentImage, Matrix4 view)
+	void RenderScene::tick(uint32_t currentImage, std::shared_ptr<RenderCamera> camera)
 	{
 		for (auto object : _objs)
 		{
-			object->updateUniformBuffer(currentImage, view);
+			object->updateUniformBuffer(currentImage, camera);
 		}
 	}
 }

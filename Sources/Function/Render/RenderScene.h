@@ -22,6 +22,6 @@ namespace FOCUS
 		void initialize();
 		void prepareRenderResources();
 		void add(RenderResource* resource);
-		void tick(uint32_t currentImage, Matrix4 view);
+		void tick(uint32_t currentImage, std::shared_ptr<RenderCamera> camera);
 	};
 }

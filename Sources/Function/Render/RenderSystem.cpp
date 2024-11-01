@@ -41,7 +41,7 @@ namespace FOCUS
 		_renderer->buildCommandBuffer();
 
 		// scene tick
-		_scene->tick(_renderer->_rhiContext->getCurrentBuffer(), _camera->getViewMatrix());
+		_scene->tick(_renderer->_rhiContext->getCurrentBuffer(), _camera);
 
 		// ui tick
 		_ui->tick(_lastFPS);

@@ -1,5 +1,6 @@
 #include"RenderScene.h"
 #include"Materials/BasicMaterial.h"
+#include"Materials/BlinnPhongMaterial.h"
 
 namespace FOCUS
 {
@@ -21,7 +22,7 @@ namespace FOCUS
 		auto plane = std::shared_ptr<Mesh>(loadModel("../../../Asset/Models/plane.obj"));
 
 		std::shared_ptr<Texture> texture2 = std::shared_ptr<Texture>(loadTexture("../../../Asset/Models/plane.png"));
-		plane->_material = new BasicMaterial(texture2);
+		plane->_material = new BlinnPhongMaterial(texture2);
 
 		_objs.push_back(plane);
 

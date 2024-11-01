@@ -39,7 +39,8 @@ namespace FOCUS
         std::shared_ptr<Texture> _basicTexture;
 
 	public:
-		BlinnPhongMaterial() = default;
+		BlinnPhongMaterial() = delete;
+        BlinnPhongMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
 		
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) 
 		{
@@ -123,8 +124,8 @@ namespace FOCUS
 
             // create pipeline
             DRHI::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = "../../../Shaders/model_vertex.spv";
-            pci.fragmentShader = "../../../Shaders/model_fragment.spv";
+            pci.vertexShader = "../../../Shaders/blinnPhongVertex.spv";
+            pci.fragmentShader = "../../../Shaders/blinnPhongFragment.spv";
             pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
@@ -155,7 +156,9 @@ namespace FOCUS
             memcpy(_vuniformBuffersMapped[currentImage], &vubo, sizeof(vubo));
 
             FragmentUniformBufferObject fubo{};
-           // fubo.lightPosition = 
+            fubo.lightPosition = Vector3(0.0f, 0.0f, 0.0f);
+            fubo.viewPosition = camera->_position;
+            memcpy(_funiformBuffersMapped[currentImage], &fubo, sizeof(fubo));
         }
 	};
 }

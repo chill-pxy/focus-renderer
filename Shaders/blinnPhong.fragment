@@ -38,5 +38,5 @@ void main()
 	vec3 specular = vec3(0.3) * spec;
 
 	// output
-	outColor = vec4(ambient + diffuse + specular, 1.0);
+	outColor = vec4(1.0, 0.0, 1.0, 1.0);
 }

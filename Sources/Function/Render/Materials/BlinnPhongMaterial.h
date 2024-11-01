@@ -10,19 +10,33 @@
 
 namespace FOCUS
 {
-	typedef struct UniformBufferObject
+	typedef struct VertexUniformBufferObject
 	{
 		alignas(16) Matrix4 model;
 		alignas(16) Matrix4 view;
 		alignas(16) Matrix4 proj;
-	} UniformBufferObject;
+	} VertexUniformBufferObject;
+
+    typedef struct FragmentUniformBufferObject
+    {
+        alignas(16) Vector3 lightPosition;
+        alignas(16) Vector3 viewPosition;
+    } FragmentUniformBufferObject;
 
 	class BlinnPhongMaterial : public Material
 	{
-	public:
-		std::shared_ptr<Texture> _basicTexture;
-		const char* _vertexShader = "../../../Shaders/blinnPhongVertex.spv";
-		const char* _fragmentShader = "../../../Shaders/blinnPhongFragment.spv";
+	private:
+        std::vector<void*>                             _vuniformBuffersMapped;
+        std::vector<DRHI::DynamicBuffer>               _vuniformBuffers;
+        std::vector<DRHI::DynamicDeviceMemory>         _vuniformBuffersMemory;
+        std::vector<DRHI::DynamicDescriptorBufferInfo> _vdescriptorBufferInfos;
+
+        std::vector<void*>                             _funiformBuffersMapped;
+        std::vector<DRHI::DynamicBuffer>               _funiformBuffers;
+        std::vector<DRHI::DynamicDeviceMemory>         _funiformBuffersMemory;
+        std::vector<DRHI::DynamicDescriptorBufferInfo> _fdescriptorBufferInfos;
+        
+        std::shared_ptr<Texture> _basicTexture;
 
 	public:
 		BlinnPhongMaterial() = default;
@@ -40,7 +54,7 @@ namespace FOCUS
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool);
 
-            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);
+            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(3);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -53,27 +67,40 @@ namespace FOCUS
             dsbs[1].pImmutableSamplers = nullptr;
             dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
+            dsbs[2].binding = 2;
+            dsbs[2].descriptorCount = 1;
+            dsbs[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            dsbs[2].pImmutableSamplers = nullptr;
+            dsbs[2].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
             //create uniform buffer
-            rhi->createUniformBuffer(&_uniformBuffers, &_uniformBuffersMemory, &_uniformBuffersMapped, sizeof(UniformBufferObject));
+            rhi->createUniformBuffer(&_vuniformBuffers, &_vuniformBuffersMemory, &_vuniformBuffersMapped, sizeof(VertexUniformBufferObject));
+            for (int i = 0; i < _vuniformBuffers.size(); ++i)
+            {
+                DRHI::DynamicDescriptorBufferInfo bufferInfo;
+                bufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffers[i], sizeof(VertexUniformBufferObject));
+                _vdescriptorBufferInfos.push_back(bufferInfo);
+            }
+            
+            rhi->createUniformBuffer(&_funiformBuffers, &_funiformBuffersMemory, &_funiformBuffersMapped, sizeof(FragmentUniformBufferObject));
+            for (int i = 0; i < _funiformBuffers.size(); ++i)
+            {
+                DRHI::DynamicDescriptorBufferInfo bufferInfo;
+                bufferInfo.set(rhi->getCurrentAPI(), _funiformBuffers[i], sizeof(FragmentUniformBufferObject));
+                _fdescriptorBufferInfos.push_back(bufferInfo);
+            }
 
             //binding sampler and image view
             rhi->createTextureImage(&_textureImage, &_textureMemory, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB);
             rhi->createTextureSampler(&_textureSampler);
 
-            for (int i = 0; i < _uniformBuffers.size(); ++i)
-            {
-                DRHI::DynamicDescriptorBufferInfo bufferInfo;
-                bufferInfo.set(rhi->getCurrentAPI(), _uniformBuffers[i], sizeof(UniformBufferObject));
-                _descriptorBufferInfos.push_back(bufferInfo);
-            }
-
-            std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
+            std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
-            wds[0].pBufferInfo = &_descriptorBufferInfos[0];
+            wds[0].pBufferInfo = &_vdescriptorBufferInfos[0];
             wds[0].descriptorCount = 1;
 
             DRHI::DynamicDescriptorImageInfo dii{};
@@ -83,9 +110,14 @@ namespace FOCUS
 
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             wds[1].dstBinding = 1;
-            wds[1].pBufferInfo = &_descriptorBufferInfos[1];
+            wds[1].pBufferInfo = &_vdescriptorBufferInfos[1];
             wds[1].descriptorCount = 1;
             wds[1].pImageInfo = &dii;
+
+            wds[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            wds[2].dstBinding = 2;
+            wds[2].pBufferInfo = &_fdescriptorBufferInfos[0];
+            wds[2].descriptorCount = 1;
 
             rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
 
@@ -96,10 +128,11 @@ namespace FOCUS
             pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
-            pci.vertexInputAttributes.resize(3);
+            pci.vertexInputAttributes.resize(4);
             pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
             pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
             pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
+            pci.vertexInputAttributes[3].set(api, 3, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::normal));
 
             DRHI::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;
@@ -112,6 +145,17 @@ namespace FOCUS
             rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
 		};
 
-		virtual void updateUniformBuffer(uint32_t currentImage, Matrix4 view) {};
+		virtual void updateUniformBuffer(uint32_t currentImage, std::shared_ptr<RenderCamera> camera)
+        {
+            VertexUniformBufferObject vubo{};
+            vubo.model = Matrix4(1.0f);
+            vubo.view = camera->getViewMatrix();
+            vubo.proj = perspective(radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
+            vubo.proj[1][1] *= -1;
+            memcpy(_vuniformBuffersMapped[currentImage], &vubo, sizeof(vubo));
+
+            FragmentUniformBufferObject fubo{};
+           // fubo.lightPosition = 
+        }
 	};
 }

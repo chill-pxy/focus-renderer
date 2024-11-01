@@ -16,8 +16,14 @@ namespace FOCUS
 	class BasicMaterial : public Material
 	{
 	private:
+
+        std::vector<void*>                             _uniformBuffersMapped;
+        std::vector<DRHI::DynamicBuffer>               _uniformBuffers;
+        std::vector<DRHI::DynamicDeviceMemory>         _uniformBuffersMemory;
+        std::vector<DRHI::DynamicDescriptorBufferInfo> _descriptorBufferInfos;
+
 		std::shared_ptr<Texture> _basicTexture{ nullptr };
-        UniformBufferObject _uniformObject{};
+        UniformBufferObject      _uniformObject{};
 
 	public:
 		BasicMaterial() = delete;
@@ -108,11 +114,11 @@ namespace FOCUS
             rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
 		}
 
-        virtual void updateUniformBuffer(uint32_t currentImage, Matrix4 view)
+        virtual void updateUniformBuffer(uint32_t currentImage, std::shared_ptr<RenderCamera> camera)
         {
             UniformBufferObject ubo{};
             ubo.model = Matrix4(1.0f);
-            ubo.view = view;
+            ubo.view = camera->getViewMatrix();
             ubo.proj = perspective(radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
             ubo.proj[1][1] *= -1;
 

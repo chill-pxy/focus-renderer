@@ -1,8 +1,11 @@
 #version 450
 
 layout(binding = 1) uniform sampler2D texSampler;
-layout(binding = 2) uniform vec3 lightPosition;
-layout(binding = 3) uniform vec3 viewPosition;
+layout(binding = 2) uniform UniformBufferObject 
+{
+    vec3 lightPosition;
+    vec3 viewPosition;
+} ubo;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -19,18 +22,18 @@ void main()
 	vec3 ambient = 0.05 * color;
 	
 	// diffuse
-	vec4 lightDirection = normalize(lightPosition - fragPosition);
+	vec3 lightDirection = normalize(ubo.lightPosition - fragPosition);
 	vec3 normal = normalize(fragNormal);
 	float diff = max(dot(lightDirection, normal), 0.0);
 	vec3 diffuse = diff * color;
 
 	// specular
-	vec3 viewDirection = normalize(viewPosition - fragPosition);
-	vec3 relectDirection = reflect(-lightPosition, normal);
+	vec3 viewDirection = normalize(ubo.viewPosition - fragPosition);
+	vec3 relectDirection = reflect(-ubo.lightPosition, normal);
 	float spec = 0.0;
 	
 	// blinn
-	vec3 halfwayDirection = normalize(lightPosition + viewDirection);
+	vec3 halfwayDirection = normalize(ubo.lightPosition + viewDirection);
 	spec = pow(max(dot(normal, halfwayDirection), 0.0), 32.0);
 	vec3 specular = vec3(0.3) * spec;
 

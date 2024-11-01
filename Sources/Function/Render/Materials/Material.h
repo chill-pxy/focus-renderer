@@ -3,22 +3,18 @@
 #include<drhi.h>
 
 #include"../../../Core/Math.h"
+#include"../RenderCamera.h"
 
 namespace FOCUS
 {
 	class Material
 	{
 	public:
-        std::vector<void*>                     _uniformBuffersMapped;
-        std::vector<DRHI::DynamicBuffer>       _uniformBuffers;
-        std::vector<DRHI::DynamicDeviceMemory> _uniformBuffersMemory;
-
         DRHI::DynamicImage        _textureImage;
         DRHI::DynamicImageView    _textureImageView;
         DRHI::DynamicSampler      _textureSampler;
         DRHI::DynamicDeviceMemory _textureMemory;
 
-        std::vector<DRHI::DynamicDescriptorBufferInfo> _descriptorBufferInfos;
         DRHI::DynamicDescriptorPool                    _descriptorPool;
         DRHI::DynamicDescriptorSet                     _descriptorSet;
         DRHI::DynamicDescriptorSetLayout               _descriptorSetLayout;
@@ -30,7 +26,7 @@ namespace FOCUS
 		Material() = default;
 
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
-        virtual void updateUniformBuffer(uint32_t currentImage, Matrix4 view) = 0;
+        virtual void updateUniformBuffer(uint32_t currentImage, std::shared_ptr<RenderCamera> camera) = 0;
 
         void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
         {

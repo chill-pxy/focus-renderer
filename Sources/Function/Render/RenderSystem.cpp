@@ -27,9 +27,6 @@ namespace FOCUS
 
 		// submit renderable resources
 		_renderer->buildAndSubmit(_scene->_group);
-
-		// initialize camera
-		_camera = std::make_shared<RenderCamera>();
 	}
 
 	void RenderSystem::tick()
@@ -40,11 +37,8 @@ namespace FOCUS
 		_renderer->_rhiContext->frameOnTick(std::bind(&Renderer::buildCommandBuffer, _renderer));
 		_renderer->buildCommandBuffer();
 
-		// scene tick
-		_scene->tick(_renderer->_rhiContext->getCurrentBuffer(), _camera);
-
 		// ui tick
-		_ui->tick(_lastFPS);
+		_ui->tick(_lastFPS, _scene);
 
 		// compute time on every frame cost
 		_frameCounter++;
@@ -54,8 +48,8 @@ namespace FOCUS
 		
 		_frameTimer = (float)tDiff / 1000.0f;
 
-		// camera tick
-		_camera->handleMovement(_frameTimer);
+		// scene tick
+		_scene->tick(_frameTimer);
 		
 		// Convert to clamped timer value
 		_timer += _timerSpeed * _frameTimer;

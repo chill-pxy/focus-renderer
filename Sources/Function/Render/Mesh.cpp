@@ -96,8 +96,8 @@ namespace FOCUS
         rhi->drawIndexed(index, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
     }
 
-    void Mesh::updateUniformBuffer(uint32_t currentImage, std::shared_ptr<RenderCamera> camera)
+    void Mesh::updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light)
     {
-        _material->updateUniformBuffer(currentImage, camera);
+        _material->updateUniformBuffer(camera, light);
     }
 }

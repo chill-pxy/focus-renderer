@@ -113,12 +113,12 @@ namespace FOCUS
             rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
 		}
 
-        virtual void updateUniformBuffer(uint32_t currentImage, std::shared_ptr<RenderCamera> camera)
+        virtual void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light)
         {
             UniformBufferObject ubo{};
             ubo.model = Matrix4(1.0f);
             ubo.view = camera->getViewMatrix();
-            ubo.proj = perspective(radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
+            ubo.proj = perspective(radians(45.0f), 1280 / (float)720, 0.1f, 100.0f);
             ubo.proj[1][1] *= -1;
 
             memcpy(_uniformBufferMapped, &ubo, sizeof(UniformBufferObject));

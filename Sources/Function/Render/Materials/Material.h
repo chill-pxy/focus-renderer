@@ -4,6 +4,7 @@
 
 #include"../../../Core/Math.h"
 #include"../RenderCamera.h"
+#include"../PointLight.h"
 
 namespace FOCUS
 {
@@ -26,7 +27,7 @@ namespace FOCUS
 		Material() = default;
 
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
-        virtual void updateUniformBuffer(uint32_t currentImage, std::shared_ptr<RenderCamera> camera) = 0;
+        virtual void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light) = 0;
 
         void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
         {

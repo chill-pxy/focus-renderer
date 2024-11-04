@@ -67,7 +67,7 @@ namespace FOCUS
         _drawCommandCount = imDrawData->CmdListsCount;
     }
 
-    void EngineUI::tick(uint32_t fps)
+    void EngineUI::tick(uint32_t fps, std::shared_ptr<RenderScene> scene)
     {
         if (_backend == DRHI::VULKAN)
         {
@@ -79,6 +79,16 @@ namespace FOCUS
 
         //ImGui::ShowDemoWindow();
         ImGui::Text("%d fps", fps);
+
+        // light position
+        ImGui::DragFloat("point light: x", &scene->_light->_position.x, 0.1f);
+        ImGui::DragFloat("point light: y", &scene->_light->_position.y, 0.1f);
+        ImGui::DragFloat("point light: z", &scene->_light->_position.z, 0.1f);
+
+        // camera position
+        ImGui::Text("camera position x: %f", scene->_camera->_position.x);
+        ImGui::Text("camera position y: %f", scene->_camera->_position.y);
+        ImGui::Text("camera position z: %f", scene->_camera->_position.z);
 
         ImGui::Render();
     }

@@ -19,9 +19,6 @@ namespace FOCUS
 	class RenderSystem
 	{
 	public:
-		std::shared_ptr<RenderCamera> _camera;
-
-	private:
 		std::shared_ptr<Renderer> _renderer;
 		std::shared_ptr<RenderScene> _scene;
 		std::shared_ptr<EngineUI> _ui;

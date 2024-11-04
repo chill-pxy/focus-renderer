@@ -6,6 +6,7 @@
 #include<imgui.h>
 
 #include"RenderResource.h"
+#include"RenderScene.h"
 
 namespace FOCUS
 {
@@ -27,7 +28,7 @@ namespace FOCUS
 		virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
 
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
-		void tick(uint32_t fps);
+		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene);
 		bool needUpdate();
 	};
 }

@@ -5,8 +5,8 @@
 
 #include"../../Core/Math.h"
 #include"Mesh.h"
-#include"Overlay.h"
 #include"RenderResource.h"
+#include"PointLight.h"
 
 namespace FOCUS
 {
@@ -15,6 +15,8 @@ namespace FOCUS
 	public:
 		std::vector<RenderResource*> _group;
 		std::vector<std::shared_ptr<Mesh>> _objs;
+		std::shared_ptr<PointLight> _light;
+		std::shared_ptr<RenderCamera> _camera;
 
 	public:
 		RenderScene() = default;
@@ -22,6 +24,6 @@ namespace FOCUS
 		void initialize();
 		void prepareRenderResources();
 		void add(RenderResource* resource);
-		void tick(uint32_t currentImage, std::shared_ptr<RenderCamera> camera);
+		void tick(float frameTimer);
 	};
 }

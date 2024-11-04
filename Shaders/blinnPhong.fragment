@@ -13,27 +13,30 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-	vec3 color = texture(texSampler, fragTexCoord).rgb;
-	
-	// ambient
-	vec3 ambient = 0.05 * color;
-	
-	// diffuse
-	vec3 lightDirection = normalize(fragLightPosition - fragPosition);
-	vec3 normal = normalize(fragNormal);
-	float diff = max(dot(lightDirection, normal), 0.0);
-	vec3 diffuse = diff * color;
-
-	// specular
-	vec3 viewDirection = normalize(fragViewPosition - fragPosition);
-	vec3 relectDirection = reflect(-fragLightPosition, normal);
-	float spec = 0.0;
-	
-	// blinn
-	vec3 halfwayDirection = normalize(fragLightPosition + viewDirection);
-	spec = pow(max(dot(normal, halfwayDirection), 0.0), 32.0);
-	vec3 specular = vec3(0.3) * spec;
-
-	// output
-	outColor = vec4(ambient + diffuse + specular, 1.0);
+    vec3 color = texture(texSampler, fragTexCoord).rgb;
+    
+    // 计算从表面点到光源的方向
+    vec3 lightDir = normalize(fragLightPosition - fragPosition);
+    
+    // 计算从表面点到观察者的方向
+    vec3 viewDir = normalize(fragViewPosition - fragPosition);
+    
+    // 计算表面法线的规范化
+    vec3 norm = normalize(fragNormal);
+    
+    // 计算环境光
+    float ambientStrength = 0.05;
+    vec3 ambient = ambientStrength * color;
+    
+    // 计算漫反射
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * color;
+    
+    // 计算镜面反射
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), 32); // 这里的32是光泽度指数
+    vec3 specular = spec * vec3(1.0, 1.0, 1.0) * 0.3;
+    
+    // 计算最终的片段颜色
+    outColor = vec4(ambient + diffuse + specular, 1.0);
 }

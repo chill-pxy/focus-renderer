@@ -8,6 +8,7 @@
 #include"Materials/Material.h"
 #include"RenderResource.h"
 #include"MeshVertex.h"
+#include"PointLight.h"
 
 namespace FOCUS
 {
@@ -26,7 +27,7 @@ namespace FOCUS
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi);
         virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
        
-        void updateUniformBuffer(uint32_t currentImage, std::shared_ptr<RenderCamera> camera);
+        void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light);
     };
 
     Mesh* loadModel(const char* modelPath);

@@ -5,10 +5,11 @@
 #include<functional>
 #include<memory>
 
-#include"Materials/Material.h"
-#include"RenderResource.h"
+#include"../Materials/Material.h"
+#include"../RenderResource.h"
+#include"../PointLight.h"
 #include"MeshVertex.h"
-#include"PointLight.h"
+
 
 namespace FOCUS
 {

@@ -4,7 +4,7 @@
 #include<vector>
 
 #include"../../Core/Math.h"
-#include"Mesh.h"
+#include"Geometry/Mesh.h"
 #include"RenderResource.h"
 #include"PointLight.h"
 

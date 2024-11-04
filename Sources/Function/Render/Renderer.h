@@ -6,7 +6,6 @@
 #include<drhi.h>
 
 #include"../../Core/Math.h"
-#include"Mesh.h"
 #include"Overlay.h"
 
 namespace FOCUS

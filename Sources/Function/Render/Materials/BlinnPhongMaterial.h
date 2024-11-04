@@ -6,7 +6,7 @@
 
 #include"Material.h"
 #include"../Texture.h"
-#include"../MeshVertex.h"
+#include"../Geometry/MeshVertex.h"
 
 namespace FOCUS
 {

@@ -35,7 +35,7 @@ namespace FOCUS
 		}
 
 		// prepare light
-		_light->_position = Vector3(10.0f, 10.0f, 10.0f);
+		_light->_position = Vector3(0.0f, 10.0f, 0.0f);
 	}
 
 	void RenderScene::add(RenderResource* resource)

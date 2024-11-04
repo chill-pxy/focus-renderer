@@ -2,7 +2,6 @@
 
 #include<drhi.h>
 
-#include"../../../Core/Math.h"
 #include"../RenderCamera.h"
 #include"../PointLight.h"
 

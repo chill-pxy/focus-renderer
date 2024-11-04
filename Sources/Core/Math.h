@@ -16,4 +16,6 @@ namespace FOCUS
 	typedef glm::vec2 Vector2;
 
 	typedef glm::quat Quaternion;
+
+	static const float PI = 3.141592653589793238;
 }

@@ -2,6 +2,7 @@
 
 #include<stb_image.h>
 
+#include<memory>
 #include<stdint.h>
 
 namespace FOCUS
@@ -18,5 +19,5 @@ namespace FOCUS
 		Texture() = default;
 	};
 
-	Texture* loadTexture(const char* texturePath);
+	std::shared_ptr<Texture> loadTexture(const char* texturePath);
 }

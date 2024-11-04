@@ -23,7 +23,7 @@ namespace FOCUS
 		_rhiContext->initialize();
 	}
 
-	void Renderer::buildAndSubmit(std::vector<RenderResource*> renderlist)
+	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>> renderlist)
 	{
 		_submitRenderlist = renderlist;
 

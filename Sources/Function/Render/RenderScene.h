@@ -13,8 +13,7 @@ namespace FOCUS
 	class RenderScene
 	{
 	public:
-		std::vector<RenderResource*> _group;
-		std::vector<std::shared_ptr<Mesh>> _objs;
+		std::vector<std::shared_ptr<RenderResource>> _group;
 		std::shared_ptr<PointLight> _light;
 		std::shared_ptr<RenderCamera> _camera;
 
@@ -23,7 +22,7 @@ namespace FOCUS
 
 		void initialize();
 		void prepareRenderResources();
-		void add(RenderResource* resource);
+		void add(std::shared_ptr<RenderResource> resource);
 		void tick(float frameTimer);
 	};
 }

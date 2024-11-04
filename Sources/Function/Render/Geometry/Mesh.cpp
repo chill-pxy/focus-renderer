@@ -19,7 +19,7 @@ namespace FOCUS
         _material->build(rhi);
     }
 
-    Mesh* loadModel(const char* modelPath)
+    std::shared_ptr<Mesh> loadModel(const char* modelPath)
     {
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
@@ -74,7 +74,7 @@ namespace FOCUS
             }
         }
 
-        Mesh* mesh = new Mesh();
+        std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
         mesh->_attrib = attrib;
         mesh->_indices = indices;
         mesh->_vertices = vertices;

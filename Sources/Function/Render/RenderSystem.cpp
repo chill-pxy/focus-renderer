@@ -23,7 +23,7 @@ namespace FOCUS
 		// initialize ui
 		_ui = std::make_shared<EngineUI>(rsci.window);
 		_ui->initialize(_renderer->_rhiContext);
-		_scene->add(_ui.get());
+		_scene->add(_ui);
 
 		// submit renderable resources
 		_renderer->buildAndSubmit(_scene->_group);

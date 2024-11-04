@@ -16,9 +16,9 @@ namespace FOCUS
     class Mesh : public RenderResource
     {
     public:
-        tinyobj::attrib_t        _attrib;
-        std::vector<Vertex>      _vertices;
-        std::vector<uint32_t>    _indices;
+        tinyobj::attrib_t        _attrib{};
+        std::vector<Vertex>      _vertices{};
+        std::vector<uint32_t>    _indices{};
 
         bool _needInit{ true };
 
@@ -27,9 +27,8 @@ namespace FOCUS
 
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi);
         virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
-       
-        void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light);
+        virtual void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light);
     };
 
-    Mesh* loadModel(const char* modelPath);
+    std::shared_ptr<Mesh> loadModel(const char* modelPath);
 }

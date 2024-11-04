@@ -1,42 +1,39 @@
 #version 450
 
 layout(binding = 1) uniform sampler2D texSampler;
-layout(binding = 2) uniform FragmentUniformBufferObject 
-{
-    vec3 lightPosition;
-    vec3 viewPosition;
-} fubo;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
 layout(location = 2) in vec3 fragPosition;
 layout(location = 3) in vec3 fragNormal;
+layout(location = 4) in vec3 fragLightPosition;
+layout(location = 5) in vec3 fragViewPosition;
 
 layout(location = 0) out vec4 outColor;
 
 void main()
 {
-	//vec3 color = texture(texSampler, fragTexCoord).rgb;
+	vec3 color = texture(texSampler, fragTexCoord).rgb;
 	
 	// ambient
-	//vec3 ambient = 0.05 * color;
+	vec3 ambient = 0.05 * color;
 	
 	// diffuse
-	//vec3 lightDirection = normalize(fubo.lightPosition - fragPosition);
-	//vec3 normal = normalize(fragNormal);
-	//float diff = max(dot(lightDirection, normal), 0.0);
-	//vec3 diffuse = diff * color;
+	vec3 lightDirection = normalize(fragLightPosition - fragPosition);
+	vec3 normal = normalize(fragNormal);
+	float diff = max(dot(lightDirection, normal), 0.0);
+	vec3 diffuse = diff * color;
 
 	// specular
-	//vec3 viewDirection = normalize(fubo.viewPosition - fragPosition);
-	//vec3 relectDirection = reflect(-fubo.lightPosition, normal);
-	//float spec = 0.0;
+	vec3 viewDirection = normalize(fragViewPosition - fragPosition);
+	vec3 relectDirection = reflect(-fragLightPosition, normal);
+	float spec = 0.0;
 	
 	// blinn
-	//vec3 halfwayDirection = normalize(fubo.lightPosition + viewDirection);
-	//spec = pow(max(dot(normal, halfwayDirection), 0.0), 32.0);
-	//vec3 specular = vec3(0.3) * spec;
+	vec3 halfwayDirection = normalize(fragLightPosition + viewDirection);
+	spec = pow(max(dot(normal, halfwayDirection), 0.0), 32.0);
+	vec3 specular = vec3(0.3) * spec;
 
 	// output
-	outColor = vec4(1.0, 0.0, 1.0, 1.0);
+	outColor = vec4(ambient + diffuse + specular, 1.0);
 }

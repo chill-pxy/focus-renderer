@@ -5,6 +5,8 @@ layout(binding = 0) uniform VertexUniformBufferObject
     mat4 model;
     mat4 view;
     mat4 proj;
+    vec3 lightPosition;
+    vec3 viewPosition;
 } vubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -16,6 +18,8 @@ layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 fragPosition;
 layout(location = 3) out vec3 fragNormal;
+layout(location = 4) out vec3 fragLightPosition;
+layout(location = 5) out vec3 fragViewPosition;
 
 void main() 
 {
@@ -25,4 +29,6 @@ void main()
     fragTexCoord = inTexCoord;
     fragPosition = inPosition;
     fragNormal   = inNormal;
+    fragLightPosition = vubo.lightPosition;
+    fragViewPosition = vubo.viewPosition;
 }

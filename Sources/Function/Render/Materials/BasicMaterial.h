@@ -17,10 +17,10 @@ namespace FOCUS
 	{
 	private:
 
-        std::vector<void*>                             _uniformBuffersMapped;
-        std::vector<DRHI::DynamicBuffer>               _uniformBuffers;
-        std::vector<DRHI::DynamicDeviceMemory>         _uniformBuffersMemory;
-        std::vector<DRHI::DynamicDescriptorBufferInfo> _descriptorBufferInfos;
+        void* _uniformBufferMapped{nullptr};
+        DRHI::DynamicBuffer               _uniformBuffer;
+        DRHI::DynamicDeviceMemory         _uniformBufferMemory;
+        DRHI::DynamicDescriptorBufferInfo _descriptorBufferInfo;
 
 		std::shared_ptr<Texture> _basicTexture{ nullptr };
         UniformBufferObject      _uniformObject{};
@@ -55,19 +55,13 @@ namespace FOCUS
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
             //create uniform buffer
-            rhi->createUniformBuffer(&_uniformBuffers, &_uniformBuffersMemory, &_uniformBuffersMapped, sizeof(UniformBufferObject));
+            rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(UniformBufferObject));
+            _descriptorBufferInfo.set(rhi->getCurrentAPI(), _uniformBuffer, sizeof(UniformBufferObject));
 
             //binding sampler and image view
             rhi->createTextureImage(&_textureImage, &_textureMemory, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB);
             rhi->createTextureSampler(&_textureSampler);
-
-            for (int i = 0; i < _uniformBuffers.size(); ++i)
-            {
-                DRHI::DynamicDescriptorBufferInfo bufferInfo;
-                bufferInfo.set(rhi->getCurrentAPI(), _uniformBuffers[i], sizeof(UniformBufferObject));
-                _descriptorBufferInfos.push_back(bufferInfo);
-            }
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -81,7 +75,7 @@ namespace FOCUS
             std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
-            wds[0].pBufferInfo = &_descriptorBufferInfos[0];
+            wds[0].pBufferInfo = &_descriptorBufferInfo;
             wds[0].descriptorCount = 1;
 
             DRHI::DynamicDescriptorImageInfo dii{};
@@ -127,7 +121,7 @@ namespace FOCUS
             ubo.proj = perspective(radians(45.0f), 1280 / (float)720, 0.1f, 10.0f);
             ubo.proj[1][1] *= -1;
 
-            memcpy(_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+            memcpy(_uniformBufferMapped, &ubo, sizeof(UniformBufferObject));
         }
 	};
 }

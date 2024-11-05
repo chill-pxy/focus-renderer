@@ -27,7 +27,7 @@ namespace FOCUS
 		add(plane);
 
 		// prepare light
-		_light->_position = Vector3(0.0f, 10.0f, 0.0f);
+		_light->_position = Vector3(0.0f, 0.6f, 0.0f);
 		add(_light);
 	}
 

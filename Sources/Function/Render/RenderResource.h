@@ -19,6 +19,9 @@ namespace FOCUS
 
         std::shared_ptr<Material> _material{};
 
+        Vector3 _position{ 0.0,0.0,0.0 };
+        Vector3 _color{ 1.0f, 1.0f, 1.0f };
+
     public:
         RenderResource() = default;
 

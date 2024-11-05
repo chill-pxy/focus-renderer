@@ -2,8 +2,7 @@
 
 #include<drhi.h>
 
-#include"../RenderCamera.h"
-#include"../PointLight.h"
+#include"../../../Core/Math.h"
 
 namespace FOCUS
 {
@@ -12,8 +11,15 @@ namespace FOCUS
         Matrix4 model;
         Matrix4 view;
         Matrix4 proj;
-        Vector3 lightPosition;
+
         Vector3 viewPosition;  
+        
+        Vector3 vertexColor;
+        
+        Vector3 lightPosition;
+        Vector3 lightColor;
+        float lightIntensity;
+ 
     }UniformUpdateData;
 
 	class Material

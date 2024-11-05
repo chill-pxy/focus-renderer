@@ -7,7 +7,6 @@
 
 #include"../Materials/Material.h"
 #include"../RenderResource.h"
-#include"../PointLight.h"
 #include"MeshVertex.h"
 
 

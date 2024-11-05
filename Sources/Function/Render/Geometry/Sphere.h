@@ -2,7 +2,6 @@
 
 #include<vector>
 
-#include"../../../Core/Math.h"
 #include"../RenderResource.h"
 #include"MeshVertex.h"
 
@@ -16,10 +15,11 @@ namespace FOCUS
 
 		uint32_t _latBands{};
 		uint32_t _lonBands{};
+
 		float _radius{ 0.0f };
 
 	public:
-		Sphere() = default;
+		Sphere() : _latBands(60), _lonBands(60), _radius(1.0f){};
 
 		Sphere(uint32_t latBands, uint32_t lonBands, float radius) : _latBands(latBands), _lonBands(lonBands), _radius(radius) {}
 
@@ -41,7 +41,7 @@ namespace FOCUS
 					vertex.pos = Vector3(x, y, z);
 					vertex.normal = Vector3(x, y, z);
 					vertex.texCoord = Vector2(j / (float)_lonBands, i / (float)_latBands);
-					vertex.color = Vector3(1.0f, 1.0f, 1.0f);
+					vertex.color = _color;
 					_vertices.push_back(vertex);
 
 					uint32_t first = (i * (_lonBands + 1)) + j;

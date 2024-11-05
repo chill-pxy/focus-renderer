@@ -82,6 +82,12 @@ namespace FOCUS
 			vkrhi->_viewPortWidth = width;
 			vkrhi->_viewPortHeight = height;
 		}
+
+		if (_scene)
+		{
+			_scene->_canvasWidth = width;
+			_scene->_canvasHeight = height;
+		}
 	}
 
 	std::shared_ptr<Renderer> RenderSystem::getRenderer()

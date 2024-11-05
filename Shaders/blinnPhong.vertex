@@ -7,6 +7,8 @@ layout(binding = 0) uniform VertexUniformBufferObject
     mat4 proj;
     vec3 lightPosition;
     vec3 viewPosition;
+    vec3 lightColor;
+    float lightStrength;
 } vubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -20,6 +22,8 @@ layout(location = 2) out vec3 fragPosition;
 layout(location = 3) out vec3 fragNormal;
 layout(location = 4) out vec3 fragLightPosition;
 layout(location = 5) out vec3 fragViewPosition;
+layout(location = 6) out vec3 fragLightColor;
+layout(location = 7) out float fragLightStrength;
 
 void main() 
 {
@@ -31,4 +35,6 @@ void main()
     fragNormal   = inNormal;
     fragLightPosition = vubo.lightPosition;
     fragViewPosition = vubo.viewPosition;
+    fragLightColor = vubo.lightColor;
+    fragLightStrength = vubo.lightStrength;
 }

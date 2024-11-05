@@ -85,6 +85,14 @@ namespace FOCUS
         ImGui::DragFloat("point light: y", &scene->_light->_position.y, 0.1f);
         ImGui::DragFloat("point light: z", &scene->_light->_position.z, 0.1f);
 
+        //light color
+        ImGui::DragFloat("point color: r", &scene->_light->_color.x, 0.1f);
+        ImGui::DragFloat("point color: g", &scene->_light->_color.y, 0.1f);
+        ImGui::DragFloat("point color: b", &scene->_light->_color.z, 0.1f);
+
+        // light strength
+        ImGui::DragFloat("point strength:", &scene->_light->_intensity, 0.1f);
+
         // camera position
         ImGui::Text("camera position x: %f", scene->_camera->_position.x);
         ImGui::Text("camera position y: %f", scene->_camera->_position.y);

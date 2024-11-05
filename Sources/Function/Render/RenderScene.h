@@ -3,10 +3,10 @@
 #include<memory>
 #include<vector>
 
-#include"../../Core/Math.h"
 #include"Geometry/Mesh.h"
 #include"RenderResource.h"
 #include"PointLight.h"
+#include"RenderCamera.h"
 
 namespace FOCUS
 {
@@ -16,6 +16,9 @@ namespace FOCUS
 		std::vector<std::shared_ptr<RenderResource>> _group;
 		std::shared_ptr<PointLight> _light;
 		std::shared_ptr<RenderCamera> _camera;
+
+		uint32_t _canvasWidth{1280};
+		uint32_t _canvasHeight{720};
 
 	public:
 		RenderScene() = default;

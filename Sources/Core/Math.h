@@ -17,5 +17,5 @@ namespace FOCUS
 
 	typedef glm::quat Quaternion;
 
-	static const float PI = 3.141592653589793238;
+	static const double PI = 3.14159265358979323846264338327950288;
 }

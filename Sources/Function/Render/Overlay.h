@@ -26,7 +26,7 @@ namespace FOCUS
 
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) {}
 		virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
-		virtual void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light) {}
+		virtual void updateUniformBuffer(UniformUpdateData uud) {}
 
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene);

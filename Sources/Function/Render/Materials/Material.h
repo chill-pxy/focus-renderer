@@ -7,26 +7,35 @@
 
 namespace FOCUS
 {
+    typedef struct UniformUpdateData
+    {
+        Matrix4 model;
+        Matrix4 view;
+        Matrix4 proj;
+        Vector3 lightPosition;
+        Vector3 viewPosition;  
+    }UniformUpdateData;
+
 	class Material
 	{
 	public:
-        DRHI::DynamicImage        _textureImage;
-        DRHI::DynamicImageView    _textureImageView;
-        DRHI::DynamicSampler      _textureSampler;
-        DRHI::DynamicDeviceMemory _textureMemory;
+        DRHI::DynamicImage        _textureImage{};
+        DRHI::DynamicImageView    _textureImageView{};
+        DRHI::DynamicSampler      _textureSampler{};
+        DRHI::DynamicDeviceMemory _textureMemory{};
 
-        DRHI::DynamicDescriptorPool                    _descriptorPool;
-        DRHI::DynamicDescriptorSet                     _descriptorSet;
-        DRHI::DynamicDescriptorSetLayout               _descriptorSetLayout;
+        DRHI::DynamicDescriptorPool                    _descriptorPool{};
+        DRHI::DynamicDescriptorSet                     _descriptorSet{};
+        DRHI::DynamicDescriptorSetLayout               _descriptorSetLayout{};
 
-        DRHI::DynamicPipeline       _pipeline;
-        DRHI::DynamicPipelineLayout _pipelineLayout;
+        DRHI::DynamicPipeline       _pipeline{};
+        DRHI::DynamicPipelineLayout _pipelineLayout{};
 
 	public:
 		Material() = default;
 
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
-        virtual void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light) = 0;
+        virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
 
         void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
         {

@@ -4,19 +4,14 @@
 
 #include"../../../Core/Math.h"
 #include"../RenderResource.h"
+#include"MeshVertex.h"
 
 namespace FOCUS
 {
-	typedef struct SphereVertex
-	{
-		Vector3 pos;
-		Vector3 color;
-	}SphereVertex;
-
 	class Sphere : public RenderResource
 	{
 	public:
-		std::vector<SphereVertex> _vertices{};
+		std::vector<Vertex> _vertices{};
 		std::vector<uint32_t> _indices{};
 
 		uint32_t _latBands{};
@@ -31,25 +26,34 @@ namespace FOCUS
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi)
 		{
 			// create vertices
-			uint32_t count = 0;
-			for (int i = 0; i < _latBands; ++i)
+			for (int i = 0; i <= _latBands; ++i)
 			{
-				for (int j = 0; j < _lonBands; ++j)
+				for (int j = 0; j <= _lonBands; ++j)
 				{
-					float latitude = (float)i / _latBands * PI;
-					float longtitude = (float)j / _lonBands * 2 * PI;
+					float latitude = (i / (float)_latBands) * PI;
+					float longitude = (j / (float)_lonBands) * 2.0f * PI;
 
-					float x = _radius * sin(latitude) * cos(longtitude);
-					float y = _radius * sin(latitude) * sin(latitude);
+					float x = _radius * sin(latitude) * cos(longitude);
+					float y = _radius * sin(latitude) * sin(longitude);
 					float z = _radius * cos(latitude);
 
-					SphereVertex vertex{};
+					Vertex vertex{};
 					vertex.pos = Vector3(x, y, z);
+					vertex.normal = Vector3(x, y, z);
+					vertex.texCoord = Vector2(j / (float)_lonBands, i / (float)_latBands);
 					vertex.color = Vector3(1.0f, 1.0f, 1.0f);
-					
 					_vertices.push_back(vertex);
-					_indices.push_back(count);
-					count++;
+
+					uint32_t first = (i * (_lonBands + 1)) + j;
+					uint32_t second = first + _lonBands + 1;
+
+					_indices.push_back(first);
+					_indices.push_back(second);
+					_indices.push_back(first + 1);
+
+					_indices.push_back(second);
+					_indices.push_back(second + 1);
+					_indices.push_back(first + 1);
 				}
 			}
 
@@ -82,9 +86,9 @@ namespace FOCUS
 			rhi->drawIndexed(index, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
 		}
 
-		virtual void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light)
+		virtual void updateUniformBuffer(UniformUpdateData uud)
 		{
-			_material->updateUniformBuffer(camera, light);
+			_material->updateUniformBuffer(uud);
 		}
 	};
 }

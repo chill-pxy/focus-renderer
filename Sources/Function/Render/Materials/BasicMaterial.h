@@ -18,9 +18,9 @@ namespace FOCUS
 	private:
 
         void* _uniformBufferMapped{nullptr};
-        DRHI::DynamicBuffer               _uniformBuffer;
-        DRHI::DynamicDeviceMemory         _uniformBufferMemory;
-        DRHI::DynamicDescriptorBufferInfo _descriptorBufferInfo;
+        DRHI::DynamicBuffer               _uniformBuffer{};
+        DRHI::DynamicDeviceMemory         _uniformBufferMemory{};
+        DRHI::DynamicDescriptorBufferInfo _descriptorBufferInfo{};
 
 		std::shared_ptr<Texture> _basicTexture{ nullptr };
         UniformBufferObject      _uniformObject{};
@@ -113,13 +113,12 @@ namespace FOCUS
             rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
 		}
 
-        virtual void updateUniformBuffer(std::shared_ptr<RenderCamera> camera, std::shared_ptr<PointLight> light)
+        virtual void updateUniformBuffer(UniformUpdateData uud)
         {
             UniformBufferObject ubo{};
-            ubo.model = Matrix4(1.0f);
-            ubo.view = camera->getViewMatrix();
-            ubo.proj = perspective(radians(45.0f), 1280 / (float)720, 0.1f, 100.0f);
-            ubo.proj[1][1] *= -1;
+            ubo.model = uud.model;
+            ubo.view = uud.view;
+            ubo.proj = uud.proj;
 
             memcpy(_uniformBufferMapped, &ubo, sizeof(UniformBufferObject));
         }

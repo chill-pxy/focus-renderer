@@ -18,6 +18,11 @@ namespace FOCUS
 
 		DRHI::API                   _backend{ DRHI::VULKAN };
 		DRHI::DynamicDescriptorPool _descriptorPool{};
+		std::vector<VkDescriptorSet> _descriptorSets{};
+		std::vector<DRHI::DynamicImage> _viewportImages{};
+		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
+		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
+		VkSampler _textureSampler{};
 		 
 	public:
 
@@ -29,7 +34,7 @@ namespace FOCUS
 		virtual void updateUniformBuffer(UniformUpdateData uud) {}
 
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
-		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene);
+		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi);
 		bool needUpdate();
 	};
 }

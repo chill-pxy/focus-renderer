@@ -42,6 +42,7 @@ namespace FOCUS
             auto format = DRHI::DynamicFormat(api);
             auto descriptorType = DRHI::DynamicDescriptorType(api);
             auto imageLayout = DRHI::DynamicImageLayout(api);
+            auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 
@@ -66,7 +67,7 @@ namespace FOCUS
 
             //binding sampler and image view
             rhi->createTextureImage(&_textureImage, &_textureMemory, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
-            rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB);
+            rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);

@@ -15,6 +15,13 @@ namespace FOCUS
 
 	void RenderScene::prepareRenderResources()
 	{
+		// prepare light
+		_light->_position = Vector3(0.0f, 0.6f, 0.0f);
+		add(_light);
+
+		// prepare camera
+		//_camera->_position = Vector3(-1.54f, 2.41f, 3.21f);
+
 		// prepare obj
 		auto obj = loadModel("../../../Asset/Models/viking_room.obj");
 		auto texture = loadTexture("../../../Asset/Models/viking_room.png");
@@ -26,9 +33,7 @@ namespace FOCUS
 		plane->_material = std::make_shared<BlinnPhongMaterial>(texture2);
 		add(plane);
 
-		// prepare light
-		_light->_position = Vector3(0.0f, 0.6f, 0.0f);
-		add(_light);
+
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

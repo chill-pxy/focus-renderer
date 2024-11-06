@@ -38,7 +38,7 @@ namespace FOCUS
 		_renderer->buildCommandBuffer();
 
 		// ui tick
-		_ui->tick(_lastFPS, _scene);
+		_ui->tick(_lastFPS, _scene, _renderer->_rhiContext);
 
 		// compute time on every frame cost
 		_frameCounter++;

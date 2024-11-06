@@ -35,7 +35,6 @@ namespace FOCUS
             auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
             auto format = DRHI::DynamicFormat(api);
             auto descriptorType = DRHI::DynamicDescriptorType(api);
-            auto imageLayout = DRHI::DynamicImageLayout(api);
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 

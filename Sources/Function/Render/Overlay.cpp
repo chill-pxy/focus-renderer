@@ -33,7 +33,6 @@ namespace FOCUS
         // init for vulkan
         if (_backend == DRHI::VULKAN)
         {
-
             DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
 
             ImGui_ImplVulkan_InitInfo initInfo{};
@@ -51,7 +50,42 @@ namespace FOCUS
             initInfo.UseDynamicRendering = true;
 
             ImGui_ImplVulkan_Init(&initInfo);
+
+            {
+                VkSamplerCreateInfo samplerInfo{};
+                samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+                samplerInfo.magFilter = VK_FILTER_LINEAR;
+                samplerInfo.minFilter = VK_FILTER_LINEAR;
+                samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+                samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+                samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+                samplerInfo.anisotropyEnable = VK_FALSE;
+                samplerInfo.maxAnisotropy = 1.0f;
+                samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+                samplerInfo.unnormalizedCoordinates = VK_FALSE;
+                samplerInfo.compareEnable = VK_FALSE;
+                samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+                samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+                samplerInfo.mipLodBias = 0.0f;
+                samplerInfo.minLod = 0.0f;
+                samplerInfo.maxLod = 0.0f;
+
+                if (vkCreateSampler(vkrhi->_device, &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
+                {
+                    throw std::runtime_error("failed to create texture sampler!");
+                }
+            }
+
+            rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
+            rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
+
+            _descriptorSets.resize(_viewportImageViews.size());
+            for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
+            {
+               // _descriptorSets[i] = ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            }
         }
+
     }
 
     void EngineUI::draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
@@ -68,7 +102,7 @@ namespace FOCUS
         _drawCommandCount = imDrawData->CmdListsCount;
     }
 
-    void EngineUI::tick(uint32_t fps, std::shared_ptr<RenderScene> scene)
+    void EngineUI::tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
         if (_backend == DRHI::VULKAN)
         {
@@ -119,8 +153,9 @@ namespace FOCUS
 
         ImGui::Begin("Viewport");
 
+        DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        //ImGui::Image(_descriptorSets[currentFrame], ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
+       // ImGui::Image((ImTextureID)_descriptorSets[vkrhi->_currentBuffer], ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
 
         ImGui::End();
 

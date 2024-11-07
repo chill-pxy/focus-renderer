@@ -77,12 +77,13 @@ namespace FOCUS
             }
 
             rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
+
             rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
             _descriptorSets.resize(_viewportImageViews.size());
             for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
             {
-               // _descriptorSets[i] = ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                //_descriptorSets[i] = ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             }
         }
 
@@ -155,7 +156,7 @@ namespace FOCUS
 
         DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-       // ImGui::Image((ImTextureID)_descriptorSets[vkrhi->_currentBuffer], ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
+        //ImGui::Image((ImTextureID)_descriptorSets[vkrhi->_currentBuffer], ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
 
         ImGui::End();
 

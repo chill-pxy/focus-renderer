@@ -13,7 +13,11 @@ namespace FOCUS
 
     void EngineUI::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
+        rhi->createCommandPool(&_commandPool);
+        rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
         rhi->createDescriptorPool(&_descriptorPool);
+        rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
+        rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
         ImGui::CreateContext();
 
@@ -51,6 +55,7 @@ namespace FOCUS
 
             ImGui_ImplVulkan_Init(&initInfo);
 
+            // create sampler;
             {
                 VkSamplerCreateInfo samplerInfo{};
                 samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -75,10 +80,6 @@ namespace FOCUS
                     throw std::runtime_error("failed to create texture sampler!");
                 }
             }
-
-            rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
-
-            rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
             _descriptorSets.resize(_viewportImageViews.size());
             for (uint32_t i = 0; i < _viewportImageViews.size(); i++)

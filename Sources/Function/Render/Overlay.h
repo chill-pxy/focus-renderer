@@ -17,13 +17,20 @@ namespace FOCUS
 		uint32_t       _drawCommandCount{ 0 };
 
 		DRHI::API                   _backend{ DRHI::VULKAN };
+
 		DRHI::DynamicDescriptorPool _descriptorPool{};
 		std::vector<VkDescriptorSet> _descriptorSets{};
+		
 		std::vector<DRHI::DynamicImage> _viewportImages{};
 		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
 		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
+
+		DRHI::DynamicCommandPool _commandPool{};
+		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
+
 		VkSampler _textureSampler{};
-		 
+		
+
 	public:
 
 		EngineUI() = delete;

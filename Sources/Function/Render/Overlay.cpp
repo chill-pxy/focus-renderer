@@ -15,10 +15,36 @@ namespace FOCUS
     {
         rhi->createCommandPool(&_commandPool);
         rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        rhi->createDescriptorPool(&_descriptorPool);
         rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
         rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
+        // cretea descriptor pool
+        {
+            DRHI::DynamicDescriptorType type(rhi->getCurrentAPI());
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes =
+            {
+                {type.DESCRIPTOR_TYPE_SAMPLER, 1000},
+                {type.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
+                {type.DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
+                {type.DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000},
+                {type.DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000},
+                {type.DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000},
+                {type.DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000},
+                {type.DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000},
+                {type.DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+                {type.DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+                {type.DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}
+            };
+
+            DRHI::DynamicDescriptorPoolCreateFlag flag(rhi->getCurrentAPI());
+            DRHI::DynamicDescriptorPoolCreateInfo ci{};
+            ci.flags = flag.DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+            ci.maxSets = 1000 * poolSizes.size();
+            ci.pPoolSizes = &poolSizes;
+            rhi->createDescriptorPool(&_descriptorPool, &ci);
+        }
+
+        // create io
         ImGui::CreateContext();
 
         ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -84,7 +110,7 @@ namespace FOCUS
             _descriptorSets.resize(_viewportImageViews.size());
             for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
             {
-                //_descriptorSets[i] = ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             }
         }
 
@@ -157,7 +183,7 @@ namespace FOCUS
 
         DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        //ImGui::Image((ImTextureID)_descriptorSets[vkrhi->_currentBuffer], ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
+        ImGui::Image((ImTextureID)_descriptorSets[vkrhi->_currentBuffer], ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
 
         ImGui::End();
 

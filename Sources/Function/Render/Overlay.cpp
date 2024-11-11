@@ -13,6 +13,8 @@ namespace FOCUS
 
     void EngineUI::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
+        _rhi = rhi;
+
         rhi->createCommandPool(&_commandPool);
         rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
         rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
@@ -116,18 +118,23 @@ namespace FOCUS
 
     }
 
-    void EngineUI::draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
+    void EngineUI::draw(std::shared_ptr<DRHI::DynamicRHI> rhi)
     {
         ImDrawData* imDrawData = ImGui::GetDrawData();
 
-        if ((!imDrawData) || (imDrawData->CmdListsCount == 0)) { return; }
+        //if ((!imDrawData) || (imDrawData->CmdListsCount == 0)) { return; }
 
-        if (_backend == DRHI::VULKAN)
+        for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
         {
-            ImGui_ImplVulkan_RenderDrawData(imDrawData, static_cast<DRHI::VulkanDRHI*>(rhi.get())->_commandBuffers[index]);
-        }
+            rhi->beginCommandBuffer(i, &_commandBuffers);
 
-        _drawCommandCount = imDrawData->CmdListsCount;
+            if (_backend == DRHI::VULKAN)
+            {
+                ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[i].getVulkanCommandBuffer());
+            }
+
+            rhi->endCommandBuffer(i, &_commandBuffers);
+        }
     }
 
     void EngineUI::tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi)
@@ -203,5 +210,16 @@ namespace FOCUS
         }
 
         return false;
+    }
+
+    void EngineUI::recreate()
+    {
+        draw(_rhi);
+
+        _descriptorSets.resize(_viewportImageViews.size());
+        for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
+        {
+            _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        }
     }
 }

@@ -23,22 +23,27 @@ namespace FOCUS
 		// initialize ui
 		_ui = std::make_shared<EngineUI>(rsci.window);
 		_ui->initialize(_renderer->_rhiContext);
-		_scene->add(_ui);
 
 		// submit renderable resources
 		_renderer->buildAndSubmit(_scene->_group);
+
+		_recreateFunc.push_back(std::bind(&Renderer::buildCommandBuffer, _renderer));
+		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
 	}
 
 	void RenderSystem::tick()
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
 
-		// renderer tick
-		_renderer->_rhiContext->frameOnTick(std::bind(&Renderer::buildCommandBuffer, _renderer));
-		_renderer->buildCommandBuffer();
-
 		// ui tick
 		_ui->tick(_lastFPS, _scene, _renderer->_rhiContext);
+		_ui->draw(_renderer->_rhiContext);
+
+		// renderer tick
+		std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
+		submitCommandBuffers[0] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+		_renderer->_rhiContext->frameOnTick(_recreateFunc, submitCommandBuffers);
+		//_renderer->buildCommandBuffer();
 
 		// compute time on every frame cost
 		_frameCounter++;

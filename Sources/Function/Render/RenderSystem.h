@@ -26,6 +26,9 @@ namespace FOCUS
 		static std::shared_ptr<RenderSystem> _instance;
 		static std::mutex _mutex;
 		
+		std::vector<std::function<void()>> _recreateFunc;
+		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers;
+
 		uint32_t _frameCounter = 0;
 		uint32_t _lastFPS = 0;
 		float    _frameTimer = 1.0f;

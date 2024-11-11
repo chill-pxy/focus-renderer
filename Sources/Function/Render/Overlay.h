@@ -10,7 +10,7 @@
 
 namespace FOCUS
 {
-	class EngineUI : public RenderResource
+	class EngineUI
 	{
 	private:
 		HWND           _window;
@@ -26,23 +26,24 @@ namespace FOCUS
 		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
 		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
 
-		DRHI::DynamicCommandPool _commandPool{};
-		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
+		DRHI::DynamicCommandPool _commandPool{};	
 
 		VkSampler _textureSampler{};
+
+		std::shared_ptr<DRHI::DynamicRHI> _rhi;
 		
+	public:
+		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
 
 	public:
 
 		EngineUI() = delete;
 		EngineUI(HWND window);
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) {}
-		virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
-		virtual void updateUniformBuffer(UniformUpdateData uud) {}
-
+		void draw(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi);
 		bool needUpdate();
+		void recreate();
 	};
 }

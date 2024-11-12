@@ -115,7 +115,11 @@ namespace FOCUS
                 _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             }
 
-            
+            //_descriptorSets.resize(vkrhi->_swapChainImageViews.size());
+            //for (uint32_t i = 0; i < vkrhi->_swapChainImageViews.size(); i++)
+            //{
+            //    _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, vkrhi->_swapChainImageViews[rhi->getCurrentBuffer()], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            //}
         }
 
     }
@@ -129,18 +133,27 @@ namespace FOCUS
         {
             if (imDrawData->CmdListsCount > 0)
             {
-
-                //for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
-
-                rhi->beginCommandBuffer(rhi->getCurrentBuffer(), &_commandBuffers);
-
-                if (_backend == DRHI::VULKAN)
+                _isEmpty = false;
+               // for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
                 {
-                    ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[rhi->getCurrentBuffer()].getVulkanCommandBuffer());
-                }
+                    rhi->beginCommandBuffer(rhi->getCurrentBuffer(), &_commandBuffers);
 
-                rhi->endCommandBuffer(rhi->getCurrentBuffer(), &_commandBuffers);
+                    if (_backend == DRHI::VULKAN)
+                    {
+                        ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[rhi->getCurrentBuffer()].getVulkanCommandBuffer());
+                    }
+
+                    rhi->endCommandBuffer(rhi->getCurrentBuffer(), &_commandBuffers);
+                }
             }
+            else
+            {
+                _isEmpty = true;
+            }
+        }
+        else
+        {
+            _isEmpty = true;
         }
     }
 
@@ -205,6 +218,7 @@ namespace FOCUS
 
 
         ImGui::Render();
+        draw(rhi);
     }
 
     bool EngineUI::needUpdate()
@@ -220,12 +234,17 @@ namespace FOCUS
 
     void EngineUI::recreate()
     {
-        draw(_rhi);
-
+        ImGui_ImplVulkan_SetMinImageCount(3);
+        _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
+        _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
+        _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
+        
         _descriptorSets.resize(_viewportImageViews.size());
         for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
         {
             _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         }
+
+        //draw(_rhi);
     }
 }

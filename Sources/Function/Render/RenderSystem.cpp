@@ -37,13 +37,20 @@ namespace FOCUS
 
 		// ui tick
 		_ui->tick(_lastFPS, _scene, _renderer->_rhiContext);
-		_ui->draw(_renderer->_rhiContext);
 
 		// renderer tick
-		std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
-		submitCommandBuffers[0] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
-		_renderer->_rhiContext->frameOnTick(_recreateFunc,submitCommandBuffers);
-		_renderer->buildCommandBuffer();
+		if (_ui->_isEmpty)
+		{
+			_renderer->_rhiContext->frameOnTick(_recreateFunc);
+		}
+		else
+		{
+			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
+			submitCommandBuffers[0] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+			_renderer->_rhiContext->frameOnTick(_recreateFunc, submitCommandBuffers);
+		}
+		//_renderer->buildCommandBuffer();
+		
 
 		// compute time on every frame cost
 		_frameCounter++;

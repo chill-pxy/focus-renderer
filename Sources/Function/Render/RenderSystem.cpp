@@ -28,7 +28,7 @@ namespace FOCUS
 		_renderer->buildAndSubmit(_scene->_group);
 
 		_recreateFunc.push_back(std::bind(&Renderer::buildCommandBuffer, _renderer));
-		//_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
+		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
 	}
 
 	void RenderSystem::tick()
@@ -42,7 +42,7 @@ namespace FOCUS
 		// renderer tick
 		std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
 		submitCommandBuffers[0] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
-		_renderer->_rhiContext->frameOnTick(_recreateFunc);//,submitCommandBuffers);
+		_renderer->_rhiContext->frameOnTick(_recreateFunc,submitCommandBuffers);
 		_renderer->buildCommandBuffer();
 
 		// compute time on every frame cost

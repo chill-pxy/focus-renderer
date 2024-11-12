@@ -52,7 +52,7 @@ namespace FOCUS
 				p->draw(_rhiContext->getCurrentBuffer(), _rhiContext);
 			}
 
-			ImDrawData* imDrawData = ImGui::GetDrawData();
+			/*ImDrawData* imDrawData = ImGui::GetDrawData();
 			if (imDrawData != nullptr)
 			{
 				if (imDrawData->CmdListsCount > 0)
@@ -60,7 +60,7 @@ namespace FOCUS
 					DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(_rhiContext.get());
 					ImGui_ImplVulkan_RenderDrawData(imDrawData, vkrhi->_commandBuffers[_rhiContext->getCurrentBuffer()]);
 				}
-			}
+			}*/
 
 			_rhiContext->endCommandBuffer(_rhiContext->getCurrentBuffer());
 		}

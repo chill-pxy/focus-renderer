@@ -1,5 +1,11 @@
 #include<chrono>
 
+#define IMGUI_IMPL_VULKAN_USE_VOLK
+#include<imgui.h>
+#include<imgui_impl_vulkan.h>
+#include<imgui_impl_win32.h>
+
+
 #include"Renderer.h"
 #include"RenderResource.h"
 
@@ -37,16 +43,26 @@ namespace FOCUS
 
 	void Renderer::buildCommandBuffer()
 	{
-		for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
+		//for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
 		{
-			_rhiContext->beginCommandBuffer(i);
+			_rhiContext->beginCommandBuffer(_rhiContext->getCurrentBuffer());
 
 			for (auto p : _submitRenderlist)
 			{
-				p->draw(i, _rhiContext);
+				p->draw(_rhiContext->getCurrentBuffer(), _rhiContext);
 			}
 
-			_rhiContext->endCommandBuffer(i);
+			ImDrawData* imDrawData = ImGui::GetDrawData();
+			if (imDrawData != nullptr)
+			{
+				if (imDrawData->CmdListsCount > 0)
+				{
+					DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(_rhiContext.get());
+					ImGui_ImplVulkan_RenderDrawData(imDrawData, vkrhi->_commandBuffers[_rhiContext->getCurrentBuffer()]);
+				}
+			}
+
+			_rhiContext->endCommandBuffer(_rhiContext->getCurrentBuffer());
 		}
 	}
 

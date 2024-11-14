@@ -38,7 +38,7 @@ namespace FOCUS
 			p->build(_rhiContext);
 		}
 
-		buildCommandBuffer();
+		//buildCommandBuffer();
 	}
 
 	void Renderer::buildCommandBuffer()

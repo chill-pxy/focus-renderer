@@ -42,68 +42,9 @@ namespace FOCUS
 
 		// ui tick
 		_ui->tick(_lastFPS, _scene, _renderer->_rhiContext);
-
-		for (int i = 0; i < _renderer->_rhiContext->getCommandBufferSize(); ++i)
-		{
-			ImDrawData* imDrawData = ImGui::GetDrawData();
-
-			DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
-			if (imDrawData != nullptr)
-			{
-				if (imDrawData->CmdListsCount > 0)
-				{
-					{
-						_ui->_isEmpty = false;
-						_renderer->_rhiContext->beginCommandBuffer(_ui->_commandBuffers[i]);
-						_renderer->_rhiContext->beginInsertMemoryBarrier(i, _ui->_commandBuffers[i]);
-						_renderer->_rhiContext->beginRendering(i, _ui->_commandBuffers[i]);
-						
-						ImGui_ImplVulkan_RenderDrawData(imDrawData, _ui->_commandBuffers[i].getVulkanCommandBuffer());
-						_renderer->_rhiContext->endRendering(_ui->_commandBuffers[i]);
-						_renderer->_rhiContext->endInsterMemoryBarrier(i, _ui->_commandBuffers[i]);
-						_renderer->_rhiContext->endCommandBuffer(_ui->_commandBuffers[i]);
-						
-					}
-				}
-				else
-				{
-					_ui->_isEmpty = true;
-				}
-			}
-			else
-			{
-				_ui->_isEmpty = true;
-			}
-
-			_renderer->_rhiContext->beginCommandBuffer(i);
-			_renderer->_rhiContext->beginInsertMemoryBarrier(i);
-			_renderer->_rhiContext->beginRendering(i);
-			
-			for (auto p : _renderer->_submitRenderlist)
-			{
-				p->draw(i, _renderer->_rhiContext);
-			}
-
-			_renderer->_rhiContext->endRendering(i);
-			_renderer->_rhiContext->endInsterMemoryBarrier(i);
-			_renderer->_rhiContext->endCommandBuffer(i);
-			
-
-			//if (imDrawData != nullptr)
-			//{
-			//	if (imDrawData->CmdListsCount > 0)
-			//	{
-			//		{
-			//			_renderer->_rhiContext->endRendering(_ui->_commandBuffers[i]);
-			//			_renderer->_rhiContext->endInsterMemoryBarrier(i, _ui->_commandBuffers[i]);
-			//			_renderer->_rhiContext->endCommandBuffer(_ui->_commandBuffers[i]);
-
-			//		}
-			//	}
-			//}
-		}
-
+		
 		// renderer tick
+		_renderer->buildCommandBuffer();
 		if (_ui->_isEmpty)
 		{
 			_renderer->_rhiContext->frameOnTick(_recreateFunc);
@@ -114,9 +55,8 @@ namespace FOCUS
 			submitCommandBuffers[0] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, submitCommandBuffers);
 		}
-		//_renderer->buildCommandBuffer();
 		
-
+		
 		// compute time on every frame cost
 		_frameCounter++;
 		

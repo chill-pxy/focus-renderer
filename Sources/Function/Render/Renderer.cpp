@@ -46,12 +46,16 @@ namespace FOCUS
 		for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
 		{
 			_rhiContext->beginCommandBuffer(i);
+			_rhiContext->beginInsertMemoryBarrier(i);
+			_rhiContext->beginRendering(i);
 
 			for (auto p : _submitRenderlist)
 			{
 				p->draw(i, _rhiContext);
 			}
 
+			_rhiContext->endRendering(i);
+			_rhiContext->endInsterMemoryBarrier(i);
 			_rhiContext->endCommandBuffer(i);
 		}
 	}

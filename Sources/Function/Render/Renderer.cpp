@@ -74,5 +74,10 @@ namespace FOCUS
 		_rhiContext->clearImage(&obj->_textureSampler, &obj->_textureImageView, &obj->_textureImage, &obj->_textureMemory);*/
 	}
 
-	
+	void Renderer::recreate()
+	{
+		_rhiContext->freeCommandBuffers(&_commandBuffers, &_commandPool);
+		_rhiContext->createCommandBuffers(&_commandBuffers, &_commandPool);
+		buildCommandBuffer();
+	}
 }

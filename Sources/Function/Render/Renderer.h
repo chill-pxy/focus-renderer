@@ -28,5 +28,6 @@ namespace FOCUS
 		void buildCommandBuffer();
 		void buildAndSubmit(std::vector<std::shared_ptr<RenderResource>> renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool);
 		void clean();
+		void recreate();
 	};
 }

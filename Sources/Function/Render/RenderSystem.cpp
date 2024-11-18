@@ -32,7 +32,7 @@ namespace FOCUS
 		// submit renderable resources
 		_renderer->buildAndSubmit(_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);
 
-		_recreateFunc.push_back(std::bind(&Renderer::buildCommandBuffer, _renderer));
+		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
 		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
 	}
 

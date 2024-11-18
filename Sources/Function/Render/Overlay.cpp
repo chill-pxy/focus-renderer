@@ -204,7 +204,7 @@ namespace FOCUS
 
         DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
+       // ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
 
         ImGui::End();
 
@@ -230,6 +230,7 @@ namespace FOCUS
     void EngineUI::recreate()
     {
         ImGui_ImplVulkan_SetMinImageCount(3);
+        _rhi->freeCommandBuffers(&_commandBuffers, &_commandPool);
         _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
         _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);

@@ -17,7 +17,7 @@ namespace FOCUS
 
         rhi->createCommandPool(&_commandPool);
         rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
+        rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
         // cretea descriptor pool
@@ -76,8 +76,8 @@ namespace FOCUS
             initInfo.QueueFamily = vkrhi->_queueFamilyIndices.graphicsFamily.value();
             initInfo.PipelineRenderingCreateInfo = vkrhi->getPipelineRenderingCreateInfo();
             initInfo.PipelineCache = vkrhi->_pipelineCache;
-            initInfo.ImageCount = vkrhi->getCommandBufferSize();
-            initInfo.MinImageCount = vkrhi->getCommandBufferSize();
+            initInfo.ImageCount = MAX_FRAMES_IN_FLIGHT;
+            initInfo.MinImageCount = MAX_FRAMES_IN_FLIGHT;
             initInfo.Allocator = nullptr;
             initInfo.UseDynamicRendering = true;
 
@@ -132,13 +132,13 @@ namespace FOCUS
                 for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
                 {
                     rhi->beginCommandBuffer(_commandBuffers[i]);
-                    rhi->beginInsertMemoryBarrier(i, _commandBuffers[i]);
-                    rhi->beginRendering(i, _commandBuffers[i]);
+                    rhi->beginInsertMemoryBarrier(_commandBuffers[i]);
+                    rhi->beginRendering(&_commandBuffers[i], false);
 
                     ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[i].getVulkanCommandBuffer());
-                    rhi->endRendering(_commandBuffers[i]);
-                    rhi->endInsterMemoryBarrier(i, _commandBuffers[i]);
-                    rhi->endCommandBuffer(_commandBuffers[i]);
+                    rhi->endRendering(&_commandBuffers[i]);
+                    rhi->endInsterMemoryBarrier(_commandBuffers[i]);
+                    rhi->endCommandBuffer(&_commandBuffers[i]);
                 }
             }
             else
@@ -162,7 +162,7 @@ namespace FOCUS
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        //ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+        //ImGui::DockSpaceOverViewport(1, ImGui::GetMainViewport());
 
         ImGui::Begin("Property");
         //ImGui::ShowDemoWindow();
@@ -231,7 +231,7 @@ namespace FOCUS
     {
         ImGui_ImplVulkan_SetMinImageCount(3);
         _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys);
+        _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
         
         _descriptorSets.resize(_viewportImageViews.size());

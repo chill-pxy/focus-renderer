@@ -19,13 +19,11 @@ namespace FOCUS
         std::vector<Vertex>      _vertices{};
         std::vector<uint32_t>    _indices{};
 
-        bool _needInit{ true };
-
     public:
         Mesh() = default;
 
-        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi);
-        virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi);
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool);
+        virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer);
         virtual void updateUniformBuffer(UniformUpdateData uud);
     };
 

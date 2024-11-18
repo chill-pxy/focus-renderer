@@ -23,14 +23,14 @@ namespace FOCUS
 
 		// initialize scene
 		_scene = std::make_shared<RenderScene>();
-		_scene->initialize();
+		_scene->initialize(_renderer->_rhiContext);
 
 		// initialize ui
 		_ui = std::make_shared<EngineUI>(rsci.window);
 		_ui->initialize(_renderer->_rhiContext);
 
 		// submit renderable resources
-		_renderer->buildAndSubmit(_scene->_group);
+		_renderer->buildAndSubmit(_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);
 
 		_recreateFunc.push_back(std::bind(&Renderer::buildCommandBuffer, _renderer));
 		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
@@ -47,12 +47,16 @@ namespace FOCUS
 		_renderer->buildCommandBuffer();
 		if (_ui->_isEmpty)
 		{
-			_renderer->_rhiContext->frameOnTick(_recreateFunc);
+			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
+			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+			_renderer->_rhiContext->frameOnTick(_recreateFunc, submitCommandBuffers);
 		}
 		else
 		{
-			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
-			submitCommandBuffers[0] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(2);
+			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+			submitCommandBuffers[1] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+			
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, submitCommandBuffers);
 		}
 		

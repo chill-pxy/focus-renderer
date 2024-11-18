@@ -13,6 +13,10 @@ namespace FOCUS
 	class RenderScene
 	{
 	public:
+		
+		std::vector<DRHI::DynamicCommandBuffer> _sceneCommandBuffers;
+		DRHI::DynamicCommandPool _sceneCommandPool;
+
 		std::vector<std::shared_ptr<RenderResource>> _group;
 		std::shared_ptr<PointLight> _light;
 		std::shared_ptr<RenderCamera> _camera;
@@ -23,7 +27,7 @@ namespace FOCUS
 	public:
 		RenderScene() = default;
 
-		void initialize();
+		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void prepareRenderResources();
 		void add(std::shared_ptr<RenderResource> resource);
 		void tick(float frameTimer);

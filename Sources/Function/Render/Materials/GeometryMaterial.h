@@ -29,7 +29,7 @@ namespace FOCUS
     public:
         GeometryMaterial() = default;
 
-        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi)
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
         {
             auto api = rhi->getCurrentAPI();
             auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);

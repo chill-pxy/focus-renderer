@@ -5,8 +5,11 @@
 
 namespace FOCUS
 {
-	void RenderScene::initialize()
+	void RenderScene::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
 	{
+		rhi->createCommandPool(&_sceneCommandPool);
+		rhi->createCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
+
 		_light = std::make_shared<PointLight>();
 		_camera = std::make_shared<RenderCamera>();
 

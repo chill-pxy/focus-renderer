@@ -29,34 +29,34 @@ namespace FOCUS
 		_rhiContext->initialize();
 	}
 
-	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>> renderlist)
+	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>> renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)
 	{
 		_submitRenderlist = renderlist;
+		_commandBuffers = *commandBuffers;
+		_commandPool = *commandPool;
 
 		for (auto p : _submitRenderlist)
 		{
-			p->build(_rhiContext);
+			p->build(_rhiContext, &_commandPool);
 		}
-
-		//buildCommandBuffer();
 	}
 
 	void Renderer::buildCommandBuffer()
 	{
-		for (uint32_t i = 0; i < _rhiContext->getCommandBufferSize(); ++i)
+		for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
 		{
-			_rhiContext->beginCommandBuffer(i);
-			_rhiContext->beginInsertMemoryBarrier(i);
-			_rhiContext->beginRendering(i);
+			_rhiContext->beginCommandBuffer(_commandBuffers[i]);
+			_rhiContext->beginInsertMemoryBarrier(_commandBuffers[i]);
+			_rhiContext->beginRendering(&_commandBuffers[i], true);
 
 			for (auto p : _submitRenderlist)
 			{
-				p->draw(i, _rhiContext);
+				p->draw(_rhiContext, &_commandBuffers[i]);
 			}
 
-			_rhiContext->endRendering(i);
-			_rhiContext->endInsterMemoryBarrier(i);
-			_rhiContext->endCommandBuffer(i);
+			_rhiContext->endRendering(&_commandBuffers[i]);
+			_rhiContext->endInsterMemoryBarrier(_commandBuffers[i]);
+			_rhiContext->endCommandBuffer(&_commandBuffers[i]);
 		}
 	}
 

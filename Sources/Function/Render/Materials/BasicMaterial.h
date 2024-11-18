@@ -29,7 +29,7 @@ namespace FOCUS
 		BasicMaterial() = delete;
 		BasicMaterial(std::shared_ptr<Texture> texture) : _basicTexture{ texture } {};
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
 		{
             auto api = rhi->getCurrentAPI();
             auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
@@ -60,7 +60,7 @@ namespace FOCUS
             _descriptorBufferInfo.set(rhi->getCurrentAPI(), _uniformBuffer, sizeof(UniformBufferObject));
 
             //binding sampler and image view
-            rhi->createTextureImage(&_textureImage, &_textureMemory, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
+            rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 

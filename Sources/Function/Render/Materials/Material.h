@@ -40,16 +40,16 @@ namespace FOCUS
 	public:
 		Material() = default;
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
 
-        void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi)
+        void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
         {
             auto api = rhi->getCurrentAPI();
             auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-            rhi->bindPipeline(_pipeline, bindPoint.PIPELINE_BIND_POINT_GRAPHICS, index);
-            rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, 0, index);
+            rhi->bindPipeline(_pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+            rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, 0);
         }
 	};
 }

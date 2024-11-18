@@ -19,15 +19,14 @@ namespace FOCUS
 	class RenderSystem
 	{
 	public:
+		static std::shared_ptr<RenderSystem> _instance;
+		static std::mutex _mutex;
+
 		std::shared_ptr<Renderer> _renderer;
 		std::shared_ptr<RenderScene> _scene;
 		std::shared_ptr<EngineUI> _ui;
 
-		static std::shared_ptr<RenderSystem> _instance;
-		static std::mutex _mutex;
-		
 		std::vector<std::function<void()>> _recreateFunc;
-		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers;
 
 		uint32_t _frameCounter = 0;
 		uint32_t _lastFPS = 0;

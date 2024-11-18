@@ -25,8 +25,8 @@ namespace FOCUS
     public:
         RenderResource() = default;
 
-        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
-        virtual void draw(uint32_t index, std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool) = 0;
+        virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
     };
 }

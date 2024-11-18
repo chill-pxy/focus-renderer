@@ -48,14 +48,14 @@ namespace FOCUS
 		if (_ui->_isEmpty)
 		{
 			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
-			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()];
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, submitCommandBuffers);
 		}
 		else
 		{
 			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(2);
-			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
-			submitCommandBuffers[1] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentBuffer()];
+			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()];
+			submitCommandBuffers[1] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentFrame()];
 			
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, submitCommandBuffers);
 		}

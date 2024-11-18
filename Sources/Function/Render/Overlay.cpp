@@ -204,7 +204,7 @@ namespace FOCUS
 
         DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        ImGui::Image((ImTextureID)_descriptorSets[vkrhi->_currentBuffer], ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
+        ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
 
         ImGui::End();
 

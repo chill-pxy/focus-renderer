@@ -128,18 +128,17 @@ namespace FOCUS
             if (imDrawData->CmdListsCount > 0)
             {
                 _isEmpty = false;
+                auto index = rhi->getCurrentFrame();
 
-                for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
-                {
-                    rhi->beginCommandBuffer(_commandBuffers[i]);
-                    rhi->beginInsertMemoryBarrier(_commandBuffers[i]);
-                    rhi->beginRendering(&_commandBuffers[i], false);
+                rhi->beginCommandBuffer(_commandBuffers[index]);
+                rhi->beginInsertMemoryBarrier(_commandBuffers[index]);
+                rhi->beginRendering(_commandBuffers[index], true);
 
-                    ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[i].getVulkanCommandBuffer());
-                    rhi->endRendering(&_commandBuffers[i]);
-                    rhi->endInsterMemoryBarrier(_commandBuffers[i]);
-                    rhi->endCommandBuffer(&_commandBuffers[i]);
-                }
+                ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
+
+                rhi->endRendering(_commandBuffers[index]);
+                rhi->endInsterMemoryBarrier(_commandBuffers[index]);
+                rhi->endCommandBuffer(_commandBuffers[index]);
             }
             else
             {
@@ -204,7 +203,7 @@ namespace FOCUS
 
         DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-       // ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
+        //ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
 
         ImGui::End();
 

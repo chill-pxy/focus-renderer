@@ -43,21 +43,20 @@ namespace FOCUS
 
 	void Renderer::buildCommandBuffer()
 	{
-		for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
+		auto index = _rhiContext->getCurrentFrame();
+
+		_rhiContext->beginCommandBuffer(_commandBuffers[index]);
+		_rhiContext->beginInsertMemoryBarrier(_commandBuffers[index]);
+		_rhiContext->beginRendering(_commandBuffers[index], true);
+
+		for (auto p : _submitRenderlist)
 		{
-			_rhiContext->beginCommandBuffer(_commandBuffers[i]);
-			_rhiContext->beginInsertMemoryBarrier(_commandBuffers[i]);
-			_rhiContext->beginRendering(&_commandBuffers[i], true);
-
-			for (auto p : _submitRenderlist)
-			{
-				p->draw(_rhiContext, &_commandBuffers[i]);
-			}
-
-			_rhiContext->endRendering(&_commandBuffers[i]);
-			_rhiContext->endInsterMemoryBarrier(_commandBuffers[i]);
-			_rhiContext->endCommandBuffer(&_commandBuffers[i]);
+			p->draw(_rhiContext, &_commandBuffers[index]);
 		}
+
+		_rhiContext->endRendering(_commandBuffers[index]);
+		_rhiContext->endInsterMemoryBarrier(_commandBuffers[index]);
+		_rhiContext->endCommandBuffer(_commandBuffers[index]);
 	}
 
 	void Renderer::clean()

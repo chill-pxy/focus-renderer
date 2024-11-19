@@ -17,8 +17,8 @@ namespace FOCUS
 
         rhi->createCommandPool(&_commandPool);
         rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
-        rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
+        //rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
+        //rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
         // cretea descriptor pool
         {
@@ -109,11 +109,11 @@ namespace FOCUS
                 }
             }
 
-            _descriptorSets.resize(_viewportImageViews.size());
-            for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
-            {
-                _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-            }
+            //_descriptorSets.resize(_viewportImageViews.size());
+            //for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
+            //{
+            //    _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            //}
         }
 
     }
@@ -131,13 +131,11 @@ namespace FOCUS
                 auto index = rhi->getCurrentFrame();
 
                 rhi->beginCommandBuffer(_commandBuffers[index]);
-                rhi->beginInsertMemoryBarrier(_commandBuffers[index]);
-                rhi->beginRendering(_commandBuffers[index], true);
+                rhi->beginRendering(_commandBuffers[index], index, false);
 
                 ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
 
-                rhi->endRendering(_commandBuffers[index]);
-                rhi->endInsterMemoryBarrier(_commandBuffers[index]);
+                rhi->endRendering(_commandBuffers[index], index);
                 rhi->endCommandBuffer(_commandBuffers[index]);
             }
             else
@@ -229,16 +227,16 @@ namespace FOCUS
     void EngineUI::recreate()
     {
         ImGui_ImplVulkan_SetMinImageCount(3);
-        _rhi->freeCommandBuffers(&_commandBuffers, &_commandPool);
+        //_rhi->freeCommandBuffers(&_commandBuffers, &_commandPool);
         _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
-        _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
+        //_rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
+       // _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
         
-        _descriptorSets.resize(_viewportImageViews.size());
+       /* _descriptorSets.resize(_viewportImageViews.size());
         for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
         {
             _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        }
+        }*/
 
         draw(_rhi);
     }

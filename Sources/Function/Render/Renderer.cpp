@@ -39,24 +39,26 @@ namespace FOCUS
 		{
 			p->build(_rhiContext, &_commandPool);
 		}
+
+		buildCommandBuffer();
 	}
 
 	void Renderer::buildCommandBuffer()
 	{
-		auto index = _rhiContext->getCurrentFrame();
-
-		_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-		_rhiContext->beginInsertMemoryBarrier(_commandBuffers[index]);
-		_rhiContext->beginRendering(_commandBuffers[index], true);
-
-		for (auto p : _submitRenderlist)
+		//auto index = _rhiContext->getCurrentFrame();
+		for (int index = 0; index < _commandBuffers.size(); ++index)
 		{
-			p->draw(_rhiContext, &_commandBuffers[index]);
-		}
+			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
+			_rhiContext->beginRendering(_commandBuffers[index], index, true);
 
-		_rhiContext->endRendering(_commandBuffers[index]);
-		_rhiContext->endInsterMemoryBarrier(_commandBuffers[index]);
-		_rhiContext->endCommandBuffer(_commandBuffers[index]);
+			for (auto p : _submitRenderlist)
+			{
+				p->draw(_rhiContext, &_commandBuffers[index]);
+			}
+
+			_rhiContext->endRendering(_commandBuffers[index], index);
+			_rhiContext->endCommandBuffer(_commandBuffers[index]);
+		}
 	}
 
 	void Renderer::clean()
@@ -75,7 +77,7 @@ namespace FOCUS
 
 	void Renderer::recreate()
 	{
-		_rhiContext->freeCommandBuffers(&_commandBuffers, &_commandPool);
+		//_rhiContext->freeCommandBuffers(&_commandBuffers, &_commandPool);
 		_rhiContext->createCommandBuffers(&_commandBuffers, &_commandPool);
 		buildCommandBuffer();
 	}

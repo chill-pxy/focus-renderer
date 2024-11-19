@@ -131,11 +131,11 @@ namespace FOCUS
                 auto index = rhi->getCurrentFrame();
 
                 rhi->beginCommandBuffer(_commandBuffers[index]);
-                rhi->beginRendering(_commandBuffers[index], index, false);
+                rhi->beginRendering(_commandBuffers[index], false);
 
                 ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
 
-                rhi->endRendering(_commandBuffers[index], index);
+                rhi->endRendering(_commandBuffers[index]);
                 rhi->endCommandBuffer(_commandBuffers[index]);
             }
             else

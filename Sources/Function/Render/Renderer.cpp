@@ -49,7 +49,7 @@ namespace FOCUS
 		for (int index = 0; index < _commandBuffers.size(); ++index)
 		{
 			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-			_rhiContext->beginRendering(_commandBuffers[index], index, true);
+			_rhiContext->beginRendering(_commandBuffers[index], true, index);
 
 			for (auto p : _submitRenderlist)
 			{

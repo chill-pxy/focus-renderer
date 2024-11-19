@@ -44,8 +44,6 @@ namespace FOCUS
 		_ui->tick(_lastFPS, _scene, _renderer->_rhiContext);
 
 		// renderer tick
-		
-
 		if (_ui->_isEmpty)
 		{
 			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);

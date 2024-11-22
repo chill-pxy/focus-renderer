@@ -45,7 +45,7 @@ namespace FOCUS
 
 	void Renderer::buildCommandBuffer()
 	{
-		//auto index = _rhiContext->getCurrentFrame();
+		auto index = _rhiContext->getCurrentFrame();
 		for (int index = 0; index < _commandBuffers.size(); ++index)
 		{
 			_rhiContext->beginCommandBuffer(_commandBuffers[index]);

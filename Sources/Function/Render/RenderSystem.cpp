@@ -46,8 +46,11 @@ namespace FOCUS
 		// renderer tick
 		if (_ui->_isEmpty)
 		{
-			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(1);
-			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()];
+			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers;
+			for (uint32_t i = 0; i < _scene->_sceneCommandBuffers.size(); ++i)
+			{
+				submitCommandBuffers.push_back(_scene->_sceneCommandBuffers[i]);
+			}
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, &submitCommandBuffers);
 		}
 		else

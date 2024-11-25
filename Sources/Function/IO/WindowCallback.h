@@ -6,6 +6,11 @@ namespace FOCUS
 {
 	void onRenderCanvasSizeChanged(uint32_t width, uint32_t height)
 	{
+		if (RenderSystem::getInstance()->_isInitialized)
+		{
+			RenderSystem::getInstance()->_ui->_needUpdate = true;
+		}
 		RenderSystem::getInstance()->setViewportSize(width, height);
+		
 	}
 }

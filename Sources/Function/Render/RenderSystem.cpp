@@ -36,6 +36,8 @@ namespace FOCUS
 		// submit recreation functions
 		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
 		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
+
+		_isInitialized = true;
 	}
 
 	void RenderSystem::tick()

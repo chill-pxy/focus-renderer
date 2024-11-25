@@ -37,6 +37,8 @@ namespace FOCUS
 		std::chrono::time_point<std::chrono::high_resolution_clock> _lastTimestamp;
 		std::chrono::time_point<std::chrono::high_resolution_clock>	_tPrevEnd;
 
+		bool _isInitialized{ false };
+
 		RenderSystem() = default;
 
 	public:

@@ -14,9 +14,7 @@ namespace FOCUS
 	{
 	private:
 		HWND           _window;
-		uint32_t       _drawCommandCount{ 0 };
-
-		DRHI::API                   _backend{ DRHI::VULKAN };
+		DRHI::API      _backend{ DRHI::VULKAN };
 
 		DRHI::DynamicDescriptorPool _descriptorPool{};
 		std::vector<VkDescriptorSet> _descriptorSets{};
@@ -26,6 +24,8 @@ namespace FOCUS
 		VkSampler _textureSampler{};
 
 		std::shared_ptr<DRHI::DynamicRHI> _rhi;
+
+		
 		
 	public:
 		std::vector<DRHI::DynamicImage> _viewportImages{};
@@ -35,6 +35,7 @@ namespace FOCUS
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
 		
 		bool _isEmpty = true;
+		bool _needUpdate{ false };
 
 	public:
 
@@ -44,7 +45,6 @@ namespace FOCUS
 		void draw(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi);
-		bool needUpdate();
 		void recreate();
 	};
 }

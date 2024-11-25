@@ -216,25 +216,18 @@ namespace FOCUS
 
 
         ImGui::Render();
-        draw(rhi);
-    }
 
-    bool EngineUI::needUpdate()
-    {
-        ImDrawData* imDrawData = ImGui::GetDrawData();
-        if (_drawCommandCount != imDrawData->CmdListsCount)
+        if(!_needUpdate)
         {
-            return true;
+            draw(rhi);
         }
-
-        return false;
     }
 
     void EngineUI::recreate()
     {
-        ImGui_ImplVulkan_SetMinImageCount(3);
+        //ImGui_ImplVulkan_SetMinImageCount(3);
         //_rhi->freeCommandBuffers(&_commandBuffers, &_commandPool);
-        _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
+        //_rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
         //_rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
        // _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
         

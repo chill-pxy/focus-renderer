@@ -92,8 +92,7 @@ namespace FOCUS
 
 	void Renderer::recreate()
 	{
-		//_rhiContext->freeCommandBuffers(&_commandBuffers, &_commandPool);
-		_rhiContext->createCommandBuffers(&_commandBuffers, &_commandPool);
+		//_rhiContext->createCommandBuffers(&_commandBuffers, &_commandPool);
 		buildCommandBuffer();
 	}
 }

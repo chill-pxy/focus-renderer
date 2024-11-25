@@ -45,18 +45,24 @@ namespace FOCUS
 
 	void Renderer::buildCommandBuffer()
 	{
+		DRHI::DynamicRenderingInfo renderInfo{};
+		renderInfo.isRenderOnSwapChain = true;
+		renderInfo.isClearEveryFrame = true;
+
 		auto index = _rhiContext->getCurrentFrame();
 		for (int index = 0; index < _commandBuffers.size(); ++index)
 		{
+			renderInfo.swapChainIndex = index;
+
 			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-			_rhiContext->beginRendering(_commandBuffers[index], true, index);
+			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
 
 			for (auto p : _submitRenderlist)
 			{
 				p->draw(_rhiContext, &_commandBuffers[index]);
 			}
 
-			_rhiContext->endRendering(_commandBuffers[index], index);
+			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
 			_rhiContext->endCommandBuffer(_commandBuffers[index]);
 		}
 	}

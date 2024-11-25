@@ -33,6 +33,7 @@ namespace FOCUS
 		_renderer->submitRenderTargetImage(&_ui->_viewportImages, &_ui->_viewportImageViews);
 		_renderer->buildAndSubmit(_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);	
 
+		// submit recreation functions
 		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
 		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
 	}
@@ -45,20 +46,16 @@ namespace FOCUS
 		_ui->tick(_lastFPS, _scene, _renderer->_rhiContext);
 
 		// renderer tick
-		if (_ui->_isEmpty)
+		if (!_ui->_isEmpty)
 		{
 			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers;
-			for (uint32_t i = 0; i < _scene->_sceneCommandBuffers.size(); ++i)
+
+			for (uint32_t i = 0; i < _ui->_commandBuffers.size(); ++i)
 			{
-				submitCommandBuffers.push_back(_scene->_sceneCommandBuffers[i]);
+				submitCommandBuffers.push_back(_ui->_commandBuffers[i]);
 			}
-			_renderer->_rhiContext->frameOnTick(_recreateFunc, &submitCommandBuffers);
-		}
-		else
-		{
-			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers(2);
-			submitCommandBuffers[0] = _scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()];
-			submitCommandBuffers[1] = _ui->_commandBuffers[_renderer->_rhiContext->getCurrentFrame()];
+			submitCommandBuffers.push_back(_scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()]);
+			
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, &submitCommandBuffers);
 		}
 		

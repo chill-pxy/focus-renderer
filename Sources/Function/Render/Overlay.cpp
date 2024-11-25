@@ -123,7 +123,7 @@ namespace FOCUS
         ImDrawData* imDrawData = ImGui::GetDrawData();
         DRHI::DynamicRenderingInfo renderInfo{};
         renderInfo.isRenderOnSwapChain = true;
-        renderInfo.isClearEveryFrame = false;
+        renderInfo.isClearEveryFrame = true;
 
         DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         if (imDrawData != nullptr)
@@ -131,17 +131,19 @@ namespace FOCUS
             if (imDrawData->CmdListsCount > 0)
             {
                 _isEmpty = false;
-                auto index = rhi->getCurrentFrame();
+                //auto index = rhi->getCurrentFrame();
+                for (uint32_t index = 0; index < _commandBuffers.size(); ++index)
+                {
+                    renderInfo.swapChainIndex = index;
 
-                renderInfo.swapChainIndex = index;
+                    rhi->beginCommandBuffer(_commandBuffers[index]);
+                    rhi->beginRendering(_commandBuffers[index], renderInfo);
 
-                rhi->beginCommandBuffer(_commandBuffers[index]);
-                rhi->beginRendering(_commandBuffers[index], renderInfo);
+                    ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
 
-                ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
-
-                rhi->endRendering(_commandBuffers[index], renderInfo);
-                rhi->endCommandBuffer(_commandBuffers[index]);
+                    rhi->endRendering(_commandBuffers[index], renderInfo);
+                    rhi->endCommandBuffer(_commandBuffers[index]);
+                }
             }
             else
             {
@@ -164,7 +166,7 @@ namespace FOCUS
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::DockSpaceOverViewport(1, ImGui::GetMainViewport());
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
         ImGui::Begin("Property");
         ImGui::Text("%d fps", fps);

@@ -164,10 +164,9 @@ namespace FOCUS
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        //ImGui::DockSpaceOverViewport(1, ImGui::GetMainViewport());
+        ImGui::DockSpaceOverViewport(1, ImGui::GetMainViewport());
 
         ImGui::Begin("Property");
-        //ImGui::ShowDemoWindow();
         ImGui::Text("%d fps", fps);
 
         // light position

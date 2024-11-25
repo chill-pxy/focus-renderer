@@ -20,10 +20,6 @@ namespace FOCUS
 
 		DRHI::DynamicDescriptorPool _descriptorPool{};
 		std::vector<VkDescriptorSet> _descriptorSets{};
-		
-		std::vector<DRHI::DynamicImage> _viewportImages{};
-		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
-		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
 
 		DRHI::DynamicCommandPool _commandPool{};	
 
@@ -32,7 +28,12 @@ namespace FOCUS
 		std::shared_ptr<DRHI::DynamicRHI> _rhi;
 		
 	public:
+		std::vector<DRHI::DynamicImage> _viewportImages{};
+		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
+		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
+
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
+		
 		bool _isEmpty = true;
 
 	public:

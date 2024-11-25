@@ -30,7 +30,8 @@ namespace FOCUS
 		_ui->initialize(_renderer->_rhiContext);
 
 		// submit renderable resources
-		_renderer->buildAndSubmit(_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);
+		_renderer->submitRenderTargetImage(&_ui->_viewportImages, &_ui->_viewportImageViews);
+		_renderer->buildAndSubmit(_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);	
 
 		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
 		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));

@@ -19,6 +19,9 @@ namespace FOCUS
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers;
 		DRHI::DynamicCommandPool _commandPool;
 
+		std::vector<DRHI::DynamicImage>*     _viewportImages;
+		std::vector<DRHI::DynamicImageView>* _viewportImageViews;
+
 	public:
 		Renderer() = delete;
 
@@ -27,6 +30,7 @@ namespace FOCUS
 		void initialize();
 		void buildCommandBuffer();
 		void buildAndSubmit(std::vector<std::shared_ptr<RenderResource>> renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool);
+		void submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews);
 		void clean();
 		void recreate();
 	};

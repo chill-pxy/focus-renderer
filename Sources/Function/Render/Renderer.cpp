@@ -43,16 +43,23 @@ namespace FOCUS
 		buildCommandBuffer();
 	}
 
+	void Renderer::submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews)
+	{
+		_viewportImages = viewportImages;
+		_viewportImageViews = viewportImageViews;
+	}
+
 	void Renderer::buildCommandBuffer()
 	{
 		DRHI::DynamicRenderingInfo renderInfo{};
-		renderInfo.isRenderOnSwapChain = true;
+		renderInfo.isRenderOnSwapChain = false;
 		renderInfo.isClearEveryFrame = true;
 
 		auto index = _rhiContext->getCurrentFrame();
 		for (int index = 0; index < _commandBuffers.size(); ++index)
 		{
-			renderInfo.swapChainIndex = index;
+			renderInfo.targetImage = &(*_viewportImages)[index];
+			renderInfo.targetImageView = &(*_viewportImageViews)[index];
 
 			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
@@ -66,6 +73,8 @@ namespace FOCUS
 			_rhiContext->endCommandBuffer(_commandBuffers[index]);
 		}
 	}
+
+
 
 	void Renderer::clean()
 	{

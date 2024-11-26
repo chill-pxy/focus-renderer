@@ -66,4 +66,21 @@ namespace FOCUS
 			object->updateUniformBuffer(uud);
 		}
 	}
+
+	void RenderScene::clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+	{
+		// clean render resources
+		for (auto r : _group)
+		{
+			rhi->clearBuffer(&r->_indexBuffer, &r->_indexDeviceMemory);
+			rhi->clearBuffer(&r->_vertexBuffer, &r->_vertexDeviceMemory);
+			rhi->clearImage(&r->_material->_textureImageView, &r->_material->_textureImage, &r->_material->_textureMemory);
+			rhi->clearSampler(&r->_material->_textureSampler);
+
+			r->_material->clean(rhi);
+		}
+
+		rhi->freeCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
+		rhi->destroyCommandPool(&_sceneCommandPool);
+	}
 }

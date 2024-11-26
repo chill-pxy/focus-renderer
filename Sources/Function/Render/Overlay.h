@@ -20,8 +20,7 @@ namespace FOCUS
 		std::vector<VkDescriptorSet> _descriptorSets{};
 
 		DRHI::DynamicCommandPool _commandPool{};	
-
-		VkSampler _textureSampler{};
+		DRHI::DynamicSampler _textureSampler{};
 
 		std::shared_ptr<DRHI::DynamicRHI> _rhi;
 
@@ -49,5 +48,6 @@ namespace FOCUS
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void recreate();
+		void clean();
 	};
 }

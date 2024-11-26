@@ -31,9 +31,9 @@ namespace FOCUS
 		_prepared = true;
 	}
 
-	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>> renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)
+	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)
 	{
-		_submitRenderlist = renderlist;
+		_submitRenderlist = *renderlist;
 		_commandBuffers = *commandBuffers;
 		_commandPool = *commandPool;
 
@@ -83,16 +83,9 @@ namespace FOCUS
 
 	void Renderer::clean()
 	{
-		_rhiContext->clean();
-		/*
-		for (int i = 0; i < obj->_uniformBuffers.size(); ++i)
-		{
-			_rhiContext->clearBuffer(&obj->_uniformBuffers[i], &obj->_uniformBuffersMemory[i]);
-		}
+		_prepared = false;
 
-		_rhiContext->clearBuffer(&obj->_vertexBuffer, &obj->_vertexDeviceMemory);
-		_rhiContext->clearBuffer(&obj->_indexBuffer, &obj->_indexDeviceMemory);
-		_rhiContext->clearImage(&obj->_textureSampler, &obj->_textureImageView, &obj->_textureImage, &obj->_textureMemory);*/
+		_rhiContext->clean();
 	}
 
 	void Renderer::recreate()

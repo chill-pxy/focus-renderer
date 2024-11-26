@@ -28,6 +28,7 @@ namespace FOCUS
 
 
 		case WM_CLOSE:
+			onWindowDestroy();
 			DestroyWindow(hWnd);
 			break;
 

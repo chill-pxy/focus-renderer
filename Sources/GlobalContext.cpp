@@ -24,7 +24,7 @@ namespace FOCUS
 		while (running)
 		{
 			*running = WindowSystem::getInstance()->tick();
-			RenderSystem::getInstance()->tick();
+			*running = RenderSystem::getInstance()->tick();
 		}
 
 		RenderSystem::getInstance()->clean();

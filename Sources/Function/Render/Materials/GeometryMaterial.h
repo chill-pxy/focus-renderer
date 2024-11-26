@@ -98,5 +98,13 @@ namespace FOCUS
 
             memcpy(_vuniformBufferMapped, &ubo, sizeof(ubo));
         }
+
+        virtual void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+        {
+            rhi->clearBuffer(&_vuniformBuffer, &_vuniformBufferMemory);
+            rhi->freeDescriptorSets(&_descriptorSet, &_descriptorPool);
+            rhi->clearDescriptorPool(&_descriptorPool);
+            rhi->clearDescriptorSetLayout(&_descriptorSetLayout);
+        }
     };
 }

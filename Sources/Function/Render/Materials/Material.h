@@ -42,6 +42,7 @@ namespace FOCUS
 
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
+        virtual void clean(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
 
         void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
         {

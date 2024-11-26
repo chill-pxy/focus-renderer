@@ -60,7 +60,7 @@ namespace FOCUS
 		}
 
 		void initialize(RenderSystemCreateInfo rsci);
-		void tick();
+		bool tick();
 		void clean();
 		void setViewportSize(uint32_t width, uint32_t height);
 

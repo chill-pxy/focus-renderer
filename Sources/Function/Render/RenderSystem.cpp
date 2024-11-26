@@ -31,7 +31,7 @@ namespace FOCUS
 
 		// submit renderable resources
 		_renderer->submitRenderTargetImage(&_ui->_viewportImages, &_ui->_viewportImageViews);
-		_renderer->buildAndSubmit(_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);	
+		_renderer->buildAndSubmit(&_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);	
 
 		// submit recreation functions
 		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
@@ -40,8 +40,9 @@ namespace FOCUS
 		_isInitialized = true;
 	}
 
-	void RenderSystem::tick()
+	bool RenderSystem::tick()
 	{
+		if (!_isInitialized) return false;
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		// ui tick
@@ -89,11 +90,17 @@ namespace FOCUS
 			_lastTimestamp = tEnd;
 		}
 		_tPrevEnd = tEnd;
+
+		return true;
 	}
 
 	void RenderSystem::clean()
 	{
+		_scene->clean(_renderer->_rhiContext);
+		_ui->clean();
 		_renderer->clean();
+		_ui->_prepared = false;
+		_isInitialized = false;
 	}
 
 	void RenderSystem::setViewportSize(uint32_t width, uint32_t height)

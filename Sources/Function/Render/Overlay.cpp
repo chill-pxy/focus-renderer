@@ -20,7 +20,7 @@ namespace FOCUS
         rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
-        // cretea descriptor pool
+        // creata descriptor pool
         {
             DRHI::DynamicDescriptorType type(rhi->getCurrentAPI());
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes =
@@ -44,6 +44,17 @@ namespace FOCUS
             ci.maxSets = 1000 * poolSizes.size();
             ci.pPoolSizes = &poolSizes;
             rhi->createDescriptorPool(&_descriptorPool, &ci);
+        }
+
+        // create texture sampler
+        {
+            DRHI::DynamicBorderColor color(rhi->getCurrentAPI());
+            DRHI::DynamicSamplerAddressMode mode(rhi->getCurrentAPI());
+            DRHI::DynamicSmplerCreateInfo sci{};
+            sci.borderColor = color.BORDER_COLOR_INT_OPAQUE_BLACK;
+            sci.sampleraAddressMode = mode.SAMPLER_ADDRESS_MODE_REPEAT;
+
+            rhi->createSampler(&_textureSampler, sci);
         }
 
         // create io
@@ -83,36 +94,10 @@ namespace FOCUS
 
             ImGui_ImplVulkan_Init(&initInfo);
 
-            // create sampler;
-            {
-                VkSamplerCreateInfo samplerInfo{};
-                samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-                samplerInfo.magFilter = VK_FILTER_LINEAR;
-                samplerInfo.minFilter = VK_FILTER_LINEAR;
-                samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-                samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-                samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-                samplerInfo.anisotropyEnable = VK_FALSE;
-                samplerInfo.maxAnisotropy = 1.0f;
-                samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-                samplerInfo.unnormalizedCoordinates = VK_FALSE;
-                samplerInfo.compareEnable = VK_FALSE;
-                samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-                samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-                samplerInfo.mipLodBias = 0.0f;
-                samplerInfo.minLod = 0.0f;
-                samplerInfo.maxLod = 0.0f;
-
-                if (vkCreateSampler(vkrhi->_device, &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
-                {
-                    throw std::runtime_error("failed to create texture sampler!");
-                }
-            }
-
             _descriptorSets.resize(_viewportImageViews.size());
             for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
             {
-                _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler.getVulkanSampler(), _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             }
         }
 
@@ -127,13 +112,11 @@ namespace FOCUS
         renderInfo.isRenderOnSwapChain = true;
         renderInfo.isClearEveryFrame = true;
 
-        DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         if (imDrawData != nullptr)
         {
             if (imDrawData->CmdListsCount > 0)
             {
                 _isEmpty = false;
-                //auto index = rhi->getCurrentFrame();
                 for (uint32_t index = 0; index < _commandBuffers.size(); ++index)
                 {
                     renderInfo.swapChainIndex = index;
@@ -141,7 +124,10 @@ namespace FOCUS
                     rhi->beginCommandBuffer(_commandBuffers[index]);
                     rhi->beginRendering(_commandBuffers[index], renderInfo);
 
-                    ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
+                    if (_backend == DRHI::VULKAN)
+                    {
+                        ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
+                    }
 
                     rhi->endRendering(_commandBuffers[index], renderInfo);
                     rhi->endCommandBuffer(_commandBuffers[index]);
@@ -207,7 +193,6 @@ namespace FOCUS
 
         ImGui::Begin("Viewport");
 
-        DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         
         ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
@@ -241,13 +226,33 @@ namespace FOCUS
         _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);    
         
         _descriptorSets.resize(_viewportImageViews.size());
-        for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
+        if (_backend == DRHI::VULKAN)
         {
-            _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
+            {
+                _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler.getVulkanSampler(), _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            }
         }
 
         _prepared = true;
 
         draw(_rhi);
+    }
+
+    void EngineUI::clean()
+    {
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
+
+        for (uint32_t i = 0; i < _viewportImages.size(); ++i)
+        {
+            _rhi->clearImage(&_viewportImageViews[i], &_viewportImages[i], &_viewportImageMemorys[i]);
+        }
+
+        _rhi->clearSampler(&_textureSampler);
+
+        _rhi->freeCommandBuffers(&_commandBuffers, &_commandPool);
+        _rhi->destroyCommandPool(&_commandPool);
     }
 }

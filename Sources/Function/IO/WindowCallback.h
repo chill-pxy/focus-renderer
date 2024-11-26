@@ -15,4 +15,9 @@ namespace FOCUS
 		RenderSystem::getInstance()->setViewportSize(width, height);
 		
 	}
+
+	void onWindowDestroy()
+	{
+		RenderSystem::getInstance()->clean();
+	}
 }

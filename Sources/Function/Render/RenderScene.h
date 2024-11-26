@@ -31,5 +31,6 @@ namespace FOCUS
 		void prepareRenderResources();
 		void add(std::shared_ptr<RenderResource> resource);
 		void tick(float frameTimer);
+		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi);
 	};
 }

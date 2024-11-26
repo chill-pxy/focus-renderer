@@ -17,7 +17,7 @@ namespace FOCUS
 		DRHI::API      _backend{ DRHI::VULKAN };
 
 		DRHI::DynamicDescriptorPool _descriptorPool{};
-		std::vector<VkDescriptorSet> _descriptorSets{};
+		std::vector<DRHI::DynamicDescriptorSet> _descriptorSets{};
 
 		DRHI::DynamicCommandPool _commandPool{};	
 		DRHI::DynamicSampler _textureSampler{};

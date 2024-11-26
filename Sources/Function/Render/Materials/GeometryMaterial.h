@@ -102,9 +102,15 @@ namespace FOCUS
         virtual void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
         {
             rhi->clearBuffer(&_vuniformBuffer, &_vuniformBufferMemory);
+
             rhi->freeDescriptorSets(&_descriptorSet, &_descriptorPool);
             rhi->clearDescriptorPool(&_descriptorPool);
             rhi->clearDescriptorSetLayout(&_descriptorSetLayout);
+
+            rhi->clearImage(&_textureImageView, &_textureImage, &_textureMemory);
+            rhi->clearSampler(&_textureSampler);
+
+            rhi->clearPipeline(&_pipeline, &_pipelineLayout);
         }
     };
 }

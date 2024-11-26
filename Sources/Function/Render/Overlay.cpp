@@ -97,7 +97,7 @@ namespace FOCUS
             _descriptorSets.resize(_viewportImageViews.size());
             for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
             {
-                _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler.getVulkanSampler(), _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                _descriptorSets[i].internalID = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler.getVulkanSampler(), _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             }
         }
 
@@ -195,7 +195,7 @@ namespace FOCUS
 
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         
-        ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
+        ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()].getVulkanDescriptorSet(), ImVec2{viewportPanelSize.x, viewportPanelSize.y});
        
         if ((_viewportWidth != viewportPanelSize.x) || (_viewportHeight != viewportPanelSize.y))
         {
@@ -230,7 +230,7 @@ namespace FOCUS
         {
             for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
             {
-                _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler.getVulkanSampler(), _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                _descriptorSets[i].internalID = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler.getVulkanSampler(), _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
             }
         }
 
@@ -245,6 +245,7 @@ namespace FOCUS
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
 
+        // clear image
         for (uint32_t i = 0; i < _viewportImages.size(); ++i)
         {
             _rhi->clearImage(&_viewportImageViews[i], &_viewportImages[i], &_viewportImageMemorys[i]);
@@ -252,7 +253,16 @@ namespace FOCUS
 
         _rhi->clearSampler(&_textureSampler);
 
+        // clear command buffer
         _rhi->freeCommandBuffers(&_commandBuffers, &_commandPool);
         _rhi->destroyCommandPool(&_commandPool);
-    }
+
+        // clear descriptor
+        for (uint32_t i = 0; i < _descriptorSets.size(); ++i)
+        {
+            _rhi->freeDescriptorSets(&_descriptorSets[i], &_descriptorPool);
+        }
+       
+        _rhi->clearDescriptorPool(&_descriptorPool);
+    } 
 }

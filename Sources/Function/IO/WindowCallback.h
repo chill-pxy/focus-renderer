@@ -8,8 +8,10 @@ namespace FOCUS
 	{
 		if (RenderSystem::getInstance()->_isInitialized)
 		{
-			RenderSystem::getInstance()->_ui->_needUpdate = true;
+			RenderSystem::getInstance()->_ui->_prepared = false;
+			RenderSystem::getInstance()->_renderer->_prepared = false;
 		}
+
 		RenderSystem::getInstance()->setViewportSize(width, height);
 		
 	}

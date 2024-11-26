@@ -22,6 +22,8 @@ namespace FOCUS
 		std::vector<DRHI::DynamicImage>*     _viewportImages;
 		std::vector<DRHI::DynamicImageView>* _viewportImageViews;
 
+		bool _prepared = false;
+
 	public:
 		Renderer() = delete;
 

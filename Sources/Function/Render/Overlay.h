@@ -35,7 +35,10 @@ namespace FOCUS
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
 		
 		bool _isEmpty = true;
-		bool _needUpdate{ false };
+		bool _prepared{ false };
+
+		uint32_t _viewportWidth{ 0 };
+		uint32_t _viewportHeight{ 0 };
 
 	public:
 

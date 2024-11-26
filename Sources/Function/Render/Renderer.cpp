@@ -27,6 +27,8 @@ namespace FOCUS
 	void Renderer::initialize()
 	{
 		_rhiContext->initialize();
+
+		_prepared = true;
 	}
 
 	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>> renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)
@@ -51,26 +53,29 @@ namespace FOCUS
 
 	void Renderer::buildCommandBuffer()
 	{
-		DRHI::DynamicRenderingInfo renderInfo{};
-		renderInfo.isRenderOnSwapChain = false;
-		renderInfo.isClearEveryFrame = true;
-
-		auto index = _rhiContext->getCurrentFrame();
-		for (int index = 0; index < _commandBuffers.size(); ++index)
+		if (_prepared)
 		{
-			renderInfo.targetImage = &(*_viewportImages)[index];
-			renderInfo.targetImageView = &(*_viewportImageViews)[index];
+			DRHI::DynamicRenderingInfo renderInfo{};
+			renderInfo.isRenderOnSwapChain = false;
+			renderInfo.isClearEveryFrame = true;
 
-			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
-
-			for (auto p : _submitRenderlist)
+			auto index = _rhiContext->getCurrentFrame();
+			for (int index = 0; index < _commandBuffers.size(); ++index)
 			{
-				p->draw(_rhiContext, &_commandBuffers[index]);
-			}
+				renderInfo.targetImage = &(*_viewportImages)[index];
+				renderInfo.targetImageView = &(*_viewportImageViews)[index];
 
-			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
-			_rhiContext->endCommandBuffer(_commandBuffers[index]);
+				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
+				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+
+				for (auto p : _submitRenderlist)
+				{
+					p->draw(_rhiContext, &_commandBuffers[index]);
+				}
+
+				_rhiContext->endRendering(_commandBuffers[index], renderInfo);
+				_rhiContext->endCommandBuffer(_commandBuffers[index]);
+			}
 		}
 	}
 
@@ -92,7 +97,7 @@ namespace FOCUS
 
 	void Renderer::recreate()
 	{
-		//_rhiContext->createCommandBuffers(&_commandBuffers, &_commandPool);
+		_prepared = true;
 		buildCommandBuffer();
 	}
 }

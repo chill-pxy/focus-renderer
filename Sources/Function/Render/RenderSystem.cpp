@@ -34,8 +34,8 @@ namespace FOCUS
 		_renderer->buildAndSubmit(_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);	
 
 		// submit recreation functions
-		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
 		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
+		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
 
 		_isInitialized = true;
 	}
@@ -103,12 +103,6 @@ namespace FOCUS
 			auto vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
 			vkrhi->_viewPortWidth = width;
 			vkrhi->_viewPortHeight = height;
-		}
-
-		if (_scene)
-		{
-			_scene->_canvasWidth = width;
-			_scene->_canvasHeight = height;
 		}
 	}
 

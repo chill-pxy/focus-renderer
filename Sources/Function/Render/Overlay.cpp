@@ -116,6 +116,8 @@ namespace FOCUS
             }
         }
 
+        _prepared = true;
+
     }
 
     void EngineUI::draw(std::shared_ptr<DRHI::DynamicRHI> rhi)
@@ -207,7 +209,17 @@ namespace FOCUS
 
         DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+        
         ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()], ImVec2{viewportPanelSize.x, viewportPanelSize.y});
+       
+        if ((_viewportWidth != viewportPanelSize.x) || (_viewportHeight != viewportPanelSize.y))
+        {
+            _viewportWidth = viewportPanelSize.x;
+            _viewportHeight = viewportPanelSize.y;
+
+            scene->_canvasWidth = _viewportWidth;
+            scene->_canvasHeight = _viewportHeight;
+        }
 
         ImGui::End();
 
@@ -217,7 +229,7 @@ namespace FOCUS
 
         ImGui::Render();
 
-        if(!_needUpdate)
+        if(_prepared)
         {
             draw(rhi);
         }
@@ -225,17 +237,16 @@ namespace FOCUS
 
     void EngineUI::recreate()
     {
-        //ImGui_ImplVulkan_SetMinImageCount(3);
-        //_rhi->freeCommandBuffers(&_commandBuffers, &_commandPool);
-        //_rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        //_rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
-       // _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
+        _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
+        _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);    
         
-       /* _descriptorSets.resize(_viewportImageViews.size());
+        _descriptorSets.resize(_viewportImageViews.size());
         for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
         {
             _descriptorSets[i] = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(_textureSampler, _viewportImageViews[i].getVulkanImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        }*/
+        }
+
+        _prepared = true;
 
         draw(_rhi);
     }

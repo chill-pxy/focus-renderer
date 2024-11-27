@@ -6,7 +6,7 @@
 #include<drhi.h>
 
 #include"../../Core/Math.h"
-#include"Overlay.h"
+#include"RenderResource.h"
 
 namespace FOCUS
 {

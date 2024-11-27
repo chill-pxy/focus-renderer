@@ -24,9 +24,9 @@ namespace FOCUS
 
 		std::shared_ptr<Renderer> _renderer;
 		std::shared_ptr<RenderScene> _scene;
-		std::shared_ptr<EngineUI> _ui;
 
-		std::vector<std::function<void()>> _recreateFunc;
+		std::vector<std::function<void()>>      _recreateFunc;
+		std::vector<DRHI::DynamicCommandBuffer> _submitCommandBuffers;
 
 		uint32_t _frameCounter = 0;
 		uint32_t _lastFPS = 0;
@@ -62,6 +62,7 @@ namespace FOCUS
 		void initialize(RenderSystemCreateInfo rsci);
 		bool tick();
 		void clean();
+		void build();
 		void setViewportSize(uint32_t width, uint32_t height);
 
 		std::shared_ptr<Renderer> getRenderer();

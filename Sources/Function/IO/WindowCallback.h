@@ -1,6 +1,8 @@
 #pragma once
 
 #include"../Render/RenderSystem.h"
+#include"../../Platform/WindowSystem.h"
+#include"../../Editor/Overlay.h"
 
 namespace FOCUS
 {
@@ -8,16 +10,36 @@ namespace FOCUS
 	{
 		if (RenderSystem::getInstance()->_isInitialized)
 		{
-			RenderSystem::getInstance()->_ui->_prepared = false;
 			RenderSystem::getInstance()->_renderer->_prepared = false;
 		}
 
 		RenderSystem::getInstance()->setViewportSize(width, height);
 		
+		EngineUI::getInstance()->_prepared = false;
 	}
 
 	void onWindowDestroy()
 	{
 		RenderSystem::getInstance()->clean();
+	}
+
+	void onWindowClose()
+	{
+		WindowSystem::getInstance()->close();
+	}
+
+	void onWindowMaxSize()
+	{
+		WindowSystem::getInstance()->setMaxWindow();
+	}
+
+	void onWindowMinSize()
+	{
+		WindowSystem::getInstance()->setMinWindow();
+	}
+
+	void onRecoverWindowSize()
+	{
+		WindowSystem::getInstance()->recoverWindow();
 	}
 }

@@ -231,11 +231,30 @@ namespace FOCUS
 		}
 	}
 
+	void WindowSystem::close()
+	{
+		DestroyWindow(_nativeWindow->_hwnd);
+	}
+
+	void WindowSystem::setMaxWindow()
+	{
+		ShowWindow(_nativeWindow->_hwnd, SW_MAXIMIZE);
+	}
+
+	void WindowSystem::setMinWindow()
+	{
+		ShowWindow(_nativeWindow->_hwnd, SW_MINIMIZE);
+	}
+
+	void WindowSystem::recoverWindow()
+	{
+		ShowWindow(_nativeWindow->_hwnd, SW_RESTORE);
+	}
+
 	uint32_t WindowSystem::getWindowWidth()
 	{
 		_nativeWindow->_hwnd = GetForegroundWindow();
 
-		// 获取窗口的尺寸
 		RECT rect;
 		int width = 0;
 		if (GetWindowRect(_nativeWindow->_hwnd, &rect)) {
@@ -248,7 +267,6 @@ namespace FOCUS
 	{
 		_nativeWindow->_hwnd = GetForegroundWindow();
 
-		// 获取窗口的尺寸
 		RECT rect;
 		int height = 0;
 		if (GetWindowRect(_nativeWindow->_hwnd, &rect)) {

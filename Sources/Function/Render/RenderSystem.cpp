@@ -25,17 +25,13 @@ namespace FOCUS
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
-		// initialize ui
-		_ui = std::make_shared<EngineUI>(rsci.window);
-		_ui->initialize(_renderer->_rhiContext);
-
 		// submit renderable resources
-		_renderer->submitRenderTargetImage(&_ui->_viewportImages, &_ui->_viewportImageViews);
-		_renderer->buildAndSubmit(&_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);	
-
+		//_renderer->submitRenderTargetImage(&_ui->_viewportImages, &_ui->_viewportImageViews);
+		// 
 		// submit recreation functions
-		_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
+		//_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
 		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
+		//_submitCommandBuffers.push_back(_scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()]);
 
 		_isInitialized = true;
 	}
@@ -45,23 +41,8 @@ namespace FOCUS
 		if (!_isInitialized) return false;
 		auto tStart = std::chrono::high_resolution_clock::now();
 
-		// ui tick
-		_ui->tick(_lastFPS, _scene, _renderer->_rhiContext);
-
 		// renderer tick
-		if (!_ui->_isEmpty)
-		{
-			std::vector<DRHI::DynamicCommandBuffer> submitCommandBuffers;
-
-			for (uint32_t i = 0; i < _ui->_commandBuffers.size(); ++i)
-			{
-				submitCommandBuffers.push_back(_ui->_commandBuffers[i]);
-			}
-			submitCommandBuffers.push_back(_scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()]);
-			
-			_renderer->_rhiContext->frameOnTick(_recreateFunc, &submitCommandBuffers);
-		}
-		
+		_renderer->_rhiContext->frameOnTick(_recreateFunc, &_submitCommandBuffers);
 		
 		// compute time on every frame cost
 		_frameCounter++;
@@ -97,9 +78,9 @@ namespace FOCUS
 	void RenderSystem::clean()
 	{
 		_scene->clean(_renderer->_rhiContext);
-		_ui->clean();
+		//_ui->clean();
 		_renderer->clean();
-		_ui->_prepared = false;
+		//_ui->_prepared = false;
 		_isInitialized = false;
 	}
 
@@ -111,6 +92,11 @@ namespace FOCUS
 			vkrhi->_viewPortWidth = width;
 			vkrhi->_viewPortHeight = height;
 		}
+	}
+
+	void RenderSystem::build()
+	{
+		_renderer->buildAndSubmit(&_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);
 	}
 
 	std::shared_ptr<Renderer> RenderSystem::getRenderer()

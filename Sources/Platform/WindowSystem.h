@@ -45,6 +45,10 @@ namespace FOCUS
 		bool tick();
 		void initialize(WindowSystemCreateInfo wsci);
 		void setWindowSize(uint32_t width, uint32_t height);
+		void close();
+		void setMaxWindow();
+		void setMinWindow();
+		void recoverWindow();
 		uint32_t getWindowWidth();
 		uint32_t getWindowHeight();
 		NativeWindow* getNativeWindow();	

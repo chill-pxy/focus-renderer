@@ -6,23 +6,23 @@
 #include<volk.h>
 
 #include"Overlay.h"
+#include"../Function/Render/RenderSystem.h"
+#include"../Platform/WindowSystem.h"
 
 namespace FOCUS
 {
-    EngineUI::EngineUI(HWND window) :_window(window) {}
-
-    void EngineUI::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
+    void EngineUI::initialize()
     {
-        _rhi = rhi;
+        _rhi = RenderSystem::getInstance()->_renderer->_rhiContext;
 
-        rhi->createCommandPool(&_commandPool);
-        rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
-        rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
+        _rhi->createCommandPool(&_commandPool);
+        _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
+        _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
+        _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
         // creata descriptor pool
         {
-            DRHI::DynamicDescriptorType type(rhi->getCurrentAPI());
+            DRHI::DynamicDescriptorType type(_rhi->getCurrentAPI());
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes =
             {
                 {type.DESCRIPTOR_TYPE_SAMPLER, 1000},
@@ -38,23 +38,23 @@ namespace FOCUS
                 {type.DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}
             };
 
-            DRHI::DynamicDescriptorPoolCreateFlag flag(rhi->getCurrentAPI());
+            DRHI::DynamicDescriptorPoolCreateFlag flag(_rhi->getCurrentAPI());
             DRHI::DynamicDescriptorPoolCreateInfo ci{};
             ci.flags = flag.DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
             ci.maxSets = 1000 * poolSizes.size();
             ci.pPoolSizes = &poolSizes;
-            rhi->createDescriptorPool(&_descriptorPool, &ci);
+            _rhi->createDescriptorPool(&_descriptorPool, &ci);
         }
 
         // create texture sampler
         {
-            DRHI::DynamicBorderColor color(rhi->getCurrentAPI());
-            DRHI::DynamicSamplerAddressMode mode(rhi->getCurrentAPI());
+            DRHI::DynamicBorderColor color(_rhi->getCurrentAPI());
+            DRHI::DynamicSamplerAddressMode mode(_rhi->getCurrentAPI());
             DRHI::DynamicSmplerCreateInfo sci{};
             sci.borderColor = color.BORDER_COLOR_INT_OPAQUE_BLACK;
             sci.sampleraAddressMode = mode.SAMPLER_ADDRESS_MODE_REPEAT;
 
-            rhi->createSampler(&_textureSampler, sci);
+            _rhi->createSampler(&_textureSampler, sci);
         }
 
         // create io
@@ -66,19 +66,17 @@ namespace FOCUS
         io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-       // ImGui::StyleColorsDark();
-
         setStyle();
 
         // Setup Platform/Renderer backends
-        ImGui_ImplWin32_Init(_window);
+        ImGui_ImplWin32_Init(WindowSystem::getInstance()->getNativeWindow()->_hwnd);
 
-        _backend = rhi->getCurrentAPI();
+        _backend = _rhi->getCurrentAPI();
 
         // init for vulkan
         if (_backend == DRHI::VULKAN)
         {
-            DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(rhi.get());
+            DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(_rhi.get());
 
             ImGui_ImplVulkan_InitInfo initInfo{};
             initInfo.Instance = vkrhi->_instance;
@@ -103,11 +101,12 @@ namespace FOCUS
             }
         }
 
-        _prepared = true;
+        RenderSystem::getInstance()->_renderer->submitRenderTargetImage(&_viewportImages, &_viewportImageViews);
 
+        _prepared = true;
     }
 
-    void EngineUI::draw(std::shared_ptr<DRHI::DynamicRHI> rhi)
+    void EngineUI::draw()
     {
         ImDrawData* imDrawData = ImGui::GetDrawData();
         DRHI::DynamicRenderingInfo renderInfo{};
@@ -123,17 +122,26 @@ namespace FOCUS
                 {
                     renderInfo.swapChainIndex = index;
 
-                    rhi->beginCommandBuffer(_commandBuffers[index]);
-                    rhi->beginRendering(_commandBuffers[index], renderInfo);
+                    _rhi->beginCommandBuffer(_commandBuffers[index]);
+                    _rhi->beginRendering(_commandBuffers[index], renderInfo);
 
                     if (_backend == DRHI::VULKAN)
                     {
                         ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
                     }
 
-                    rhi->endRendering(_commandBuffers[index], renderInfo);
-                    rhi->endCommandBuffer(_commandBuffers[index]);
+                    _rhi->endRendering(_commandBuffers[index], renderInfo);
+                    _rhi->endCommandBuffer(_commandBuffers[index]);
                 }
+
+                RenderSystem::getInstance()->_submitCommandBuffers.clear();
+                for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
+                {
+                    RenderSystem::getInstance()->_submitCommandBuffers.push_back(_commandBuffers[i]);
+                }
+                RenderSystem::getInstance()->_submitCommandBuffers.push_back(
+                    RenderSystem::getInstance()->_scene->_sceneCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+
             }
             else
             {
@@ -146,7 +154,7 @@ namespace FOCUS
         }
     }
 
-    void EngineUI::tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi)
+    void EngineUI::tick()
     {
         if (_backend == DRHI::VULKAN)
         {
@@ -158,7 +166,9 @@ namespace FOCUS
 
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
+        // menu bar
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 15));
+        
         if (ImGui::BeginMainMenuBar()) 
         {
             if (ImGui::BeginMenu("File")) 
@@ -177,25 +187,43 @@ namespace FOCUS
                 }
                 ImGui::EndMenu();
             }
+
+            ImGui::SameLine(ImGui::GetWindowSize().x - 50);
+            if (ImGui::Button("X"))
+            {
+                WindowSystem::getInstance()->close();
+            }
+            ImGui::SameLine(ImGui::GetWindowSize().x - 85);
+            if (ImGui::Button("O"))
+            {
+                WindowSystem::getInstance()->setMaxWindow();
+            }
+            ImGui::SameLine(ImGui::GetWindowSize().x - 120);
+            if (ImGui::Button("-"))
+            {
+                WindowSystem::getInstance()->setMinWindow();
+            }
+
             ImGui::EndMainMenuBar();
         }
         ImGui::PopStyleVar();
 
+        // fps
         ImGui::Begin("Property");
-        ImGui::Text("%d fps", fps);
+        ImGui::Text("%d fps", RenderSystem::getInstance()->_lastFPS);
 
         // light position
-        ImGui::DragFloat("point light x", &scene->_light->_position.x, 0.1f);
-        ImGui::DragFloat("point light y", &scene->_light->_position.y, 0.1f);
-        ImGui::DragFloat("point light z", &scene->_light->_position.z, 0.1f);
+        ImGui::DragFloat("point light x", &RenderSystem::getInstance()->_scene->_light->_position.x, 0.1f);
+        ImGui::DragFloat("point light y", &RenderSystem::getInstance()->_scene->_light->_position.y, 0.1f);
+        ImGui::DragFloat("point light z", &RenderSystem::getInstance()->_scene->_light->_position.z, 0.1f);
 
         //light color
-        ImGui::DragFloat("point color r", &scene->_light->_color.x, 0.1f);
-        ImGui::DragFloat("point color g", &scene->_light->_color.y, 0.1f);
-        ImGui::DragFloat("point color b", &scene->_light->_color.z, 0.1f);
+        ImGui::DragFloat("point color r", &RenderSystem::getInstance()->_scene->_light->_color.x, 0.1f);
+        ImGui::DragFloat("point color g", &RenderSystem::getInstance()->_scene->_light->_color.y, 0.1f);
+        ImGui::DragFloat("point color b", &RenderSystem::getInstance()->_scene->_light->_color.z, 0.1f);
 
         // light strength
-        ImGui::DragFloat("point strength", &scene->_light->_intensity, 0.1f);
+        ImGui::DragFloat("point strength", &RenderSystem::getInstance()->_scene->_light->_intensity, 0.1f);
 
         
         ImGui::End();
@@ -206,9 +234,9 @@ namespace FOCUS
         ImGui::Begin("Scene");
         
         // camera position
-        ImGui::Text("camera position x: %f", scene->_camera->_position.x);
-        ImGui::Text("camera position y: %f", scene->_camera->_position.y);
-        ImGui::Text("camera position z: %f", scene->_camera->_position.z);
+        ImGui::Text("camera position x: %f", RenderSystem::getInstance()->_scene->_camera->_position.x);
+        ImGui::Text("camera position y: %f", RenderSystem::getInstance()->_scene->_camera->_position.y);
+        ImGui::Text("camera position z: %f", RenderSystem::getInstance()->_scene->_camera->_position.z);
 
         
         ImGui::End();
@@ -220,15 +248,15 @@ namespace FOCUS
 
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         
-        ImGui::Image((ImTextureID)_descriptorSets[rhi->getCurrentFrame()].getVulkanDescriptorSet(), ImVec2{viewportPanelSize.x, viewportPanelSize.y});
+        ImGui::Image((ImTextureID)_descriptorSets[_rhi->getCurrentFrame()].getVulkanDescriptorSet(), ImVec2{viewportPanelSize.x, viewportPanelSize.y});
        
         if ((_viewportWidth != viewportPanelSize.x) || (_viewportHeight != viewportPanelSize.y))
         {
             _viewportWidth = viewportPanelSize.x;
             _viewportHeight = viewportPanelSize.y;
 
-            scene->_canvasWidth = _viewportWidth;
-            scene->_canvasHeight = _viewportHeight;
+            RenderSystem::getInstance()->_scene->_canvasWidth = _viewportWidth;
+            RenderSystem::getInstance()->_scene->_canvasHeight = _viewportHeight;
         }
 
         ImGui::End();
@@ -241,7 +269,7 @@ namespace FOCUS
 
         if(_prepared)
         {
-            draw(rhi);
+            draw();
         }
     }
 

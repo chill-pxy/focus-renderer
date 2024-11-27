@@ -85,7 +85,7 @@ namespace FOCUS
 			if (pt.y > rc.bottom - border_thickness.bottom) hit |= bottom;
 
 			// set 30 px to resize window
-			if (pt.y > border_thickness.top && pt.y < border_thickness.top + 30) hit |= caption;
+			if (pt.y > border_thickness.top && pt.y < border_thickness.top + 10) hit |= caption;
 
 			if (hit & top && hit & left) return HTTOPLEFT;
 			if (hit & top && hit & right) return HTTOPRIGHT;
@@ -233,12 +233,28 @@ namespace FOCUS
 
 	uint32_t WindowSystem::getWindowWidth()
 	{
-		return _nativeWindow->_width;
+		_nativeWindow->_hwnd = GetForegroundWindow();
+
+		// 获取窗口的尺寸
+		RECT rect;
+		int width = 0;
+		if (GetWindowRect(_nativeWindow->_hwnd, &rect)) {
+			width = rect.right - rect.left;
+		}
+		return width;
 	}
 
 	uint32_t WindowSystem::getWindowHeight()
 	{
-		return _nativeWindow->_height;
+		_nativeWindow->_hwnd = GetForegroundWindow();
+
+		// 获取窗口的尺寸
+		RECT rect;
+		int height = 0;
+		if (GetWindowRect(_nativeWindow->_hwnd, &rect)) {
+			height = rect.bottom - rect.top;
+		}
+		return height;
 	}
 
 	NativeWindow* WindowSystem::getNativeWindow()

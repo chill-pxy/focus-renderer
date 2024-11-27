@@ -158,6 +158,29 @@ namespace FOCUS
 
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 15));
+        if (ImGui::BeginMainMenuBar()) 
+        {
+            if (ImGui::BeginMenu("File")) 
+            {
+                if (ImGui::MenuItem("Create"))
+                {
+                }
+                if (ImGui::MenuItem("Open", "Ctrl+O")) 
+                {
+                }
+                if (ImGui::MenuItem("Save", "Ctrl+S")) 
+                {
+                }
+                if (ImGui::MenuItem("Save as..")) 
+                {
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
+        ImGui::PopStyleVar();
+
         ImGui::Begin("Property");
         ImGui::Text("%d fps", fps);
 

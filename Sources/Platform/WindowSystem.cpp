@@ -1,6 +1,10 @@
 #include"imgui.h"
 #include"imgui_impl_win32.h"
 
+#include <Windows.h>
+#include <windowsx.h>
+#include <Dwmapi.h>
+
 #include"WindowSystem.h"
 #include"../Function/IO/WindowCallback.h"
 #include"../Function/IO/KeyCallback.h"
@@ -20,8 +24,81 @@ namespace FOCUS
 		if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 			return true;
 
+		static RECT border_thickness;
+
 		switch (uMsg)
 		{
+		case WM_CREATE:
+		{
+			//find border thickness
+			SetRectEmpty(&border_thickness);
+			if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_THICKFRAME)
+			{
+				AdjustWindowRectEx(&border_thickness, GetWindowLongPtr(hWnd, GWL_STYLE) & ~WS_CAPTION, FALSE, NULL);
+				border_thickness.left *= -1;
+				border_thickness.top *= -1;
+			}
+			else if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_BORDER)
+			{
+				SetRect(&border_thickness, 1, 1, 1, 1);
+			}
+
+			MARGINS margins = { 0 };
+			DwmExtendFrameIntoClientArea(hWnd, &margins);
+			SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+			break;
+		}
+
+
+
+
+
+
+		case WM_NCCALCSIZE:
+			if (lParam)
+			{
+				NCCALCSIZE_PARAMS* sz = (NCCALCSIZE_PARAMS*)lParam;
+				sz->rgrc[0].left += border_thickness.left;
+				sz->rgrc[0].right -= border_thickness.right;
+				sz->rgrc[0].bottom -= border_thickness.bottom;
+				return 0;
+			}
+			break;
+
+
+
+
+
+
+
+		case WM_NCHITTEST:
+		{
+			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			ScreenToClient(hWnd, &pt);
+			RECT rc;
+			GetClientRect(hWnd, &rc);
+			enum { left = 1, top = 2, right = 4, bottom = 8, caption = 16 };
+			int hit = 0;
+			if (pt.x < border_thickness.left) hit |= left;
+			if (pt.x > rc.right - border_thickness.right) hit |= right;
+			if (pt.y < border_thickness.top) hit |= top;
+			if (pt.y > rc.bottom - border_thickness.bottom) hit |= bottom;
+
+			// set 30 px to resize window
+			if (pt.y > border_thickness.top && pt.y < border_thickness.top + 30) hit |= caption;
+
+			if (hit & top && hit & left) return HTTOPLEFT;
+			if (hit & top && hit & right) return HTTOPRIGHT;
+			if (hit & bottom && hit & left) return HTBOTTOMLEFT;
+			if (hit & bottom && hit & right) return HTBOTTOMRIGHT;
+			if (hit & left) return HTLEFT;
+			if (hit & top) return HTTOP;
+			if (hit & right) return HTRIGHT;
+			if (hit & bottom) return HTBOTTOM;
+			if (hit & caption) return HTCAPTION;
+
+			return HTCLIENT;
+		}
 
 
 

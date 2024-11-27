@@ -35,6 +35,8 @@ namespace FOCUS
 		);
 
 		ShowWindow(_hwnd, SW_SHOW);
+
+		UpdateWindow(_hwnd);
 	}
 
 	void NativeWindow::initialize()

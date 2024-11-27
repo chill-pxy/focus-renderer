@@ -49,5 +49,8 @@ namespace FOCUS
 		void tick(uint32_t fps, std::shared_ptr<RenderScene> scene, std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void recreate();
 		void clean();
+
+	private:
+		void setStyle();
 	};
 }

@@ -222,6 +222,13 @@ namespace FOCUS
 
     void EngineUI::recreate()
     {
+        ImGui_ImplVulkan_SetMinImageCount(MAX_FRAMES_IN_FLIGHT);
+
+        for (uint32_t i = 0; i < _viewportImages.size(); ++i)
+        {
+            _rhi->clearImage(&_viewportImageViews[i], &_viewportImages[i], &_viewportImageMemorys[i]);
+        }
+
         _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);    
         
@@ -235,8 +242,6 @@ namespace FOCUS
         }
 
         _prepared = true;
-
-        draw(_rhi);
     }
 
     void EngineUI::clean()

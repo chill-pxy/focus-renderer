@@ -190,6 +190,9 @@ namespace FOCUS
                 ImGui::EndMenu();
             }
 
+            // simulate title bar
+            // close window
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 12));
             ImGui::SameLine(ImGui::GetWindowSize().x - 50);
             if (ImGui::Button("X"))
             {
@@ -197,16 +200,33 @@ namespace FOCUS
                 *running = false;
                 return;
             }
-            ImGui::SameLine(ImGui::GetWindowSize().x - 85);
-            if (ImGui::Button("O"))
+
+            // resize window
+            ImGui::SameLine(ImGui::GetWindowSize().x - 86);
+            if (_isMaxSize)
             {
-                WindowSystem::getInstance()->setMaxWindow();
+                if (ImGui::Button("o"))
+                {
+                    WindowSystem::getInstance()->recoverWindow();
+                    _isMaxSize = false;
+                }
             }
-            ImGui::SameLine(ImGui::GetWindowSize().x - 120);
+            else
+            {
+                if (ImGui::Button("O"))
+                {
+                    WindowSystem::getInstance()->setMaxWindow();
+                    _isMaxSize = true;
+                }
+            }
+            
+            // minimal window
+            ImGui::SameLine(ImGui::GetWindowSize().x - 122);
             if (ImGui::Button("-"))
             {
                 WindowSystem::getInstance()->setMinWindow();
             }
+            ImGui::PopStyleVar();
 
             ImGui::EndMainMenuBar();
         }
@@ -361,7 +381,7 @@ namespace FOCUS
         colors[ImGuiCol_HeaderActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
 
         // Buttons
-        colors[ImGuiCol_Button] = ImVec4{ 0.13f, 0.13f, 0.17, 1.0f };
+        colors[ImGuiCol_Button] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
         colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.19f, 0.2f, 0.25f, 1.0f };
         colors[ImGuiCol_ButtonActive] = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
         colors[ImGuiCol_CheckMark] = ImVec4{ 0.74f, 0.58f, 0.98f, 1.0f };

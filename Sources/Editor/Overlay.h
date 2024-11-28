@@ -36,6 +36,7 @@ namespace FOCUS
 		
 		bool _isEmpty = true;
 		bool _prepared{ false };
+		bool _isMaxSize{ false };
 
 		uint32_t _viewportWidth{ 0 };
 		uint32_t _viewportHeight{ 0 };

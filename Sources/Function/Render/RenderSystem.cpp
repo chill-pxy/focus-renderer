@@ -30,15 +30,17 @@ namespace FOCUS
 		// 
 		// submit recreation functions
 		//_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
-		_recreateFunc.push_back(std::bind(&Renderer::recreate, _renderer));
+		
 		//_submitCommandBuffers.push_back(_scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()]);
 
 		_isInitialized = true;
 	}
 
-	bool RenderSystem::tick()
+	void RenderSystem::tick(bool* running)
 	{
-		if (!_isInitialized) return false;
+		if (!_isInitialized) return; 
+		if (!*running) return;
+
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		// renderer tick
@@ -72,7 +74,7 @@ namespace FOCUS
 		}
 		_tPrevEnd = tEnd;
 
-		return true;
+		*running = true;
 	}
 
 	void RenderSystem::clean()
@@ -91,6 +93,16 @@ namespace FOCUS
 			auto vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
 			vkrhi->_viewPortWidth = width;
 			vkrhi->_viewPortHeight = height;
+		}
+	}
+
+	void RenderSystem::setSwapChainSize(uint32_t width, uint32_t height)
+	{
+		if (_renderer)
+		{
+			auto vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
+			vkrhi->_swapChainExtent.width = width;
+			vkrhi->_swapChainExtent.height = height;
 		}
 	}
 

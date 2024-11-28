@@ -22,8 +22,10 @@ namespace FOCUS
 
 		// init ui
 		EngineUI::getInstance()->initialize();
+
+
 		RenderSystem::getInstance()->_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, EngineUI::getInstance()));
-	
+		RenderSystem::getInstance()->_recreateFunc.push_back(std::bind(&Renderer::recreate, RenderSystem::getInstance()->_renderer));
 		RenderSystem::getInstance()->build();
 	}
 
@@ -31,9 +33,10 @@ namespace FOCUS
 	{
 		while (running)
 		{
-			*running = WindowSystem::getInstance()->tick();
-			*running = RenderSystem::getInstance()->tick();
-			EngineUI::getInstance()->tick();
+			if (!*running) break;
+			EngineUI::getInstance()->tick(running);
+			RenderSystem::getInstance()->tick(running);
+			WindowSystem::getInstance()->tick(running);
 		}
 
 		RenderSystem::getInstance()->clean();

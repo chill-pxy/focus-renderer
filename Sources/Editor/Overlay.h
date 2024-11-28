@@ -7,6 +7,8 @@
 #include<imgui.h>
 #include<drhi.h>
 
+#include"../Core/Math.h"
+
 namespace FOCUS
 {
 	class EngineUI
@@ -60,9 +62,10 @@ namespace FOCUS
 
 		void draw();
 		void initialize();
-		void tick();
+		void tick(bool* running);
 		void recreate();
 		void clean();
+		Vector2 getViewportSize();
 
 	private:
 		void setStyle();

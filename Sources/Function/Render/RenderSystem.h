@@ -60,10 +60,11 @@ namespace FOCUS
 		}
 
 		void initialize(RenderSystemCreateInfo rsci);
-		bool tick();
+		void tick(bool* running);
 		void clean();
 		void build();
 		void setViewportSize(uint32_t width, uint32_t height);
+		void setSwapChainSize(uint32_t width, uint32_t height);
 
 		std::shared_ptr<Renderer> getRenderer();
 	};

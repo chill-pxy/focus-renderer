@@ -30,7 +30,7 @@ namespace FOCUS
         }
 
         void initialize();
-        bool tick();
+        void tick(bool* running);
 
         HWND getRawWindow()
         {

@@ -11,11 +11,11 @@ namespace FOCUS
 		if (RenderSystem::getInstance()->_isInitialized)
 		{
 			RenderSystem::getInstance()->_renderer->_prepared = false;
-		}
 
-		RenderSystem::getInstance()->setViewportSize(width, height);
-		
-		EngineUI::getInstance()->_prepared = false;
+			EngineUI::getInstance()->_prepared = false;
+
+			RenderSystem::getInstance()->setSwapChainSize(width, height);
+		}
 	}
 
 	void onWindowDestroy()

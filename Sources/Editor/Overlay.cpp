@@ -154,8 +154,10 @@ namespace FOCUS
         }
     }
 
-    void EngineUI::tick()
+    void EngineUI::tick(bool* running)
     {
+        if (!*running) return;
+
         if (_backend == DRHI::VULKAN)
         {
             ImGui_ImplVulkan_NewFrame();
@@ -191,7 +193,9 @@ namespace FOCUS
             ImGui::SameLine(ImGui::GetWindowSize().x - 50);
             if (ImGui::Button("X"))
             {
-                WindowSystem::getInstance()->close();
+                clean();
+                *running = false;
+                return;
             }
             ImGui::SameLine(ImGui::GetWindowSize().x - 85);
             if (ImGui::Button("O"))
@@ -271,6 +275,8 @@ namespace FOCUS
         {
             draw();
         }
+
+        *running = true;
     }
 
     void EngineUI::recreate()
@@ -324,8 +330,11 @@ namespace FOCUS
         _rhi->clearDescriptorPool(&_descriptorPool);
     } 
 
-
-
+    Vector2 EngineUI::getViewportSize()
+    {
+        ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+        return Vector2(viewportPanelSize.x, viewportPanelSize.y);
+    }
 
 
 

@@ -204,9 +204,10 @@ namespace FOCUS
 	//-------------------------------- class function ------------------------------
 	//------------------------------------------------------------------------------
 	//------------------------------------------------------------------------------
-	bool WindowSystem::tick()
+	void WindowSystem::tick(bool* running)
 	{
-		return _nativeWindow->tick();
+		if (!*running) return;
+		_nativeWindow->tick(running);
 	}
 
 	void WindowSystem::initialize(WindowSystemCreateInfo wsci)

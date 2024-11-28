@@ -44,16 +44,19 @@ namespace FOCUS
 		
 	}
 
-	bool NativeWindow::tick()
+	void NativeWindow::tick(bool* running)
 	{
 		if (PeekMessageW(&_msg, 0, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&_msg);
 			DispatchMessageW(&_msg);
 			if (_msg.message == WM_QUIT)
-				return false;
+			{
+				*running = false;
+				return;
+			}	
 		}
 
-		return true;
+		*running = true;
 	}
 }

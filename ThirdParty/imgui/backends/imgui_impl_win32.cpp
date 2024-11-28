@@ -376,8 +376,8 @@ static void ImGui_ImplWin32_UpdateMouseData(ImGuiIO& io)
     ImGuiID mouse_viewport_id = 0;
     if (has_mouse_screen_pos)
         if (HWND hovered_hwnd = ::WindowFromPoint(mouse_screen_pos))
-            if (ImGuiViewport* viewport = ImGui_ImplWin32_FindViewportByPlatformHandle(hovered_hwnd))
-                mouse_viewport_id = viewport->ID;
+            //if (ImGuiViewport* viewport = ImGui_ImplWin32_FindViewportByPlatformHandle(hovered_hwnd))
+                //mouse_viewport_id = viewport->ID;
     io.AddMouseViewportEvent(mouse_viewport_id);
 }
 

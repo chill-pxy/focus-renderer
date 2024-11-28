@@ -42,7 +42,7 @@ namespace FOCUS
 			return _instance;
 		}
 
-		bool tick();
+		void tick(bool* running);
 		void initialize(WindowSystemCreateInfo wsci);
 		void setWindowSize(uint32_t width, uint32_t height);
 		void close();

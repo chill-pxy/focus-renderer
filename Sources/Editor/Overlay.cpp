@@ -396,6 +396,9 @@ namespace FOCUS
     {
         ImGui::Begin("Scene");
 
+        ImGui::Text("--- World Objects list ---");
+
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.1f, 0.13f, 1.0f));
         for (auto r : RenderSystem::getInstance()->_scene->_group)
         {
             if (ImGui::Button(r->_name.c_str()))
@@ -403,6 +406,9 @@ namespace FOCUS
                 _currentObj = r;
             }
         }
+        ImGui::PopStyleColor();
+
+        ImGui::Text("--------------------------");
 
         ImGui::End();
     }
@@ -417,11 +423,11 @@ namespace FOCUS
         ImGui::Text("camera position x: %f", RenderSystem::getInstance()->_scene->_camera->_position.x);
         ImGui::Text("camera position y: %f", RenderSystem::getInstance()->_scene->_camera->_position.y);
         ImGui::Text("camera position z: %f", RenderSystem::getInstance()->_scene->_camera->_position.z);
-
-        // light position
-        ImGui::DragFloat("point light x", &RenderSystem::getInstance()->_scene->_light->_position.x, 0.1f);
-        ImGui::DragFloat("point light y", &RenderSystem::getInstance()->_scene->_light->_position.y, 0.1f);
-        ImGui::DragFloat("point light z", &RenderSystem::getInstance()->_scene->_light->_position.z, 0.1f);
+        
+        // camera rotation
+        ImGui::Text("camera rotation x: %f", RenderSystem::getInstance()->_scene->_camera->_rotation.x);
+        ImGui::Text("camera rotation y: %f", RenderSystem::getInstance()->_scene->_camera->_rotation.y);
+        ImGui::Text("camera rotation z: %f", RenderSystem::getInstance()->_scene->_camera->_rotation.z);
 
         //light color
         ImGui::DragFloat("point color r", &RenderSystem::getInstance()->_scene->_light->_color.x, 0.1f);

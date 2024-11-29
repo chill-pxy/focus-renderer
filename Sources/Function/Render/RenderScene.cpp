@@ -19,20 +19,21 @@ namespace FOCUS
 	void RenderScene::prepareRenderResources()
 	{
 		// prepare light
-		_light->_position = Vector3(0.0f, 3.5f, 0.0f);
-		_light->_intensity = 20.0f;
+		_light->_position = Vector3(0.0f, 7.0f, 0.0f);
+		_light->_intensity = 100.0f;
 		_light->_name = "PointLight";
 		add(_light);
 
 		// prepare camera
-		_camera->_position = Vector3(-4.0f, 3.0f, 4.0f);
+		_camera->_position = Vector3(-6.5f, 5.0f, 7.5f);
+		_camera->_rotation = Vector3(-26.0f, -147.0f, 0.0f);
 
 		// prepare obj
-		auto obj = loadModel("../../../Asset/Models/viking_room.obj");
-		auto texture = loadTexture("../../../Asset/Models/viking_room.png");
-		obj->_material = std::make_shared<BlinnPhongMaterial>(texture);
-		obj->_name = "Viking Room";
-		add(obj);
+		//auto obj = loadModel("../../../Asset/Models/viking_room.obj");
+		//auto texture = loadTexture("../../../Asset/Models/viking_room.png");
+		//obj->_material = std::make_shared<BlinnPhongMaterial>(texture);
+		//obj->_name = "Viking Room";
+		//add(obj);
 
 		auto dragon = loadModel("../../../Asset/Models/dragon.obj");
 		auto texture2 = loadTexture("../../../Asset/Models/box.png");

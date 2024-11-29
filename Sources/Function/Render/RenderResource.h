@@ -11,6 +11,8 @@ namespace FOCUS
     class RenderResource
     {
     public:
+        std::string _name{ "unnamed object" };
+
         DRHI::DynamicBuffer       _vertexBuffer;
         DRHI::DynamicDeviceMemory _vertexDeviceMemory;
         

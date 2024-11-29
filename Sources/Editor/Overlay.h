@@ -8,6 +8,7 @@
 #include<drhi.h>
 
 #include"../Core/Math.h"
+#include"../Function/Render/RenderResource.h"
 
 namespace FOCUS
 {
@@ -41,6 +42,9 @@ namespace FOCUS
 		uint32_t _viewportWidth{ 0 };
 		uint32_t _viewportHeight{ 0 };
 
+		//property
+		std::shared_ptr<RenderResource> _currentObj{nullptr};
+
 	public:
 		EngineUI(const EngineUI&) = delete;
 		EngineUI& operator=(const EngineUI&) = delete;
@@ -70,5 +74,9 @@ namespace FOCUS
 
 	private:
 		void setStyle();
+		void showSceneUI();
+		void showPropertyUI();
+		void showViewPortUI();
+		void showMenu(bool* running);
 	};
 }

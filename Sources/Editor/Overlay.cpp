@@ -168,126 +168,12 @@ namespace FOCUS
 
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
-        // menu bar
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 15));
-        
-        if (ImGui::BeginMainMenuBar()) 
-        {
-            if (ImGui::BeginMenu("File")) 
-            {
-                if (ImGui::MenuItem("Create"))
-                {
-                }
-                if (ImGui::MenuItem("Open", "Ctrl+O")) 
-                {
-                }
-                if (ImGui::MenuItem("Save", "Ctrl+S")) 
-                {
-                }
-                if (ImGui::MenuItem("Save as..")) 
-                {
-                }
-                ImGui::EndMenu();
-            }
+        showMenu(running);
+        if (!*running) return;
 
-            // simulate title bar
-            // close window
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 12));
-            ImGui::SameLine(ImGui::GetWindowSize().x - 50);
-            if (ImGui::Button("X"))
-            {
-                clean();
-                *running = false;
-                return;
-            }
-
-            // resize window
-            ImGui::SameLine(ImGui::GetWindowSize().x - 86);
-            if (_isMaxSize)
-            {
-                if (ImGui::Button("o"))
-                {
-                    WindowSystem::getInstance()->recoverWindow();
-                    _isMaxSize = false;
-                }
-            }
-            else
-            {
-                if (ImGui::Button("O"))
-                {
-                    WindowSystem::getInstance()->setMaxWindow();
-                    _isMaxSize = true;
-                }
-            }
-            
-            // minimal window
-            ImGui::SameLine(ImGui::GetWindowSize().x - 122);
-            if (ImGui::Button("-"))
-            {
-                WindowSystem::getInstance()->setMinWindow();
-            }
-            ImGui::PopStyleVar();
-
-            ImGui::EndMainMenuBar();
-        }
-        ImGui::PopStyleVar();
-
-        // fps
-        ImGui::Begin("Property");
-        ImGui::Text("%d fps", RenderSystem::getInstance()->_lastFPS);
-
-        // light position
-        ImGui::DragFloat("point light x", &RenderSystem::getInstance()->_scene->_light->_position.x, 0.1f);
-        ImGui::DragFloat("point light y", &RenderSystem::getInstance()->_scene->_light->_position.y, 0.1f);
-        ImGui::DragFloat("point light z", &RenderSystem::getInstance()->_scene->_light->_position.z, 0.1f);
-
-        //light color
-        ImGui::DragFloat("point color r", &RenderSystem::getInstance()->_scene->_light->_color.x, 0.1f);
-        ImGui::DragFloat("point color g", &RenderSystem::getInstance()->_scene->_light->_color.y, 0.1f);
-        ImGui::DragFloat("point color b", &RenderSystem::getInstance()->_scene->_light->_color.z, 0.1f);
-
-        // light strength
-        ImGui::DragFloat("point strength", &RenderSystem::getInstance()->_scene->_light->_intensity, 0.1f);
-
-        
-        ImGui::End();
-
-
-
-
-        ImGui::Begin("Scene");
-        
-        // camera position
-        ImGui::Text("camera position x: %f", RenderSystem::getInstance()->_scene->_camera->_position.x);
-        ImGui::Text("camera position y: %f", RenderSystem::getInstance()->_scene->_camera->_position.y);
-        ImGui::Text("camera position z: %f", RenderSystem::getInstance()->_scene->_camera->_position.z);
-
-        
-        ImGui::End();
-
-
-
-
-        ImGui::Begin("Viewport");
-
-        ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-        
-        ImGui::Image((ImTextureID)_descriptorSets[_rhi->getCurrentFrame()].getVulkanDescriptorSet(), ImVec2{viewportPanelSize.x, viewportPanelSize.y});
-       
-        if ((_viewportWidth != viewportPanelSize.x) || (_viewportHeight != viewportPanelSize.y))
-        {
-            _viewportWidth = viewportPanelSize.x;
-            _viewportHeight = viewportPanelSize.y;
-
-            RenderSystem::getInstance()->_scene->_canvasWidth = _viewportWidth;
-            RenderSystem::getInstance()->_scene->_canvasHeight = _viewportHeight;
-        }
-
-        ImGui::End();
-
-
-
-
+        showSceneUI();
+        showPropertyUI();
+        showViewPortUI();
 
         ImGui::Render();
 
@@ -437,5 +323,144 @@ namespace FOCUS
         style.FrameRounding = 3;
         style.PopupRounding = 4;
         style.ChildRounding = 4;
+    }
+
+    void EngineUI::showMenu(bool* running)
+    {
+        // menu bar
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 15));
+
+        if (ImGui::BeginMainMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Create"))
+                {
+                }
+                if (ImGui::MenuItem("Open", "Ctrl+O"))
+                {
+                }
+                if (ImGui::MenuItem("Save", "Ctrl+S"))
+                {
+                }
+                if (ImGui::MenuItem("Save as.."))
+                {
+                }
+                ImGui::EndMenu();
+            }
+
+            // simulate title bar
+            // close window
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 12));
+            ImGui::SameLine(ImGui::GetWindowSize().x - 50);
+            if (ImGui::Button("X"))
+            {
+                clean();
+                *running = false;
+                return;
+            }
+
+            // resize window
+            ImGui::SameLine(ImGui::GetWindowSize().x - 86);
+            if (_isMaxSize)
+            {
+                if (ImGui::Button("o"))
+                {
+                    WindowSystem::getInstance()->recoverWindow();
+                    _isMaxSize = false;
+                }
+            }
+            else
+            {
+                if (ImGui::Button("O"))
+                {
+                    WindowSystem::getInstance()->setMaxWindow();
+                    _isMaxSize = true;
+                }
+            }
+
+            // minimal window
+            ImGui::SameLine(ImGui::GetWindowSize().x - 122);
+            if (ImGui::Button("-"))
+            {
+                WindowSystem::getInstance()->setMinWindow();
+            }
+            ImGui::PopStyleVar();
+
+            ImGui::EndMainMenuBar();
+        }
+        ImGui::PopStyleVar();
+    }
+
+    void EngineUI::showSceneUI()
+    {
+        ImGui::Begin("Scene");
+
+        for (auto r : RenderSystem::getInstance()->_scene->_group)
+        {
+            if (ImGui::Button(r->_name.c_str()))
+            {
+                _currentObj = r;
+            }
+        }
+
+        ImGui::End();
+    }
+
+    void EngineUI::showPropertyUI()
+    {
+        // fps
+        ImGui::Begin("Property");
+        ImGui::Text("%d fps", RenderSystem::getInstance()->_lastFPS);
+
+        // camera position
+        ImGui::Text("camera position x: %f", RenderSystem::getInstance()->_scene->_camera->_position.x);
+        ImGui::Text("camera position y: %f", RenderSystem::getInstance()->_scene->_camera->_position.y);
+        ImGui::Text("camera position z: %f", RenderSystem::getInstance()->_scene->_camera->_position.z);
+
+        // light position
+        ImGui::DragFloat("point light x", &RenderSystem::getInstance()->_scene->_light->_position.x, 0.1f);
+        ImGui::DragFloat("point light y", &RenderSystem::getInstance()->_scene->_light->_position.y, 0.1f);
+        ImGui::DragFloat("point light z", &RenderSystem::getInstance()->_scene->_light->_position.z, 0.1f);
+
+        //light color
+        ImGui::DragFloat("point color r", &RenderSystem::getInstance()->_scene->_light->_color.x, 0.1f);
+        ImGui::DragFloat("point color g", &RenderSystem::getInstance()->_scene->_light->_color.y, 0.1f);
+        ImGui::DragFloat("point color b", &RenderSystem::getInstance()->_scene->_light->_color.z, 0.1f);
+
+        // light strength
+        ImGui::DragFloat("point strength", &RenderSystem::getInstance()->_scene->_light->_intensity, 0.1f);
+
+        // selected obj
+        if (_currentObj != nullptr)
+        {
+            ImGui::Text(_currentObj->_name.c_str());
+            ImGui::DragFloat("Position X", &_currentObj->_position.x, 0.1f);
+            ImGui::DragFloat("Position Y", &_currentObj->_position.y, 0.1f);
+            ImGui::DragFloat("Position Z", &_currentObj->_position.z, 0.1f);
+        }
+       
+
+        ImGui::End();
+    }
+
+    void EngineUI::showViewPortUI()
+    {
+        ImGui::Begin("Viewport");
+
+        ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+
+        ImGui::Image((ImTextureID)_descriptorSets[_rhi->getCurrentFrame()].getVulkanDescriptorSet(), ImVec2{ viewportPanelSize.x, viewportPanelSize.y });
+
+        if ((_viewportWidth != viewportPanelSize.x) || (_viewportHeight != viewportPanelSize.y))
+        {
+            _viewportWidth = viewportPanelSize.x;
+            _viewportHeight = viewportPanelSize.y;
+
+            RenderSystem::getInstance()->_scene->_canvasWidth = _viewportWidth;
+            RenderSystem::getInstance()->_scene->_canvasHeight = _viewportHeight;
+        }
+
+        ImGui::End();
     }
 }

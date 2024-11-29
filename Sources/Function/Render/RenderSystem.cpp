@@ -25,14 +25,6 @@ namespace FOCUS
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
-		// submit renderable resources
-		//_renderer->submitRenderTargetImage(&_ui->_viewportImages, &_ui->_viewportImageViews);
-		// 
-		// submit recreation functions
-		//_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, _ui));
-		
-		//_submitCommandBuffers.push_back(_scene->_sceneCommandBuffers[_renderer->_rhiContext->getCurrentFrame()]);
-
 		_isInitialized = true;
 	}
 

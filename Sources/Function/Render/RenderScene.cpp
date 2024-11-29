@@ -19,24 +19,32 @@ namespace FOCUS
 	void RenderScene::prepareRenderResources()
 	{
 		// prepare light
-		_light->_position = Vector3(0.0f, 0.6f, 0.0f);
+		_light->_position = Vector3(0.0f, 3.5f, 0.0f);
+		_light->_intensity = 20.0f;
+		_light->_name = "PointLight";
 		add(_light);
 
 		// prepare camera
-		//_camera->_position = Vector3(-1.54f, 2.41f, 3.21f);
+		_camera->_position = Vector3(-4.0f, 3.0f, 4.0f);
 
 		// prepare obj
 		auto obj = loadModel("../../../Asset/Models/viking_room.obj");
 		auto texture = loadTexture("../../../Asset/Models/viking_room.png");
 		obj->_material = std::make_shared<BlinnPhongMaterial>(texture);
+		obj->_name = "Viking Room";
 		add(obj);
 
-		auto plane = loadModel("../../../Asset/Models/plane.obj");
-		auto texture2 = loadTexture("../../../Asset/Models/plane.png");
-		plane->_material = std::make_shared<BlinnPhongMaterial>(texture2);
-		add(plane);
+		auto dragon = loadModel("../../../Asset/Models/dragon.obj");
+		auto texture2 = loadTexture("../../../Asset/Models/box.png");
+		dragon->_material = std::make_shared<BlinnPhongMaterial>(texture2);
+		dragon->_name = "Dragon";
+		add(dragon);
 
-
+		auto box = loadModel("../../../Asset/Models/box.obj");
+		auto texture3 = loadTexture("../../../Asset/Models/box.png");
+		box->_material = std::make_shared<BlinnPhongMaterial>(texture3);
+		box->_name = "Box";
+		add(box);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

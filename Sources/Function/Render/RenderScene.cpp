@@ -63,10 +63,12 @@ namespace FOCUS
 		uud.view = _camera->getViewMatrix();
 		uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 0.1f, 100.0f);
 		uud.proj[1][1] *= -1;
-		uud.lightPosition = _light->_position;
+
 		uud.viewPosition = _camera->_position;
-		uud.lightColor = _light->_color;
-		uud.lightIntensity = _light->_intensity;
+
+		uud.pointLightPosition = _light->_position;
+		uud.pointLightColor = _light->_color;
+		uud.pointLightIntensity = _light->_intensity;
 		
 		for (auto object : _group)
 		{

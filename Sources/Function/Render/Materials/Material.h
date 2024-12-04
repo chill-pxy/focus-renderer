@@ -16,9 +16,9 @@ namespace FOCUS
         
         Vector3 vertexColor;
         
-        Vector3 lightPosition;
-        Vector3 lightColor;
-        float lightIntensity;
+        Vector3 pointLightPosition;
+        Vector3 pointLightColor;
+        float   pointLightIntensity;
  
     }UniformUpdateData;
 

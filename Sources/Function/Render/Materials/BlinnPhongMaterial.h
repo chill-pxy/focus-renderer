@@ -15,10 +15,12 @@ namespace FOCUS
 		alignas(16) Matrix4 model;
 		alignas(16) Matrix4 view;
 		alignas(16) Matrix4 proj;
-        alignas(16) Vector3 lightPosition;
+
         alignas(16) Vector3 viewPosition;
-        alignas(16) Vector3 lightColor;
-        alignas(4) float lightIntensity;
+
+        alignas(16) Vector3 pointLightPosition;
+        alignas(16) Vector3 pointLightColor;
+        alignas(4) float    pointLightIntensity;
 	} PhongUniformBufferObject;
 
 	class BlinnPhongMaterial : public Material
@@ -127,10 +129,12 @@ namespace FOCUS
             ubo.model = uud.model;
             ubo.view = uud.view;
             ubo.proj = uud.proj;
-            ubo.lightPosition = uud.lightPosition;
+
             ubo.viewPosition = uud.viewPosition;
-            ubo.lightColor = uud.lightColor;
-            ubo.lightIntensity = uud.lightIntensity;
+
+            ubo.pointLightPosition = uud.pointLightPosition;
+            ubo.pointLightColor = uud.pointLightColor;
+            ubo.pointLightIntensity = uud.pointLightIntensity;
 
             memcpy(_vuniformBufferMapped, &ubo, sizeof(ubo));
         }

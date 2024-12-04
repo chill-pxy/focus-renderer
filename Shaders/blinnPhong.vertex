@@ -5,10 +5,14 @@ layout(binding = 0) uniform VertexUniformBufferObject
     mat4 model;
     mat4 view;
     mat4 proj;
-    vec3 lightPosition;
+    
     vec3 viewPosition;
-    vec3 lightColor;
-    float lightStrength;
+    
+    vec3 pointLightPosition;
+    vec3 pointLightColor;
+    float pointLightStrength;
+
+    vec3 dirLightDirection;
 } vubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -20,10 +24,14 @@ layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 fragPosition;
 layout(location = 3) out vec3 fragNormal;
-layout(location = 4) out vec3 fragLightPosition;
-layout(location = 5) out vec3 fragViewPosition;
-layout(location = 6) out vec3 fragLightColor;
-layout(location = 7) out float fragLightStrength;
+
+layout(location = 4) out vec3 fragViewPosition;
+
+layout(location = 5) out vec3 fragPointLightPosition;
+layout(location = 6) out vec3 fragPointLightColor;
+layout(location = 7) out float fragPointLightStrength;
+
+layout(location = 8) out vec3 fragDirLightDirection;
 
 void main() 
 {
@@ -33,8 +41,12 @@ void main()
     fragTexCoord = inTexCoord;
     fragPosition = inPosition;
     fragNormal   = inNormal;
-    fragLightPosition = vubo.lightPosition;
+
     fragViewPosition = vubo.viewPosition;
-    fragLightColor = vubo.lightColor;
-    fragLightStrength = vubo.lightStrength;
+
+    fragPointLightPosition = vubo.pointLightPosition;
+    fragPointLightColor = vubo.pointLightColor;
+    fragPointLightStrength = vubo.pointLightStrength;
+
+    fragDirLightDirection = vubo.dirLightDirection;
 }

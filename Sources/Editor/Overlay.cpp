@@ -430,12 +430,24 @@ namespace FOCUS
         ImGui::Text("camera rotation z: %f", RenderSystem::getInstance()->_scene->_camera->_rotation.z);
 
         //light color
-        ImGui::DragFloat("point color r", &RenderSystem::getInstance()->_scene->_light->_color.x, 0.1f);
-        ImGui::DragFloat("point color g", &RenderSystem::getInstance()->_scene->_light->_color.y, 0.1f);
-        ImGui::DragFloat("point color b", &RenderSystem::getInstance()->_scene->_light->_color.z, 0.1f);
+        ImGui::DragFloat("point color r", &RenderSystem::getInstance()->_scene->_pointLight->_color.x, 0.1f);
+        ImGui::DragFloat("point color g", &RenderSystem::getInstance()->_scene->_pointLight->_color.y, 0.1f);
+        ImGui::DragFloat("point color b", &RenderSystem::getInstance()->_scene->_pointLight->_color.z, 0.1f);
 
         // light strength
-        ImGui::DragFloat("point strength", &RenderSystem::getInstance()->_scene->_light->_intensity, 0.1f);
+        ImGui::DragFloat("point strength", &RenderSystem::getInstance()->_scene->_pointLight->_intensity, 0.1f);
+
+        // dir light
+        ImGui::DragFloat("directional light direction x", &RenderSystem::getInstance()->_scene->_dirLight->_direction.x, 0.1f);
+        ImGui::DragFloat("directional light direction y", &RenderSystem::getInstance()->_scene->_dirLight->_direction.y, 0.1f);
+        ImGui::DragFloat("directional light direction z", &RenderSystem::getInstance()->_scene->_dirLight->_direction.z, 0.1f);
+
+        //dir color
+        ImGui::DragFloat("directional light color r", &RenderSystem::getInstance()->_scene->_dirLight->_color.x, 0.1f);
+        ImGui::DragFloat("directional light color g", &RenderSystem::getInstance()->_scene->_dirLight->_color.y, 0.1f);
+        ImGui::DragFloat("directional light color b", &RenderSystem::getInstance()->_scene->_dirLight->_color.z, 0.1f);
+
+        ImGui::DragFloat("dir light strength", &RenderSystem::getInstance()->_scene->_dirLight->_intensity, 0.1f);
 
         // selected obj
         if (_currentObj != nullptr)

@@ -6,6 +6,7 @@
 #include"Geometry/Mesh.h"
 #include"RenderResource.h"
 #include"PointLight.h"
+#include"DirectionalLight.h"
 #include"RenderCamera.h"
 
 namespace FOCUS
@@ -18,7 +19,8 @@ namespace FOCUS
 		DRHI::DynamicCommandPool _sceneCommandPool;
 
 		std::vector<std::shared_ptr<RenderResource>> _group;
-		std::shared_ptr<PointLight> _light;
+		std::shared_ptr<PointLight> _pointLight;
+		std::shared_ptr<DirectionalLight> _dirLight;
 		std::shared_ptr<RenderCamera> _camera;
 
 		uint32_t _canvasWidth{1280};

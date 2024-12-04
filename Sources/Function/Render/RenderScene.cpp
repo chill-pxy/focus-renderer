@@ -10,7 +10,8 @@ namespace FOCUS
 		rhi->createCommandPool(&_sceneCommandPool);
 		rhi->createCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
 
-		_light = std::make_shared<PointLight>();
+		_pointLight = std::make_shared<PointLight>();
+		_dirLight = std::make_shared<DirectionalLight>();
 		_camera = std::make_shared<RenderCamera>();
 
 		prepareRenderResources();
@@ -19,10 +20,13 @@ namespace FOCUS
 	void RenderScene::prepareRenderResources()
 	{
 		// prepare light
-		_light->_position = Vector3(0.0f, 7.0f, 0.0f);
-		_light->_intensity = 100.0f;
-		_light->_name = "PointLight";
-		add(_light);
+		_pointLight->_position = Vector3(0.0f, 7.0f, 0.0f);
+		_pointLight->_intensity = 100.0f;
+		_pointLight->_name = "PointLight";
+
+		_dirLight->_direction = Vector3(0.0f, 0.0f, 0.0f);
+		_dirLight->_intensity = 1.0f;
+		add(_pointLight);
 
 		// prepare camera
 		_camera->_position = Vector3(-6.5f, 5.0f, 7.5f);
@@ -66,9 +70,13 @@ namespace FOCUS
 
 		uud.viewPosition = _camera->_position;
 
-		uud.pointLightPosition = _light->_position;
-		uud.pointLightColor = _light->_color;
-		uud.pointLightIntensity = _light->_intensity;
+		uud.pointLightPosition = _pointLight->_position;
+		uud.pointLightColor = _pointLight->_color;
+		uud.pointLightIntensity = _pointLight->_intensity;
+
+		uud.dirLightDirection = _dirLight->_direction;
+		uud.dirLightColor = _dirLight->_color;
+		uud.dirLightStrength = _dirLight->_intensity;
 		
 		for (auto object : _group)
 		{

@@ -19,8 +19,17 @@ namespace FOCUS
         _material->build(rhi, commandPool);
     }
 
-    std::shared_ptr<Mesh> loadModel(const char* modelPath)
+    std::shared_ptr<Mesh> loadModel(std::string modelPath)
     {
+        // find mlt path
+        std::string basePath;
+        size_t pos = modelPath.rfind('/');
+        if (pos != std::string::npos) 
+        { 
+            basePath = modelPath.substr(0, pos);
+        }
+
+        // load obj data
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
 
@@ -29,13 +38,14 @@ namespace FOCUS
         std::vector<tinyobj::material_t> materials;
         std::string warn, err;
 
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath))
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelPath.c_str(), basePath.c_str()))
         {
             throw std::runtime_error(warn + err);
         }
 
         std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
+        // handle mesh data
         for (const auto& shape : shapes)
         {
             for (const auto& index : shape.mesh.indices)

@@ -27,5 +27,5 @@ namespace FOCUS
         virtual void updateUniformBuffer(UniformUpdateData uud);
     };
 
-    std::shared_ptr<Mesh> loadModel(const char* modelPath);
+    std::shared_ptr<Mesh> loadModel(std::string modelPath);
 }

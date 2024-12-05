@@ -33,11 +33,11 @@ namespace FOCUS
 		_camera->_rotation = Vector3(-26.0f, -147.0f, 0.0f);
 
 		// prepare obj
-		//auto obj = loadModel("../../../Asset/Models/viking_room.obj");
-		//auto texture = loadTexture("../../../Asset/Models/viking_room.png");
-		//obj->_material = std::make_shared<BlinnPhongMaterial>(texture);
-		//obj->_name = "Viking Room";
-		//add(obj);
+		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
+		auto texture = loadTexture("../../../Asset/Models/viking_room.png");
+		obj->_material = std::make_shared<BlinnPhongMaterial>(texture);
+		obj->_name = "Viking Room";
+		add(obj);
 
 		auto dragon = loadModel("../../../Asset/Models/dragon.obj");
 		auto texture2 = loadTexture("../../../Asset/Models/box.png");
@@ -45,11 +45,11 @@ namespace FOCUS
 		dragon->_name = "Dragon";
 		add(dragon);
 
-		auto box = loadModel("../../../Asset/Models/box.obj");
-		auto texture3 = loadTexture("../../../Asset/Models/box.png");
-		box->_material = std::make_shared<BlinnPhongMaterial>(texture3);
-		box->_name = "Box";
-		add(box);
+		//auto box = loadModel("../../../Asset/Models/box.obj");
+		//auto texture3 = loadTexture("../../../Asset/Models/box.png");
+		//box->_material = std::make_shared<BlinnPhongMaterial>(texture3);
+		//box->_name = "Box";
+		//add(box);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

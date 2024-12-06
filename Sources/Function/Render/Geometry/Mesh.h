@@ -15,7 +15,6 @@ namespace FOCUS
     class Mesh : public RenderResource
     {
     public:
-        tinyobj::attrib_t        _attrib{};
         std::vector<Vertex>      _vertices{};
         std::vector<uint32_t>    _indices{};
 
@@ -26,6 +25,4 @@ namespace FOCUS
         virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer);
         virtual void updateUniformBuffer(UniformUpdateData uud);
     };
-
-    std::shared_ptr<Mesh> loadModel(std::string modelPath);
 }

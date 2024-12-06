@@ -41,6 +41,18 @@ namespace FOCUS
         DRHI::DynamicPipeline       _pipeline{};
         DRHI::DynamicPipelineLayout _pipelineLayout{};
 
+        // property
+        std::string _name{ "unknown" };
+        std::string _ambientTex{ "" };
+        std::string _diffuseTex{ "" };
+        std::string _specularTex{ "" };
+
+        float _ambient{ 1.0 };
+        float _diffuse{ 1.0 };
+        float _specular{ 0.0 };
+        float _roughness{ 0.0 };
+        float _ior{ 0.0 };
+
 	public:
 		Material() = default;
 

@@ -30,16 +30,17 @@ namespace FOCUS
 
 	class BlinnPhongMaterial : public Material
 	{
+    public:
+        std::shared_ptr<Texture> _basicTexture;
+
 	private:
         void* _vuniformBufferMapped{nullptr};
         DRHI::DynamicBuffer               _vuniformBuffer;
         DRHI::DynamicDeviceMemory        _vuniformBufferMemory;
         DRHI::DynamicDescriptorBufferInfo _vdescriptorBufferInfo;
-        
-        std::shared_ptr<Texture> _basicTexture;
 
 	public:
-		BlinnPhongMaterial() = delete;
+        BlinnPhongMaterial() {};
         BlinnPhongMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
 		
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)

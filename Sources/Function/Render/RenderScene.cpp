@@ -2,6 +2,7 @@
 #include"Materials/BasicMaterial.h"
 #include"Materials/BlinnPhongMaterial.h"
 #include"Geometry/Sphere.h"
+#include"Geometry/Model.h"
 
 namespace FOCUS
 {
@@ -34,16 +35,16 @@ namespace FOCUS
 
 		// prepare obj
 		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
-		auto texture = loadTexture("../../../Asset/Models/viking_room.png");
-		obj->_material = std::make_shared<BlinnPhongMaterial>(texture);
-		obj->_name = "Viking Room";
-		add(obj);
+		//auto texture = loadTexture("../../../Asset/Models/viking_room.png");
+		//obj->_material = std::make_shared<BlinnPhongMaterial>(texture);
+		//obj->_name = "Viking Room";
+		//add(obj);
 
-		auto dragon = loadModel("../../../Asset/Models/dragon.obj");
-		auto texture2 = loadTexture("../../../Asset/Models/box.png");
-		dragon->_material = std::make_shared<BlinnPhongMaterial>(texture2);
-		dragon->_name = "Dragon";
-		add(dragon);
+		//auto dragon = loadModel("../../../Asset/Models/dragon.obj");
+		//auto texture2 = loadTexture("../../../Asset/Models/box.png");
+		//dragon->_material = std::make_shared<BlinnPhongMaterial>(texture2);
+		//dragon->_name = "Dragon";
+		//add(dragon);
 
 		//auto box = loadModel("../../../Asset/Models/box.obj");
 		//auto texture3 = loadTexture("../../../Asset/Models/box.png");

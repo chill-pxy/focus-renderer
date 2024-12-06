@@ -456,6 +456,10 @@ namespace FOCUS
             ImGui::DragFloat("Position X", &_currentObj->_position.x, 0.1f);
             ImGui::DragFloat("Position Y", &_currentObj->_position.y, 0.1f);
             ImGui::DragFloat("Position Z", &_currentObj->_position.z, 0.1f);
+
+            ImGui::DragFloat("Scale X", &_currentObj->_scale.x, 0.1f);
+            ImGui::DragFloat("Scale Y", &_currentObj->_scale.y, 0.1f);
+            ImGui::DragFloat("Scale Z", &_currentObj->_scale.z, 0.1f);
         }
        
 

@@ -3,7 +3,7 @@
 #include<memory>
 #include<vector>
 
-#include"Geometry/Mesh.h"
+#include"Geometry/Model.h"
 #include"RenderResource.h"
 #include"PointLight.h"
 #include"DirectionalLight.h"
@@ -32,7 +32,10 @@ namespace FOCUS
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void prepareRenderResources();
 		void add(std::shared_ptr<RenderResource> resource);
+		void add(std::shared_ptr<Model> model);
 		void tick(float frameTimer);
 		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi);
+
+		std::shared_ptr<Model> loadModel(std::string modelPath);
 	};
 }

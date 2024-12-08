@@ -31,6 +31,7 @@ namespace FOCUS
 
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
 		{
+            if (_built) return;
             auto api = rhi->getCurrentAPI();
             auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
             auto format = DRHI::DynamicFormat(api);

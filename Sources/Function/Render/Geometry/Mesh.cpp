@@ -4,6 +4,8 @@ namespace FOCUS
 {
 	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
 	{
+        if((_vertices.size() == 0) || (_indices.size() == 0)) return;
+
         auto api = rhi->getCurrentAPI();
         auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
         auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);

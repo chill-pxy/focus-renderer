@@ -53,6 +53,8 @@ namespace FOCUS
         float _roughness{ 0.0 };
         float _ior{ 0.0 };
 
+        bool _built{ false };
+
 	public:
 		Material() = default;
 

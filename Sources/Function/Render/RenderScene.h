@@ -8,11 +8,15 @@
 #include"PointLight.h"
 #include"DirectionalLight.h"
 #include"RenderCamera.h"
+#include"Materials/MaterialManager.h"
 
 namespace FOCUS
 {
 	class RenderScene
 	{
+	private:
+		MaterialManager _materialManager;
+
 	public:
 		
 		std::vector<DRHI::DynamicCommandBuffer> _sceneCommandBuffers;

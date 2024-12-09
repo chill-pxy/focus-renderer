@@ -149,25 +149,26 @@ namespace FOCUS
         // handle material
         for (tinyobj::material_t& mat : materials)
         {
-            std::shared_ptr<BlinnPhongMaterial> material = std::make_shared<BlinnPhongMaterial>();
-
-            material->_name = mat.name;
-            material->_ambient = mat.ambient[0];
-            material->_diffuse = mat.diffuse[0];
-            material->_specular = mat.specular[0];
-            material->_roughness = mat.shininess;
-            material->_ior = mat.ior;
-
-            material->_ambientTex = mat.ambient_texname;
-            material->_diffuseTex = mat.diffuse_texname;
-            material->_specularTex = mat.specular_texname;
+            std::shared_ptr<BlinnPhongMaterial> material;
 
             if (mat.diffuse_texname.compare(""))
             {
-                material->_basicTexture = loadTexture((basePath + '/' + mat.diffuse_texname).c_str());
-            }
+                std::shared_ptr<Texture> texture = loadTexture((basePath + '/' + mat.diffuse_texname).c_str());                
+                material = _materialManager.createMaterial(mat.name, texture);
 
-            model->_materials.push_back(material);
+                material->_name = mat.name;
+                material->_ambient = mat.ambient[0];
+                material->_diffuse = mat.diffuse[0];
+                material->_specular = mat.specular[0];
+                material->_roughness = mat.shininess;
+                material->_ior = mat.ior;
+
+                material->_ambientTex = mat.ambient_texname;
+                material->_diffuseTex = mat.diffuse_texname;
+                material->_specularTex = mat.specular_texname;
+
+                model->_materials.push_back(material);
+            }
         }
 
         // handle every shape

@@ -128,6 +128,8 @@ namespace FOCUS
 
 
             rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
+
+            _built = true;
 		};
 
 		virtual void updateUniformBuffer(UniformUpdateData uud)

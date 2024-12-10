@@ -74,7 +74,7 @@ namespace FOCUS
 
 		UniformUpdateData uud{};
 		uud.view = _camera->getViewMatrix();
-		uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 0.1f, 100.0f);
+		uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 0.1f, 10000.0f);
 		uud.proj[1][1] *= -1;
 
 		uud.viewPosition = _camera->_position;
@@ -92,15 +92,10 @@ namespace FOCUS
 			uud.vertexColor = object->_color;
 
 			// handle scale
-			auto identity = Matrix4(
-				object->_scale.x, 0               , 0               , 0,
-				0               , object->_scale.y, 0               , 0,
-				0               , 0               , object->_scale.z, 0,
-				0               , 0               , 0               , 1
-			);
+            uud.model = scale(Matrix4(1.0f), Vector3(object->_scale.x, object->_scale.y, object->_scale.z));
 
 			// handle translate
-			uud.model = translate(identity * object->_scale.x, object->_position);
+			uud.model = translate(Matrix4(1.0f), object->_position);
 			object->updateUniformBuffer(uud);
 		}
 	}

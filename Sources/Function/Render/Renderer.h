@@ -19,8 +19,8 @@ namespace FOCUS
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers;
 		DRHI::DynamicCommandPool _commandPool;
 
-		std::vector<DRHI::DynamicImage>*     _viewportImages;
-		std::vector<DRHI::DynamicImageView>* _viewportImageViews;
+		std::vector<DRHI::DynamicImage>* _viewportImages{nullptr};
+		std::vector<DRHI::DynamicImageView>* _viewportImageViews{nullptr};
 
 		bool _prepared = false;
 

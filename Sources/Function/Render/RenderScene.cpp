@@ -249,6 +249,7 @@ namespace FOCUS
             mesh->_vertices = vertices;
             mesh->_material = model->_materials[count];
             mesh->_name = model->_materials[count]->_name;
+            mesh->_scale = Vector3(0.1, 0.1, 0.1);
 
             model->_meshes.push_back(mesh);
 

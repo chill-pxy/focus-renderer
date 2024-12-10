@@ -23,7 +23,8 @@ namespace FOCUS
 
     void Mesh::draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
     {
-        if (_indexBuffer.vaild() || _vertexBuffer.vaild()) return;
+        if (!_indexBuffer.vaild() || !_vertexBuffer.vaild()) return;
+
         auto api = rhi->getCurrentAPI();
         auto indexType = DRHI::DynamicIndexType(api);
 

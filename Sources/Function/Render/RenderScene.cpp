@@ -173,7 +173,7 @@ namespace FOCUS
 
         // handle every shape
         std::vector<std::vector<tinyobj::index_t>> allSubFace;
-        allSubFace.resize(materials.size() + 1);
+        allSubFace.resize(materials.size());
 
         for (uint32_t i = 0; i < shapes.size(); ++i)
         {
@@ -186,7 +186,7 @@ namespace FOCUS
             {
                 int materialIndex = shapes[i].mesh.material_ids[j];
 
-                std::vector<tinyobj::index_t>& subIdx = allSubFace[materialIndex + 1];
+                std::vector<tinyobj::index_t>& subIdx = allSubFace[materialIndex];
                 subIdx.push_back(shapes[i].mesh.indices[indexOffset++]);
                 subIdx.push_back(shapes[i].mesh.indices[indexOffset++]);
                 subIdx.push_back(shapes[i].mesh.indices[indexOffset++]);
@@ -195,12 +195,12 @@ namespace FOCUS
 
         // handle mesh
         std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+        uint32_t count = 0;
 
         for (std::vector<tinyobj::index_t>& subIdx : allSubFace)
         {
             std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
-
-            uint32_t count = 0;
+            
             for (tinyobj::index_t& index : subIdx)
             {
                 Vertex vertex{};
@@ -248,10 +248,15 @@ namespace FOCUS
             mesh->_indices = indices;
             mesh->_vertices = vertices;
             mesh->_material = model->_materials[count];
+            mesh->_name = model->_materials[count]->_name;
 
             model->_meshes.push_back(mesh);
 
-            count++;
+            if (count != model->_materials.size() - 1)
+            {
+                count++;
+            }
+            
         }
 
         return model;

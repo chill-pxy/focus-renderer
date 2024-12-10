@@ -23,7 +23,7 @@ namespace FOCUS
 
         Vector3 _position{ 0.0,0.0,0.0 };
         Vector3 _color{ 1.0f, 1.0f, 1.0f };
-        Vector3 _scale{ 1.0f, 1.0f, 1.0f };
+        Vector3 _scale{ 0.1f, 0.1f, 0.1f };
 
     public:
         RenderResource() = default;

@@ -92,10 +92,13 @@ namespace FOCUS
 			uud.vertexColor = object->_color;
 
 			// handle scale
-            uud.model = scale(Matrix4(1.0f), Vector3(object->_scale.x, object->_scale.y, object->_scale.z));
+            auto scaleMatrix = scale(identity<Matrix4>(), Vector3(object->_scale.x, object->_scale.y, object->_scale.z));
 
 			// handle translate
-			uud.model = translate(Matrix4(1.0f), object->_position);
+			auto transMatrix = translate(identity<Matrix4>(), object->_position);
+
+            uud.model = transMatrix * scaleMatrix;
+
 			object->updateUniformBuffer(uud);
 		}
 	}
@@ -244,7 +247,7 @@ namespace FOCUS
             mesh->_vertices = vertices;
             mesh->_material = model->_materials[count];
             mesh->_name = model->_materials[count]->_name;
-            mesh->_scale = Vector3(0.1, 0.1, 0.1);
+            mesh->_scale = Vector3(0.01, 0.01, 0.01);
 
             model->_meshes.push_back(mesh);
 

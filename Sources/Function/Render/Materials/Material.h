@@ -23,6 +23,12 @@ namespace FOCUS
         Vector3 dirLightDirection;
         Vector3 dirLightColor;
         float   dirLightStrength;
+
+        float ambient;
+        float diffuse;
+        float specular;
+        float roughness;
+        float shinness;
  
     }UniformUpdateData;
 
@@ -51,6 +57,7 @@ namespace FOCUS
         float _diffuse{ 1.0 };
         float _specular{ 0.0 };
         float _roughness{ 0.0 };
+        float _shinness{ 0.0 };
         float _ior{ 0.0 };
 
         bool _built{ false };

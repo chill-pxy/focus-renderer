@@ -39,6 +39,16 @@ namespace FOCUS
 
     void Mesh::updateUniformBuffer(UniformUpdateData uud)
     {
+        uud.vertexColor = _color;
+
+        // handle scale
+        auto scaleMatrix = scale(identity<Matrix4>(), Vector3(_scale.x, _scale.y, _scale.z));
+
+        // handle translate
+        auto transMatrix = translate(identity<Matrix4>(), _position);
+
+        uud.model = transMatrix * scaleMatrix;
+
         _material->updateUniformBuffer(uud);
     }
 }

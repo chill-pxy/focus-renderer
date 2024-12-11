@@ -25,8 +25,8 @@ namespace FOCUS
 		_pointLight->_intensity = 1000.0f;
 		_pointLight->_name = "PointLight";
 
-		_dirLight->_direction = Vector3(0.0f, 0.0f, 0.0f);
-		_dirLight->_intensity = 1.0f;
+		_dirLight->_direction = Vector3(-2.8f, -5.2f, 0.0f);
+		_dirLight->_intensity = 0.05f;
 		add(_pointLight);
 
 		// prepare camera
@@ -73,16 +73,6 @@ namespace FOCUS
 		
 		for (auto object : _group)
 		{
-			uud.vertexColor = object->_color;
-
-			// handle scale
-            auto scaleMatrix = scale(identity<Matrix4>(), Vector3(object->_scale.x, object->_scale.y, object->_scale.z));
-
-			// handle translate
-			auto transMatrix = translate(identity<Matrix4>(), object->_position);
-
-            uud.model = transMatrix * scaleMatrix;
-
 			object->updateUniformBuffer(uud);
 		}
 	}
@@ -142,7 +132,8 @@ namespace FOCUS
                 material->_ambient = mat.ambient[0];
                 material->_diffuse = mat.diffuse[0];
                 material->_specular = mat.specular[0];
-                material->_roughness = mat.shininess;
+                material->_roughness = shininessToRoughness(mat.shininess);
+                material->_shinness = mat.shininess;
                 material->_ior = mat.ior;
 
                 material->_ambientTex = mat.ambient_texname;

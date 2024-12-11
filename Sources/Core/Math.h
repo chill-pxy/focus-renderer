@@ -18,4 +18,22 @@ namespace FOCUS
 	typedef glm::quat Quaternion;
 
 	static const double PI = 3.14159265358979323846264338327950288;
+
+
+	static float shininessToRoughness(float Ypoint)
+	{
+		float a = -1;
+		float b = 2;
+
+		float c;
+		c = (Ypoint / 100) - 1;
+
+		float D;
+		D = b * b - (4 * a * c);
+
+		float x1;
+		x1 = (-b + sqrt(D)) / (2 * a);
+
+		return x1;
+	}
 }

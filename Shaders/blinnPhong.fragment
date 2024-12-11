@@ -40,7 +40,7 @@ vec3 calDirLight(vec3 color)
     
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayDir), 0.0), 5); // ÕâÀïµÄ32ÊÇ¹âÔó¶ÈÖ¸Êý
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), 5); // ï¿½ï¿½ï¿½ï¿½ï¿½32ï¿½Ç¹ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
     vec3 specular = spec * fragDirLightColor * 0.3 * fragDirLightStrength;
 
     return (ambient + diffuse + specular);
@@ -72,7 +72,7 @@ vec3 calPointLight(vec3 color)
     
     // specular
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfwayDir), 0.0), 5); // ÕâÀïµÄ32ÊÇ¹âÔó¶ÈÖ¸Êý
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), 5); // ï¿½ï¿½ï¿½ï¿½ï¿½32ï¿½Ç¹ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
     vec3 specular = spec * fragPointLightColor * 0.3 * attenuation;
 
     return (ambient + diffuse + specular);

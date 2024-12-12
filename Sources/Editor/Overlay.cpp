@@ -50,7 +50,7 @@ namespace FOCUS
         {
             DRHI::DynamicBorderColor color(_rhi->getCurrentAPI());
             DRHI::DynamicSamplerAddressMode mode(_rhi->getCurrentAPI());
-            DRHI::DynamicSmplerCreateInfo sci{};
+            DRHI::DynamicSamplerCreateInfo sci{};
             sci.borderColor = color.BORDER_COLOR_INT_OPAQUE_BLACK;
             sci.sampleraAddressMode = mode.SAMPLER_ADDRESS_MODE_REPEAT;
 

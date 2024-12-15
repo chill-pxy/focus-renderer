@@ -116,8 +116,7 @@ namespace FOCUS
 
 			// create pipeline
 			DRHI::DynamicPipelineCreateInfo pci = {};
-			pci.vertexShader = "../../../Shaders/blinnPhongVertex.spv";
-			pci.fragmentShader = "../../../Shaders/blinnPhongFragment.spv";
+			pci.vertexShader = "../../../Shaders/shadowMapVertex.spv";
 			pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 			pci.vertexInputBinding.set(api, 0, 0);
 			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();

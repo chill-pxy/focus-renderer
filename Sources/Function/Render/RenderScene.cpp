@@ -3,6 +3,7 @@
 #include"Materials/BlinnPhongMaterial.h"
 #include"Geometry/Sphere.h"
 #include"Geometry/Model.h"
+#include"ShadowMap.h"
 
 namespace FOCUS
 {
@@ -16,6 +17,10 @@ namespace FOCUS
 		_camera = std::make_shared<RenderCamera>();
 
 		prepareRenderResources();
+
+        auto s = new ShadowMap();
+        s->_rhi = rhi;
+        s->initialize();
 	}
 
 	void RenderScene::prepareRenderResources()

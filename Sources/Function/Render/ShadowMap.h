@@ -3,6 +3,7 @@
 #include<drhi.h>
 
 #include"../../Core/Math.h"
+#include"Geometry/MeshVertex.h"
 
 namespace FOCUS
 {
@@ -118,8 +119,10 @@ namespace FOCUS
 			DRHI::DynamicPipelineCreateInfo pci = {};
 			pci.vertexShader = "../../../Shaders/shadowMapVertex.spv";
 			pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
-			pci.vertexInputBinding.set(api, 0, 0);
+			pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+			pci.vertexInputAttributes.resize(1);
+			pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
 
 			DRHI::DynamicPipelineLayoutCreateInfo plci{};
 			plci.pSetLayouts = &_descriptorSetLayout;
@@ -127,7 +130,6 @@ namespace FOCUS
 			plci.pushConstantRangeCount = 0;
 
 			_rhi->createPipelineLayout(&_shadowPipelineLayout, &plci);
-
 
 			_rhi->createPipeline(&_shadowPipeline, &_shadowPipelineLayout, pci);
 		}

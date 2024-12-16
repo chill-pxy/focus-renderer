@@ -46,6 +46,16 @@ namespace FOCUS
 			MARGINS margins = { 0 };
 			DwmExtendFrameIntoClientArea(hWnd, &margins);
 			SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+			
+			HICON hIcon = (HICON)::LoadImage(
+				NULL,
+				TEXT("E:\\project\\FOCUS\\Asset\\Images\\focus.ico"),
+				IMAGE_ICON,
+				0, 0,
+				LR_DEFAULTCOLOR | LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+			SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+			SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+			DestroyIcon(hIcon);
 			break;
 		}
 

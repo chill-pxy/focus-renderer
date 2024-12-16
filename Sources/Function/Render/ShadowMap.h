@@ -4,6 +4,7 @@
 
 #include"../../Core/Math.h"
 #include"Geometry/MeshVertex.h"
+#include"Materials/Material.h"
 
 namespace FOCUS
 {
@@ -38,11 +39,16 @@ namespace FOCUS
 		uint32_t _shadowDepthImageWidth{ 512 };
 		uint32_t _shadowDepthImageHeight{ 512 };
 
+		float _zNear = 1.0f;
+		float _zFar = 96.0f;
+
 	public:
 		ShadowMap() = default;
 
-		void initialize()
+		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
 		{
+			_rhi = rhi;
+
 			auto api = _rhi->getCurrentAPI();
 			auto format = DRHI::DynamicFormat(api);
 			auto tilling = DRHI::DynamicImageTiling(api);
@@ -133,5 +139,20 @@ namespace FOCUS
 
 			_rhi->createPipeline(&_shadowPipeline, &_shadowPipelineLayout, pci);
 		}
+
+		void updateUniform(UniformUpdateData ubo)
+		{
+			// Matrix from light's point of view
+			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, _zNear, _zFar);
+			Matrix4 depthViewMatrix = lookAt(ubo.pointLightPosition, Vector3(0.0f), Vector3(0, 1, 0));
+			Matrix4 depthModelMatrix = Matrix4(1.0f);
+
+			ShadowMapUniformBufferObject subo{};
+			subo.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+			memcpy(_uniformBufferMapped, &subo, sizeof(ShadowMapUniformBufferObject));
+		}
 	};
+
+
 }

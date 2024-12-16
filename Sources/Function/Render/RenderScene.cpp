@@ -3,7 +3,7 @@
 #include"Materials/BlinnPhongMaterial.h"
 #include"Geometry/Sphere.h"
 #include"Geometry/Model.h"
-#include"ShadowMap.h"
+
 
 namespace FOCUS
 {
@@ -16,11 +16,10 @@ namespace FOCUS
 		_dirLight = std::make_shared<DirectionalLight>();
 		_camera = std::make_shared<RenderCamera>();
 
-		prepareRenderResources();
+        _shadowMap = std::make_shared<ShadowMap>();
+        _shadowMap->initialize(rhi);
 
-        auto s = new ShadowMap();
-        s->_rhi = rhi;
-        s->initialize();
+		prepareRenderResources();
 	}
 
 	void RenderScene::prepareRenderResources()
@@ -75,7 +74,9 @@ namespace FOCUS
 		uud.dirLightDirection = _dirLight->_direction;
 		uud.dirLightColor = _dirLight->_color;
 		uud.dirLightStrength = _dirLight->_intensity;
-		
+
+        _shadowMap->updateUniform(uud);
+
 		for (auto object : _group)
 		{
 			object->updateUniformBuffer(uud);

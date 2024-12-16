@@ -9,6 +9,7 @@
 #include"DirectionalLight.h"
 #include"RenderCamera.h"
 #include"Materials/MaterialManager.h"
+#include"ShadowMap.h"
 
 namespace FOCUS
 {
@@ -26,6 +27,7 @@ namespace FOCUS
 		std::shared_ptr<PointLight> _pointLight;
 		std::shared_ptr<DirectionalLight> _dirLight;
 		std::shared_ptr<RenderCamera> _camera;
+		std::shared_ptr<ShadowMap> _shadowMap;
 
 		uint32_t _canvasWidth{1280};
 		uint32_t _canvasHeight{720};

@@ -22,7 +22,7 @@ namespace FOCUS
         Mesh() = default;
 
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool);
-        virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer);
+        virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool usingMaterial);
         virtual void updateUniformBuffer(UniformUpdateData uud);
     };
 }

@@ -16,9 +16,6 @@ namespace FOCUS
 		_dirLight = std::make_shared<DirectionalLight>();
 		_camera = std::make_shared<RenderCamera>();
 
-        _shadowMap = std::make_shared<ShadowMap>();
-        _shadowMap->initialize(rhi);
-
 		prepareRenderResources();
 	}
 
@@ -75,7 +72,7 @@ namespace FOCUS
 		uud.dirLightColor = _dirLight->_color;
 		uud.dirLightStrength = _dirLight->_intensity;
 
-        _shadowMap->updateUniform(uud);
+        //_shadowMap->updateUniform(uud);
 
 		for (auto object : _group)
 		{

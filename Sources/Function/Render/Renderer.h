@@ -7,6 +7,7 @@
 
 #include"../../Core/Math.h"
 #include"RenderResource.h"
+#include"ShadowMap.h"
 
 namespace FOCUS
 {
@@ -21,6 +22,8 @@ namespace FOCUS
 
 		std::vector<DRHI::DynamicImage>* _viewportImages{nullptr};
 		std::vector<DRHI::DynamicImageView>* _viewportImageViews{nullptr};
+
+		std::shared_ptr<ShadowMap> _shadowMap;
 
 		bool _prepared = false;
 

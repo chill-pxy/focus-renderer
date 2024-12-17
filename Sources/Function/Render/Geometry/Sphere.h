@@ -72,13 +72,16 @@ namespace FOCUS
 			_material->build(rhi, commandPool);
 		}
 
-		virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
+		virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool usingMaterial)
 		{
 			auto api = rhi->getCurrentAPI();
 			auto indexType = DRHI::DynamicIndexType(api);
 
-			_material->draw(rhi, commandBuffer);
-
+			if (usingMaterial)
+			{
+				_material->draw(rhi, commandBuffer);
+			}
+			
 			rhi->bindVertexBuffers(&_vertexBuffer, commandBuffer);
 			rhi->bindIndexBuffer(&_indexBuffer, commandBuffer, indexType.INDEX_TYPE_UINT32);
 

@@ -22,11 +22,15 @@ namespace FOCUS
 			_rhiContext = std::make_shared<DRHI::VulkanDRHI>(rhiCI);
 			break;
 		}
+
+		_shadowMap = std::make_shared<ShadowMap>();
 	}
 
 	void Renderer::initialize()
 	{
 		_rhiContext->initialize();
+
+		_shadowMap->initialize(_rhiContext);
 
 		_prepared = true;
 	}
@@ -59,7 +63,32 @@ namespace FOCUS
 			renderInfo.isRenderOnSwapChain = false;
 			renderInfo.isClearEveryFrame = true;
 
-			auto index = _rhiContext->getCurrentFrame();
+			// rendering shadow map
+			for (int index = 0; index < _commandBuffers.size(); ++index)
+			{
+				renderInfo.targetImage = &(*_viewportImages)[index];
+				renderInfo.targetImageView = &(*_viewportImageViews)[index];
+
+				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
+				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+
+				// binding shadow map pipeline
+				auto api = _rhiContext->getCurrentAPI();
+				auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+
+				_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_commandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_commandBuffers[index], 0);
+
+				for (auto p : _submitRenderlist)
+				{
+					p->draw(_rhiContext, &_commandBuffers[index], false);
+				}
+
+				_rhiContext->endRendering(_commandBuffers[index], renderInfo);
+				_rhiContext->endCommandBuffer(_commandBuffers[index]);
+			}
+
+			// rendering scene
 			for (int index = 0; index < _commandBuffers.size(); ++index)
 			{
 				renderInfo.targetImage = &(*_viewportImages)[index];
@@ -70,7 +99,7 @@ namespace FOCUS
 
 				for (auto p : _submitRenderlist)
 				{
-					p->draw(_rhiContext, &_commandBuffers[index]);
+					p->draw(_rhiContext, &_commandBuffers[index], true);
 				}
 
 				_rhiContext->endRendering(_commandBuffers[index], renderInfo);

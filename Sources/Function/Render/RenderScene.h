@@ -27,6 +27,8 @@ namespace FOCUS
 		std::shared_ptr<DirectionalLight> _dirLight;
 		std::shared_ptr<RenderCamera> _camera;
 
+		UniformUpdateData _uud{};
+
 		uint32_t _canvasWidth{1280};
 		uint32_t _canvasHeight{720};
 

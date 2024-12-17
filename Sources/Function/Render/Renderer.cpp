@@ -108,7 +108,10 @@ namespace FOCUS
 		}
 	}
 
-
+	void Renderer::tick(UniformUpdateData ubo)
+	{
+		_shadowMap->updateUniform(ubo);
+	}
 
 	void Renderer::clean()
 	{

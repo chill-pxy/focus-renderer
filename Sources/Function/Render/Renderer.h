@@ -38,5 +38,6 @@ namespace FOCUS
 		void submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews);
 		void clean();
 		void recreate();
+		void tick(UniformUpdateData ubo);
 	};
 }

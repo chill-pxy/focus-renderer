@@ -15,6 +15,7 @@ layout(binding = 0) uniform VertexUniformBufferObject
     vec3 dirLightDirection;
     vec3 dirLightColor;
     float dirLightStrength;
+    mat4 dirLightSpace;
 
     float ambient;
     float diffuse;
@@ -48,6 +49,15 @@ layout(location = 12) out float fragDiffuse;
 layout(location = 13) out float fragSpecular;
 layout(location = 14) out float fragShinness;
 
+layout(location = 15) out vec4 fragShadowCoord;
+
+const mat4 biasMat = mat4(
+    0.5, 0.0, 0.0, 0.0,
+    0.0, 0.5, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.5, 0.5, 0.0, 1.0
+);
+
 void main() 
 {
     gl_Position = vubo.proj * vubo.view * vubo.model * vec4(inPosition, 1.0);
@@ -55,7 +65,7 @@ void main()
     fragColor    = inColor;
     fragTexCoord = inTexCoord;
     fragPosition = (vubo.model * vec4(inPosition, 1.0)).xyz ;
-    fragNormal   = inNormal;
+    fragNormal   = (vubo.model * vec4(inNormal, 1.0)).xyz;
 
     fragViewPosition = vubo.viewPosition;
 
@@ -71,4 +81,6 @@ void main()
     fragDiffuse = vubo.diffuse;
     fragSpecular = vubo.specular;
     fragShinness = vubo.shinness;
+
+    fragShadowCoord = ( biasMat * vubo.dirLightSpace * vubo.model ) * vec4(inPosition, 1.0);
 }

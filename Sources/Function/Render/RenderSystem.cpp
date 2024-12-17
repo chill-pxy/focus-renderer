@@ -48,7 +48,8 @@ namespace FOCUS
 
 		// scene tick
 		_scene->tick(_frameTimer);
-		
+		_renderer->tick(_scene->_uud);
+
 		// Convert to clamped timer value
 		_timer += _timerSpeed * _frameTimer;
 		if (_timer > 1.0)
@@ -72,9 +73,7 @@ namespace FOCUS
 	void RenderSystem::clean()
 	{
 		_scene->clean(_renderer->_rhiContext);
-		//_ui->clean();
 		_renderer->clean();
-		//_ui->_prepared = false;
 		_isInitialized = false;
 	}
 

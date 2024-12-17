@@ -57,26 +57,23 @@ namespace FOCUS
 		// camera tick
 		_camera->handleMovement(frameTimer);
 
-		UniformUpdateData uud{};
-		uud.view = _camera->getViewMatrix();
-		uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 0.1f, 10000.0f);
-		uud.proj[1][1] *= -1;
+		_uud.view = _camera->getViewMatrix();
+		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 0.1f, 10000.0f);
+		_uud.proj[1][1] *= -1;
 
-		uud.viewPosition = _camera->_position;
+		_uud.viewPosition = _camera->_position;
 
-		uud.pointLightPosition = _pointLight->_position;
-		uud.pointLightColor = _pointLight->_color;
-		uud.pointLightIntensity = _pointLight->_intensity;
+		_uud.pointLightPosition = _pointLight->_position;
+		_uud.pointLightColor = _pointLight->_color;
+		_uud.pointLightIntensity = _pointLight->_intensity;
 
-		uud.dirLightDirection = _dirLight->_direction;
-		uud.dirLightColor = _dirLight->_color;
-		uud.dirLightStrength = _dirLight->_intensity;
-
-        //_shadowMap->updateUniform(uud);
+		_uud.dirLightDirection = _dirLight->_direction;
+		_uud.dirLightColor = _dirLight->_color;
+		_uud.dirLightStrength = _dirLight->_intensity;
 
 		for (auto object : _group)
 		{
-			object->updateUniformBuffer(uud);
+			object->updateUniformBuffer(_uud);
 		}
 	}
 

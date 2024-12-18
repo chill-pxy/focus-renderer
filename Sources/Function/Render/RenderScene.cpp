@@ -52,7 +52,7 @@ namespace FOCUS
 		}
 	}
 
-	void RenderScene::tick(float frameTimer)
+	void RenderScene::tick(float frameTimer, std::shared_ptr<ShadowMap> shadowMap)
 	{
 		// camera tick
 		_camera->handleMovement(frameTimer);

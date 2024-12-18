@@ -43,7 +43,7 @@ namespace FOCUS
 
 		for (auto p : _submitRenderlist)
 		{
-			p->build(_rhiContext, &_commandPool);
+			p->build(_rhiContext, &_commandPool, _shadowMap->_depthImageView, _shadowMap->_shadowSampler);
 		}
 
 		buildCommandBuffer();
@@ -106,11 +106,6 @@ namespace FOCUS
 				_rhiContext->endCommandBuffer(_commandBuffers[index]);
 			}
 		}
-	}
-
-	void Renderer::tick(UniformUpdateData ubo)
-	{
-		_shadowMap->updateUniform(ubo);
 	}
 
 	void Renderer::clean()

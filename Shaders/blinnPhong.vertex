@@ -65,7 +65,7 @@ void main()
     fragColor    = inColor;
     fragTexCoord = inTexCoord;
     fragPosition = (vubo.model * vec4(inPosition, 1.0)).xyz ;
-    fragNormal   = (vubo.model * vec4(inNormal, 1.0)).xyz;
+    fragNormal   = inNormal;
 
     fragViewPosition = vubo.viewPosition;
 

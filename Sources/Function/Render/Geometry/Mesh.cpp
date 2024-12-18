@@ -2,7 +2,7 @@
 
 namespace FOCUS
 {
-	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
+	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
 	{
         if((_vertices.size() == 0) || (_indices.size() == 0)) return;
 
@@ -18,7 +18,7 @@ namespace FOCUS
 		auto indexBufferSize = sizeof(_indices[0]) * _indices.size();
 		rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, commandPool, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        _material->build(rhi, commandPool);
+        _material->build(rhi, commandPool, shadowImageView, shadowSampler);
     }
 
     void Mesh::draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool usingMaterial)

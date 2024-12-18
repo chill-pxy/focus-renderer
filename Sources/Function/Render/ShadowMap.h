@@ -140,7 +140,7 @@ namespace FOCUS
 			_rhi->createPipeline(&_shadowPipeline, &_shadowPipelineLayout, pci);
 		}
 
-		void updateUniform(UniformUpdateData ubo)
+		void updateUniform(UniformUpdateData& ubo)
 		{
 			// Matrix from light's point of view
 			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, _zNear, _zFar);
@@ -149,6 +149,7 @@ namespace FOCUS
 
 			ShadowMapUniformBufferObject subo{};
 			subo.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+			ubo.dirLightSpace = subo.depthMVP;
 
 			memcpy(_uniformBufferMapped, &subo, sizeof(ShadowMapUniformBufferObject));
 		}

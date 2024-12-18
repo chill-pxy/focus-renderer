@@ -47,8 +47,7 @@ namespace FOCUS
 		_frameTimer = (float)tDiff / 1000.0f;
 
 		// scene tick
-		_scene->tick(_frameTimer);
-		_renderer->tick(_scene->_uud);
+		_scene->tick(_frameTimer, _renderer->_shadowMap);
 
 		// Convert to clamped timer value
 		_timer += _timerSpeed * _frameTimer;

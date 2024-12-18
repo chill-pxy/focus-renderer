@@ -25,6 +25,7 @@ namespace FOCUS
         alignas(16) Vector3 dirLightDirection;
         alignas(16) Vector3 dirLightColor;
         alignas(4) float    dirLightStrength;
+        alignas(16) Matrix4 dirLightSpace;
 
         alignas(4) float ambient;
         alignas(4) float diffuse;
@@ -48,7 +49,7 @@ namespace FOCUS
         BlinnPhongMaterial() {};
         BlinnPhongMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
 		
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
 		{
             if (_built) return;
             auto api = rhi->getCurrentAPI();
@@ -60,7 +61,7 @@ namespace FOCUS
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 
-            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);
+            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(3);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -73,6 +74,12 @@ namespace FOCUS
             dsbs[1].pImmutableSamplers = nullptr;
             dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
+            dsbs[2].binding = 2;
+            dsbs[2].descriptorCount = 1;
+            dsbs[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[2].pImmutableSamplers = nullptr;
+            dsbs[2].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
             //create uniform buffer
@@ -84,16 +91,18 @@ namespace FOCUS
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
-            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             poolSizes[0].descriptorCount = 3;
             poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             poolSizes[1].descriptorCount = 3;
+            poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[2].descriptorCount = 3;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
+            std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_vdescriptorBufferInfo;
@@ -108,6 +117,16 @@ namespace FOCUS
             wds[1].dstBinding = 1;
             wds[1].descriptorCount = 1;
             wds[1].pImageInfo = &dii;
+
+            DRHI::DynamicDescriptorImageInfo dii2{};
+            dii2.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii2.imageView = shadowImageView;
+            dii2.sampler = shadowSampler;
+
+            wds[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[2].dstBinding = 2;
+            wds[2].descriptorCount = 1;
+            wds[2].pImageInfo = &dii2;
 
             rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
 
@@ -153,6 +172,7 @@ namespace FOCUS
             ubo.dirLightDirection = uud.dirLightDirection;
             ubo.dirLightColor = uud.dirLightColor;
             ubo.dirLightStrength = uud.dirLightStrength;
+            ubo.dirLightSpace = uud.dirLightSpace;
 
             ubo.ambient = _ambient;
             ubo.diffuse = _diffuse;

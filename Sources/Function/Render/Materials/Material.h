@@ -23,6 +23,7 @@ namespace FOCUS
         Vector3 dirLightDirection;
         Vector3 dirLightColor;
         float   dirLightStrength;
+        Matrix4 dirLightSpace;
 
         float ambient;
         float diffuse;
@@ -40,9 +41,9 @@ namespace FOCUS
         DRHI::DynamicSampler      _textureSampler{};
         DRHI::DynamicDeviceMemory _textureMemory{};
 
-        DRHI::DynamicDescriptorPool                    _descriptorPool{};
-        DRHI::DynamicDescriptorSet                     _descriptorSet{};
-        DRHI::DynamicDescriptorSetLayout               _descriptorSetLayout{};
+        DRHI::DynamicDescriptorPool      _descriptorPool{};
+        DRHI::DynamicDescriptorSet       _descriptorSet{};
+        DRHI::DynamicDescriptorSetLayout _descriptorSetLayout{};
 
         DRHI::DynamicPipeline       _pipeline{};
         DRHI::DynamicPipelineLayout _pipelineLayout{};
@@ -66,7 +67,7 @@ namespace FOCUS
 	public:
 		Material() = default;
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool) = 0;
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
         virtual void clean(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
 

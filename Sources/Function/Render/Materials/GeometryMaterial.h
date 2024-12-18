@@ -29,7 +29,7 @@ namespace FOCUS
     public:
         GeometryMaterial() = default;
 
-        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
         {
             if (_built) return;
             auto api = rhi->getCurrentAPI();

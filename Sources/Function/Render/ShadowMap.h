@@ -79,45 +79,26 @@ namespace FOCUS
 			// create descriptor
 			auto descriptorType = DRHI::DynamicDescriptorType(api);
 			auto stageFlags = DRHI::DynamicShaderStageFlags(api);
-			std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);
+			std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
 			dsbs[0].binding = 0;
 			dsbs[0].descriptorCount = 1;
 			dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			dsbs[0].pImmutableSamplers = nullptr;
 			dsbs[0].stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
 
-			dsbs[1].binding = 1;
-			dsbs[1].descriptorCount = 1;
-			dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			dsbs[1].pImmutableSamplers = nullptr;
-			dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
-
 			_rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
-			std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
+			std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(1);
 			poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			poolSizes[0].descriptorCount = 3;
-			poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			poolSizes[1].descriptorCount = 3;
 
 			_rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-			std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
+			std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
 			wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			wds[0].dstBinding = 0;
 			wds[0].pBufferInfo = &_descriptorBufferInfo;
 			wds[0].descriptorCount = 1;
-
-			auto imageLayout = DRHI::DynamicImageLayout(api);
-			DRHI::DynamicDescriptorImageInfo dii{};
-			dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			dii.imageView = _depthImageView;
-			dii.sampler = _shadowSampler;
-
-			wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			wds[1].dstBinding = 1;
-			wds[1].descriptorCount = 1;
-			wds[1].pImageInfo = &dii;
 
 			_rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
 

@@ -59,6 +59,8 @@ namespace FOCUS
 	{
 		if (_prepared)
 		{
+			auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+
 			DRHI::DynamicRenderingInfo renderInfo{};
 			renderInfo.isRenderOnSwapChain = false;
 			renderInfo.isClearEveryFrame = true;
@@ -66,8 +68,9 @@ namespace FOCUS
 			// rendering shadow map
 			for (int index = 0; index < _commandBuffers.size(); ++index)
 			{
-				renderInfo.targetImage = &(*_viewportImages)[index];
-				renderInfo.targetImageView = &(*_viewportImageViews)[index];
+				renderInfo.targetImage = &_shadowMap->_depthImage;
+				renderInfo.targetImageView = &_shadowMap->_depthImageView;
+				renderInfo.aspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
@@ -93,6 +96,7 @@ namespace FOCUS
 			{
 				renderInfo.targetImage = &(*_viewportImages)[index];
 				renderInfo.targetImageView = &(*_viewportImageViews)[index];
+				renderInfo.aspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);

@@ -56,7 +56,7 @@ namespace FOCUS
 			auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
 
 			// create Depth image
-			_rhi->createImage(&_depthImage, _shadowDepthImageWidth, _shadowDepthImageHeight,
+			_rhi->createImage(&_depthImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(),
 				format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT,
 				memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_depthImageMemory);
 

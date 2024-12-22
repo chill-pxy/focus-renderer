@@ -68,9 +68,11 @@ namespace FOCUS
 			// rendering shadow map
 			for (int index = 0; index < _commandBuffers.size(); ++index)
 			{
-				renderInfo.targetImage = &_shadowMap->_depthImage;
-				renderInfo.targetImageView = &_shadowMap->_depthImageView;
-				renderInfo.aspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
+				renderInfo.targetImage = nullptr;// &_shadowMap->_depthImage;
+				renderInfo.targetImageView = nullptr; // &_shadowMap->_depthImageView;
+				renderInfo.aspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
+				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);

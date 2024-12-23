@@ -43,7 +43,7 @@ namespace FOCUS
 
 		for (auto p : _submitRenderlist)
 		{
-			p->build(_rhiContext, &_commandPool, _shadowMap->_depthImageView, _shadowMap->_shadowSampler);
+			p->build(_rhiContext, &_commandPool, _shadowMap->_depthImage, _shadowMap->_depthImageView, _shadowMap->_shadowSampler);
 		}
 
 		buildCommandBuffer();
@@ -80,7 +80,7 @@ namespace FOCUS
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
 
-				// binding shadow map pipeline
+				// binding shadow map pipeline  
 				auto api = _rhiContext->getCurrentAPI();
 				auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 

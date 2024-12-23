@@ -67,7 +67,7 @@ namespace FOCUS
 	public:
 		Material() = default;
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler) = 0;
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
         virtual void clean(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
 

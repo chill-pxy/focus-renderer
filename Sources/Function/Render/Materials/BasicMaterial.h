@@ -29,7 +29,7 @@ namespace FOCUS
 		BasicMaterial() = delete;
 		BasicMaterial(std::shared_ptr<Texture> texture) : _basicTexture{ texture } {};
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
 		{
             if (_built) return;
             auto api = rhi->getCurrentAPI();

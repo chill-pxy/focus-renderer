@@ -49,7 +49,7 @@ namespace FOCUS
         BlinnPhongMaterial() {};
         BlinnPhongMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
 		
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
 		{
             if (_built) return;
             auto api = rhi->getCurrentAPI();
@@ -90,6 +90,8 @@ namespace FOCUS
             rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
+
+            rhi->transitionImageLayout(&shadowImage, commandPool, format.FORMAT_D16_UNORM, imageLayout.IMAGE_LAYOUT_UNDEFINED, imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;

@@ -23,7 +23,7 @@ namespace FOCUS
 
 		Sphere(uint32_t latBands, uint32_t lonBands, float radius) : _latBands(latBands), _lonBands(lonBands), _radius(radius) {}
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
+		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
 		{
 			// create vertices
 			for (int i = 0; i <= _latBands; ++i)
@@ -69,7 +69,7 @@ namespace FOCUS
 			auto indexBufferSize = sizeof(_indices[0]) * _indices.size();
 			rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, commandPool, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		
-			_material->build(rhi, commandPool, shadowImageView, shadowSampler);
+			_material->build(rhi, commandPool, shadowImage, shadowImageView, shadowSampler);
 		}
 
 		virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool usingMaterial)

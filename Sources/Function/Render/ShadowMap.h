@@ -30,6 +30,10 @@ namespace FOCUS
 		DRHI::DynamicImageView    _depthImageView{};
 		DRHI::DynamicSampler      _shadowSampler{};
 
+		DRHI::DynamicImage        _colorImage{};
+		DRHI::DynamicDeviceMemory _colorImageMemory{};
+		DRHI::DynamicImageView    _colorImageView{};
+
 		DRHI::DynamicBuffer       _uniformBuffer{};
 		DRHI::DynamicDeviceMemory _uniformBufferMemory{};
 		void*                     _uniformBufferMapped{ nullptr };
@@ -63,6 +67,14 @@ namespace FOCUS
 			// create Depth image view
 			auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
 			_rhi->createImageView(&_depthImageView, &_depthImage, format.FORMAT_D16_UNORM, imageAspect.IMAGE_ASPECT_DEPTH_BIT);
+			
+			// create Depth image
+			_rhi->createImage(&_colorImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(),
+				format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT,
+				memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_colorImageMemory);
+
+			// create Depth image view
+			_rhi->createImageView(&_colorImageView, &_colorImage, format.FORMAT_B8G8R8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
 
 			// create sampler
 			auto borderColor = DRHI::DynamicBorderColor(api);
@@ -110,7 +122,7 @@ namespace FOCUS
 			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
 			pci.vertexInputAttributes.resize(1);
 			pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
-			pci.colorImageFormat = format.FORMAT_UNDEFINED;
+			pci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
 			pci.depthImageFormat = format.FORMAT_D16_UNORM;
 			pci.includeStencil = false;
 

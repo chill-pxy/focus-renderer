@@ -91,7 +91,7 @@ namespace FOCUS
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
-            rhi->transitionImageLayout(&shadowImage, commandPool, format.FORMAT_D16_UNORM, imageLayout.IMAGE_LAYOUT_UNDEFINED, imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
+            rhi->transitionImageLayout(&shadowImage, commandPool, format.FORMAT_B8G8R8A8_SRGB, imageLayout.IMAGE_LAYOUT_UNDEFINED, imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -111,7 +111,7 @@ namespace FOCUS
             wds[0].descriptorCount = 1;
 
             DRHI::DynamicDescriptorImageInfo dii{};
-            dii.imageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             dii.imageView = shadowImageView;//_textureImageView;
             dii.sampler = shadowSampler;//_textureSampler;
 

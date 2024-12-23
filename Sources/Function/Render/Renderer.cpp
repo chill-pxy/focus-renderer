@@ -43,7 +43,7 @@ namespace FOCUS
 
 		for (auto p : _submitRenderlist)
 		{
-			p->build(_rhiContext, &_commandPool, _shadowMap->_depthImage, _shadowMap->_depthImageView, _shadowMap->_shadowSampler);
+			p->build(_rhiContext, &_commandPool, _shadowMap->_colorImage, _shadowMap->_colorImageView, _shadowMap->_shadowSampler);
 		}
 
 		buildCommandBuffer();
@@ -70,8 +70,8 @@ namespace FOCUS
 			// rendering shadow map
 			for (int index = 0; index < _commandBuffers.size(); ++index)
 			{
-				renderInfo.targetImage = nullptr;// &_shadowMap->_depthImage;
-				renderInfo.targetImageView = nullptr; // &_shadowMap->_depthImageView;
+				renderInfo.targetImage = &_shadowMap->_colorImage;
+				renderInfo.targetImageView = &_shadowMap->_colorImageView;
 				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
 				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
 				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;

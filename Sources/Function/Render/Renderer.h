@@ -22,6 +22,8 @@ namespace FOCUS
 
 		std::vector<DRHI::DynamicImage>* _viewportImages{nullptr};
 		std::vector<DRHI::DynamicImageView>* _viewportImageViews{nullptr};
+		DRHI::DynamicImage* _viewportDepthImage{nullptr};
+		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
 
 		std::shared_ptr<ShadowMap> _shadowMap;
 
@@ -35,7 +37,7 @@ namespace FOCUS
 		void initialize();
 		void buildCommandBuffer();
 		void buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool);
-		void submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews);
+		void submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews, DRHI::DynamicImage* depthImage, DRHI::DynamicImageView* depthImageView);
 		void clean();
 		void recreate();
 	};

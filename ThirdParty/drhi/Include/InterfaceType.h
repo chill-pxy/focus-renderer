@@ -34,15 +34,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkCommandBuffer>(internalID))
+			if (this)
 			{
-				if (std::get<VkCommandBuffer>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkCommandBuffer>(internalID))
+				{
+					if (std::get<VkCommandBuffer>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -55,15 +56,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkCommandPool>(internalID))
+			if (this)
 			{
-				if (std::get<VkCommandPool>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkCommandPool>(internalID))
+				{
+					if (std::get<VkCommandPool>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -76,15 +78,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkBuffer>(internalID))
+			if (this)
 			{
-				if (std::get<VkBuffer>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkBuffer>(internalID))
+				{
+					if (std::get<VkBuffer>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -97,15 +100,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkDeviceMemory>(internalID))
+			if (this)
 			{
-				if (std::get<VkDeviceMemory>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkDeviceMemory>(internalID))
+				{
+					if (std::get<VkDeviceMemory>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -118,15 +122,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkImage>(internalID))
+			if (this)
 			{
-				if (std::get<VkImage>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkImage>(internalID))
+				{
+					if (std::get<VkImage>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -139,15 +144,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkImageView>(internalID))
+			if (this)
 			{
-				if (std::get<VkImageView>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkImageView>(internalID))
+				{
+					if (std::get<VkImageView>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -160,15 +166,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkSampler>(internalID))
+			if (this)
 			{
-				if (std::get<VkSampler>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkSampler>(internalID))
+				{
+					if (std::get<VkSampler>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -181,15 +188,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkPipeline>(internalID))
+			if (this)
 			{
-				if (std::get<VkPipeline>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkPipeline>(internalID))
+				{
+					if (std::get<VkPipeline>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -202,15 +210,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkPipelineLayout>(internalID))
+			if (this)
 			{
-				if (std::get<VkPipelineLayout>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkPipelineLayout>(internalID))
+				{
+					if (std::get<VkPipelineLayout>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -223,15 +232,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkDescriptorPool>(internalID))
+			if (this)
 			{
-				if (std::get<VkDescriptorPool>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkDescriptorPool>(internalID))
+				{
+					if (std::get<VkDescriptorPool>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -244,15 +254,16 @@ namespace DRHI
 
 		bool valid()
 		{
-			if (std::holds_alternative<VkDescriptorSet>(internalID))
+			if (this)
 			{
-				if (std::get<VkDescriptorSet>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkDescriptorSet>(internalID))
+				{
+					if (std::get<VkDescriptorSet>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -265,15 +276,16 @@ namespace DRHI
 	
 		bool valid()
 		{
-			if (std::holds_alternative<VkDescriptorSetLayout>(internalID))
+			if (this)
 			{
-				if (std::get<VkDescriptorSetLayout>(internalID) == nullptr) return false;
-				else return true;
+				if (std::holds_alternative<VkDescriptorSetLayout>(internalID))
+				{
+					if (std::get<VkDescriptorSetLayout>(internalID) == nullptr) return false;
+					else return true;
+				}
+				else return false;
 			}
-			else
-			{
-				return false;
-			}
+			else return false;
 		}
 	};
 
@@ -376,7 +388,10 @@ namespace DRHI
 				FORMAT_R32G32_SFLOAT = VK_FORMAT_R32G32_SFLOAT;
 				FORMAT_R8G8B8A8_UNORM = VK_FORMAT_R8G8B8A8_UNORM;
 				FORMAT_R8G8B8A8_SRGB = VK_FORMAT_R8G8B8A8_SRGB;
+				FORMAT_B8G8R8A8_SRGB = VK_FORMAT_B8G8R8A8_SRGB;
 				FORMAT_D16_UNORM = VK_FORMAT_D16_UNORM;
+				FORMAT_D32_SFLOAT_S8_UINT = VK_FORMAT_D32_SFLOAT_S8_UINT;
+				FORMAT_UNDEFINED = VK_FORMAT_UNDEFINED;
 				break;
 			case DRHI::DIRECT3D12:
 				break;
@@ -384,11 +399,14 @@ namespace DRHI
 		}
 
 		uint32_t
+			FORMAT_UNDEFINED{ 0 },
 			FORMAT_R32G32B32_SFLOAT{ 0 },
 			FORMAT_R32G32_SFLOAT{ 0 },
 			FORMAT_R8G8B8A8_UNORM{ 0 },
 			FORMAT_R8G8B8A8_SRGB{ 0 },
-			FORMAT_D16_UNORM{ 0 };
+			FORMAT_B8G8R8A8_SRGB{ 0 },
+			FORMAT_D16_UNORM{ 0 },
+			FORMAT_D32_SFLOAT_S8_UINT{ 0 };
 
 	}DynamicFormat;
 
@@ -943,6 +961,9 @@ namespace DRHI
 		const char* fragmentShader;
 		DynamicVertexInputBindingDescription vertexInputBinding;
 		std::vector<DynamicVertexInputAttributeDescription> vertexInputAttributes;
+		uint32_t colorImageFormat;
+		uint32_t depthImageFormat;
+		bool includeStencil;
 	}DynamicPipelineCreateInfo;
 
 	typedef struct DynamicDescriptorPoolSize {
@@ -995,7 +1016,8 @@ namespace DRHI
 		DynamicImageView*  targetImageView;
 		DynamicImage*      targetDepthImage;
 		DynamicImageView*  targetDepthImageView;
-		uint32_t           aspectFlag;
+		uint32_t           colorAspectFlag;
+		uint32_t           depthAspectFlag;
 	}DynamicRenderingInfo;
 
 	typedef struct RenderingInfo

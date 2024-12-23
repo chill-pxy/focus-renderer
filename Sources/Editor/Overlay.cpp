@@ -20,6 +20,18 @@ namespace FOCUS
         _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
+        // create depth image
+        auto api = _rhi->getCurrentAPI();
+        auto format = DRHI::DynamicFormat(api);
+        auto tilling = DRHI::DynamicImageTiling(api);
+        auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
+        auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+        _rhi->createImage(&_viewportDepthImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), 
+            format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT,
+            memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_viewportDepthImageMemory);
+        auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
+        _rhi->createImageView(&_viewportDepthImageView, &_viewportDepthImage, format.FORMAT_D16_UNORM, imageAspect.IMAGE_ASPECT_DEPTH_BIT);
+
         // creata descriptor pool
         {
             DRHI::DynamicDescriptorType type(_rhi->getCurrentAPI());
@@ -101,7 +113,7 @@ namespace FOCUS
             }
         }
 
-        RenderSystem::getInstance()->_renderer->submitRenderTargetImage(&_viewportImages, &_viewportImageViews);
+        RenderSystem::getInstance()->_renderer->submitRenderTargetImage(&_viewportImages, &_viewportImageViews, &_viewportDepthImage, &_viewportDepthImageView);
 
         _prepared = true;
     }

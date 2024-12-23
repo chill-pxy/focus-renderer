@@ -33,6 +33,10 @@ namespace FOCUS
 		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
 		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
 
+		DRHI::DynamicImage _viewportDepthImage{};
+		DRHI::DynamicDeviceMemory _viewportDepthImageMemory{};
+		DRHI::DynamicImageView _viewportDepthImageView{};
+
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
 		
 		bool _isEmpty = true;

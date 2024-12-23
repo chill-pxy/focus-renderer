@@ -49,10 +49,12 @@ namespace FOCUS
 		buildCommandBuffer();
 	}
 
-	void Renderer::submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews)
+	void Renderer::submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews, DRHI::DynamicImage* depthImage, DRHI::DynamicImageView* depthImageView)
 	{
 		_viewportImages = viewportImages;
 		_viewportImageViews = viewportImageViews;
+		_viewportDepthImage = depthImage;
+		_viewportDepthImageView = depthImageView;
 	}
 
 	void Renderer::buildCommandBuffer()
@@ -70,9 +72,10 @@ namespace FOCUS
 			{
 				renderInfo.targetImage = nullptr;// &_shadowMap->_depthImage;
 				renderInfo.targetImageView = nullptr; // &_shadowMap->_depthImageView;
-				renderInfo.aspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
 				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
 				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
+				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
@@ -98,7 +101,10 @@ namespace FOCUS
 			{
 				renderInfo.targetImage = &(*_viewportImages)[index];
 				renderInfo.targetImageView = &(*_viewportImageViews)[index];
-				renderInfo.aspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+				renderInfo.targetDepthImage = _viewportDepthImage;
+				renderInfo.targetDepthImageView = _viewportDepthImageView;
+				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);

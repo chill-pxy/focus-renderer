@@ -30,7 +30,7 @@ namespace FOCUS
 	{
 		_rhiContext->initialize();
 
-		_shadowMap->initialize(_rhiContext);
+		
 
 		_prepared = true;
 	}
@@ -41,9 +41,11 @@ namespace FOCUS
 		_commandBuffers = *commandBuffers;
 		_commandPool = *commandPool;
 
+		_shadowMap->initialize(_rhiContext, &_commandPool);
+
 		for (auto p : _submitRenderlist)
 		{
-			p->build(_rhiContext, &_commandPool, _shadowMap->_colorImage, _shadowMap->_colorImageView, _shadowMap->_shadowSampler);
+			p->build(_rhiContext, &_commandPool, _shadowMap->_colorImage[0], _shadowMap->_colorImageView[0], _shadowMap->_shadowSampler);
 		}
 
 		buildCommandBuffer();
@@ -70,12 +72,19 @@ namespace FOCUS
 			// rendering shadow map
 			for (int index = 0; index < _commandBuffers.size(); ++index)
 			{
-				renderInfo.targetImage = &_shadowMap->_colorImage;
-				renderInfo.targetImageView = &_shadowMap->_colorImageView;
+				//renderInfo.targetImage = &_shadowMap->_colorImage[0];
+				//renderInfo.targetImageView = &_shadowMap->_colorImageView[0];
+				//renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+				//renderInfo.targetDepthImage = &_shadowMap->_depthImage;
+				//renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
+				//renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
+
+				renderInfo.targetImage = &(*_viewportImages)[index];
+				renderInfo.targetImageView = &(*_viewportImageViews)[index];
 				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
-				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
-				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
-				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
+				renderInfo.targetDepthImage = _viewportDepthImage;
+				renderInfo.targetDepthImageView = _viewportDepthImageView;
+				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
@@ -97,7 +106,7 @@ namespace FOCUS
 			}
 
 			// rendering scene
-			for (int index = 0; index < _commandBuffers.size(); ++index)
+			/*for (int index = 0; index < _commandBuffers.size(); ++index)
 			{
 				renderInfo.targetImage = &(*_viewportImages)[index];
 				renderInfo.targetImageView = &(*_viewportImageViews)[index];
@@ -116,7 +125,7 @@ namespace FOCUS
 
 				_rhiContext->endRendering(_commandBuffers[index], renderInfo);
 				_rhiContext->endCommandBuffer(_commandBuffers[index]);
-			}
+			}*/
 		}
 	}
 

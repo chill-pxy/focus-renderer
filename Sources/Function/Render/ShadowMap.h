@@ -11,6 +11,10 @@ namespace FOCUS
 	typedef struct ShadowMapUniformBufferObject
 	{
 		alignas(16) Matrix4 depthMVP;
+		//alignas(16) Matrix4 model;
+		//alignas(16) Matrix4 view;
+		//alignas(16) Matrix4 proj;
+		//alignas(16) Vector3 color;
 	}ShadowMapUniformBufferObject;
 
 	class ShadowMap
@@ -30,9 +34,9 @@ namespace FOCUS
 		DRHI::DynamicImageView    _depthImageView{};
 		DRHI::DynamicSampler      _shadowSampler{};
 
-		DRHI::DynamicImage        _colorImage{};
-		DRHI::DynamicDeviceMemory _colorImageMemory{};
-		DRHI::DynamicImageView    _colorImageView{};
+		std::vector<DRHI::DynamicImage>        _colorImage{};
+		std::vector<DRHI::DynamicDeviceMemory> _colorImageMemory{};
+		std::vector<DRHI::DynamicImageView>    _colorImageView{};
 
 		DRHI::DynamicBuffer       _uniformBuffer{};
 		DRHI::DynamicDeviceMemory _uniformBufferMemory{};
@@ -49,7 +53,7 @@ namespace FOCUS
 	public:
 		ShadowMap() = default;
 
-		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
 		{
 			_rhi = rhi;
 
@@ -61,27 +65,22 @@ namespace FOCUS
 
 			// create Depth image
 			_rhi->createImage(&_depthImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(),
-				format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT,
+				format.FORMAT_D32_SFLOAT_S8_UINT, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT,
 				memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_depthImageMemory);
 
 			// create Depth image view
 			auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
-			_rhi->createImageView(&_depthImageView, &_depthImage, format.FORMAT_D16_UNORM, imageAspect.IMAGE_ASPECT_DEPTH_BIT);
+			_rhi->createImageView(&_depthImageView, &_depthImage, format.FORMAT_D32_SFLOAT_S8_UINT, imageAspect.IMAGE_ASPECT_DEPTH_BIT);
 			
-			// create Depth image
-			_rhi->createImage(&_colorImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(),
-				format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT,
-				memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_colorImageMemory);
-
-			// create Depth image view
-			_rhi->createImageView(&_colorImageView, &_colorImage, format.FORMAT_B8G8R8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
+			_rhi->createViewportImage(&_colorImage, &_colorImageMemory, commandPool);
+			_rhi->createViewportImageViews(&_colorImageView, &_colorImage);
 
 			// create sampler
 			auto borderColor = DRHI::DynamicBorderColor(api);
 			auto addressMode = DRHI::DynamicSamplerAddressMode(api);
 			DRHI::DynamicSamplerCreateInfo sci{};
 			sci.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-			sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_REPEAT;
 			_rhi->createSampler(&_shadowSampler, sci);
 
 			// create uniform buffer
@@ -117,14 +116,16 @@ namespace FOCUS
 			// create pipeline
 			DRHI::DynamicPipelineCreateInfo pci = {};
 			pci.vertexShader = "../../../Shaders/shadowMapVertex.spv";
+			pci.fragmentShader = "../../../Shaders/shadowMapFragment.spv";
 			pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 			pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
-			pci.vertexInputAttributes.resize(1);
+			pci.vertexInputAttributes.resize(2);
 			pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
+			pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
 			pci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
-			pci.depthImageFormat = format.FORMAT_D16_UNORM;
-			pci.includeStencil = false;
+			pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
+			pci.includeStencil = true;
 
 			DRHI::DynamicPipelineLayoutCreateInfo plci{};
 			plci.pSetLayouts = &_descriptorSetLayout;
@@ -140,12 +141,16 @@ namespace FOCUS
 		{
 			// Matrix from light's point of view
 			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, _zNear, _zFar);
-			Matrix4 depthViewMatrix = lookAt(ubo.pointLightPosition, Vector3(0.0f), Vector3(0, 1, 0));
+			Matrix4 depthViewMatrix = lookAt(ubo.viewPosition, Vector3(0.0f), Vector3(0, -1, 0));
 			Matrix4 depthModelMatrix = Matrix4(1.0f);
 
 			ShadowMapUniformBufferObject subo{};
-			subo.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+			subo.depthMVP = ubo.proj * depthViewMatrix * depthModelMatrix;
 			ubo.dirLightSpace = subo.depthMVP;
+			//subo.model = depthModelMatrix;//Matrix4(1.0);
+			//subo.view = lookAt(ubo.viewPosition, Vector3(0.0f), Vector3(0, -1, 0));//ubo.view;
+			//subo.proj = ubo.proj;
+			//subo.color = Vector3(1.0, 1.0, 0.0);
 
 			memcpy(_uniformBufferMapped, &subo, sizeof(ShadowMapUniformBufferObject));
 		}

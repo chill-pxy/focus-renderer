@@ -85,6 +85,7 @@ namespace FOCUS
 				renderInfo.targetDepthImage = _viewportDepthImage;
 				renderInfo.targetDepthImageView = _viewportDepthImageView;
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+				renderInfo.isClearEveryFrame = true;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);

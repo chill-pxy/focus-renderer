@@ -70,43 +70,34 @@ namespace FOCUS
 			renderInfo.isClearEveryFrame = true;
 
 			// rendering shadow map
-			//for (int index = 0; index < _commandBuffers.size(); ++index)
-			//{
-			//	//renderInfo.targetImage = &_shadowMap->_colorImage[0];
-			//	//renderInfo.targetImageView = &_shadowMap->_colorImageView[0];
-			//	//renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
-			//	//renderInfo.targetDepthImage = &_shadowMap->_depthImage;
-			//	//renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
-			//	//renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
+			for (int index = 0; index < _commandBuffers.size(); ++index)
+			{
+				renderInfo.targetImage = &_shadowMap->_colorImage[index];//&(*_viewportImages)[index];
+				renderInfo.targetImageView = &_shadowMap->_colorImageView[index];//&(*_viewportImageViews)[index];
+				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
+				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
+				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+				renderInfo.isClearEveryFrame = true;
 
-			//	renderInfo.targetImage = &(*_viewportImages)[index];
-			//	renderInfo.targetImageView = &(*_viewportImageViews)[index];
-			//	renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
-			//	renderInfo.targetDepthImage = _viewportDepthImage;
-			//	renderInfo.targetDepthImageView = _viewportDepthImageView;
-			//	renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
-			//	renderInfo.isClearEveryFrame = true;
+				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
+				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
 
-			//	_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-			//	_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+				// binding shadow map pipeline  
+				auto api = _rhiContext->getCurrentAPI();
+				auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-			//	// binding shadow map pipeline  
-			//	auto api = _rhiContext->getCurrentAPI();
-			//	auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+				_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_commandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_commandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 
-			//	_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_commandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-			//	_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_commandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				for (auto p : _submitRenderlist)
+				{
+					p->draw(_rhiContext, &_commandBuffers[index], false);
+				}
 
-			//	for (auto p : _submitRenderlist)
-			//	{
-			//		p->draw(_rhiContext, &_commandBuffers[index], false);
-			//	}
-
-			//	_rhiContext->endRendering(_commandBuffers[index], renderInfo);
-			//	_rhiContext->endCommandBuffer(_commandBuffers[index]);
-			//}
-
-				
+				_rhiContext->endRendering(_commandBuffers[index], renderInfo);
+				_rhiContext->endCommandBuffer(_commandBuffers[index]);
+			}	
 
 			// rendering scene
 			for (int index = 0; index < _commandBuffers.size(); ++index)

@@ -26,11 +26,6 @@ namespace FOCUS
         auto tilling = DRHI::DynamicImageTiling(api);
         auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
         auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
-       /* _rhi->createImage(&_viewportDepthImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), 
-            format.FORMAT_D32_SFLOAT_S8_UINT, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_viewportDepthImageMemory);
-        auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
-        _rhi->createImageView(&_viewportDepthImageView, &_viewportDepthImage, format.FORMAT_D32_SFLOAT_S8_UINT, imageAspect.IMAGE_ASPECT_DEPTH_BIT | imageAspect.IMAGE_ASPECT_STENCIL_BIT);*/
 
         _rhi->createDepthStencil(&_viewportDepthImage, &_viewportDepthImageView, &_viewportDepthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT,_rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight());
 

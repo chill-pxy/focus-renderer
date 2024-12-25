@@ -64,13 +64,7 @@ namespace FOCUS
 			auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
 
 			// create Depth image
-			_rhi->createImage(&_depthImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(),
-				format.FORMAT_D32_SFLOAT_S8_UINT, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT,
-				memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_depthImageMemory);
-
-			// create Depth image view
-			auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
-			_rhi->createImageView(&_depthImageView, &_depthImage, format.FORMAT_D32_SFLOAT_S8_UINT, imageAspect.IMAGE_ASPECT_DEPTH_BIT);
+			_rhi->createDepthStencil(&_depthImage, &_depthImageView, &_depthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT, rhi->getSwapChainExtentWidth(), rhi->getSwapChainExtentHeight());
 			
 			_rhi->createViewportImage(&_colorImage, &_colorImageMemory, commandPool);
 			_rhi->createViewportImageViews(&_colorImageView, &_colorImage);
@@ -140,17 +134,13 @@ namespace FOCUS
 		void updateUniform(UniformUpdateData& ubo)
 		{
 			// Matrix from light's point of view
-			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, _zNear, _zFar);
+			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 200.0f, 2500.0f);
 			Matrix4 depthViewMatrix = lookAt(ubo.viewPosition, Vector3(0.0f), Vector3(0, -1, 0));
 			Matrix4 depthModelMatrix = Matrix4(1.0f);
 
 			ShadowMapUniformBufferObject subo{};
-			subo.depthMVP = ubo.proj * ubo.view * depthModelMatrix;
+			subo.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 			ubo.dirLightSpace = subo.depthMVP;
-			//subo.model = depthModelMatrix;//Matrix4(1.0);
-			//subo.view = lookAt(ubo.viewPosition, Vector3(0.0f), Vector3(0, -1, 0));//ubo.view;
-			//subo.proj = ubo.proj;
-			//subo.color = Vector3(1.0, 1.0, 0.0);
 
 			memcpy(_uniformBufferMapped, &subo, sizeof(ShadowMapUniformBufferObject));
 		}

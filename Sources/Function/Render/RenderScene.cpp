@@ -31,7 +31,7 @@ namespace FOCUS
 		add(_pointLight);
 
 		// prepare camera
-        _camera->_position = Vector3(-71, 64, 0.5);
+        _camera->_position = Vector3(-71, 2000, 0.5);
         _camera->_rotation = Vector3(-14, -92, 0);
 
 		// prepare obj

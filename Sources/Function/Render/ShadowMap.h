@@ -145,7 +145,7 @@ namespace FOCUS
 			Matrix4 depthModelMatrix = Matrix4(1.0f);
 
 			ShadowMapUniformBufferObject subo{};
-			subo.depthMVP = ubo.proj * depthViewMatrix * depthModelMatrix;
+			subo.depthMVP = ubo.proj * ubo.view * depthModelMatrix;
 			ubo.dirLightSpace = subo.depthMVP;
 			//subo.model = depthModelMatrix;//Matrix4(1.0);
 			//subo.view = lookAt(ubo.viewPosition, Vector3(0.0f), Vector3(0, -1, 0));//ubo.view;

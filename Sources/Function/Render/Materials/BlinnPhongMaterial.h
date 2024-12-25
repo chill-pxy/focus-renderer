@@ -145,8 +145,8 @@ namespace FOCUS
             pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
             pci.vertexInputAttributes[3].set(api, 3, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::normal));
             pci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
-            pci.depthImageFormat = format.FORMAT_D16_UNORM;
-            pci.includeStencil = false;
+            pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
+            pci.includeStencil = true;
 
             DRHI::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;

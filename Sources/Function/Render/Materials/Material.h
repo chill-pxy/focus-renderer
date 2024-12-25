@@ -77,7 +77,7 @@ namespace FOCUS
             auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
             rhi->bindPipeline(_pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-            rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, 0);
+            rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
         }
 	};
 }

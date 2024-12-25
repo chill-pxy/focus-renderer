@@ -112,8 +112,8 @@ namespace FOCUS
 
             DRHI::DynamicDescriptorImageInfo dii{};
             dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii.imageView = shadowImageView;//_textureImageView;
-            dii.sampler = shadowSampler;//_textureSampler;
+            dii.imageView = _textureImageView;
+            dii.sampler = _textureSampler;
 
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             wds[1].dstBinding = 1;

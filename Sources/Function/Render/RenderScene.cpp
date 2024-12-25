@@ -58,7 +58,7 @@ namespace FOCUS
 		_camera->handleMovement(frameTimer);
 
 		_uud.view = _camera->getViewMatrix();
-		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 0.1f, 10000.0f);
+		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 10.0f, 1000.0f);
 		_uud.proj[1][1] *= -1;
 
 		_uud.viewPosition = _camera->_position;

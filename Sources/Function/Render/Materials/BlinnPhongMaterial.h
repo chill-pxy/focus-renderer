@@ -25,7 +25,7 @@ namespace FOCUS
         alignas(16) Vector3 dirLightDirection;
         alignas(16) Vector3 dirLightColor;
         alignas(4) float    dirLightStrength;
-        alignas(16) Matrix4 dirLightSpace;
+        //alignas(16) Matrix4 dirLightSpace;
 
         alignas(4) float ambient;
         alignas(4) float diffuse;
@@ -112,8 +112,8 @@ namespace FOCUS
 
             DRHI::DynamicDescriptorImageInfo dii{};
             dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii.imageView = shadowImageView;//_textureImageView;
-            dii.sampler = shadowSampler;//_textureSampler;
+            dii.imageView = shadowImageView; //_textureImageView;
+            dii.sampler = shadowSampler; //_textureSampler;
 
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             wds[1].dstBinding = 1;
@@ -177,7 +177,7 @@ namespace FOCUS
             ubo.dirLightDirection = uud.dirLightDirection;
             ubo.dirLightColor = uud.dirLightColor;
             ubo.dirLightStrength = uud.dirLightStrength;
-            ubo.dirLightSpace = uud.dirLightSpace;
+            //ubo.dirLightSpace = uud.dirLightSpace;
 
             ubo.ambient = _ambient;
             ubo.diffuse = _diffuse;

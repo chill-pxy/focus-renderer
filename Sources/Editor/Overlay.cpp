@@ -148,9 +148,12 @@ namespace FOCUS
                 {
                     RenderSystem::getInstance()->_submitCommandBuffers.push_back(_commandBuffers[i]);
                 }
+
+                RenderSystem::getInstance()->_submitCommandBuffers.push_back(
+                    RenderSystem::getInstance()->_renderer->_shadowCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+
                 RenderSystem::getInstance()->_submitCommandBuffers.push_back(
                     RenderSystem::getInstance()->_scene->_sceneCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
-
             }
             else
             {

@@ -19,8 +19,7 @@ namespace FOCUS
 
 		DRHI::DynamicDescriptorPool _descriptorPool{};
 		std::vector<DRHI::DynamicDescriptorSet> _descriptorSets{};
-
-		DRHI::DynamicCommandPool _commandPool{};	
+	
 		DRHI::DynamicSampler _textureSampler{};
 
 		std::shared_ptr<DRHI::DynamicRHI> _rhi;
@@ -37,6 +36,7 @@ namespace FOCUS
 		DRHI::DynamicDeviceMemory _viewportDepthImageMemory{};
 		DRHI::DynamicImageView _viewportDepthImageView{};
 
+		DRHI::DynamicCommandPool _commandPool{};
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
 		
 		bool _isEmpty = true;

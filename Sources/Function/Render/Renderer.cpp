@@ -30,7 +30,8 @@ namespace FOCUS
 	{
 		_rhiContext->initialize();
 
-		
+		_rhiContext->createCommandPool(&_shadowCommandPool);
+		_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
 
 		_prepared = true;
 	}
@@ -41,7 +42,7 @@ namespace FOCUS
 		_commandBuffers = *commandBuffers;
 		_commandPool = *commandPool;
 
-		_shadowMap->initialize(_rhiContext, &_commandPool);
+		_shadowMap->initialize(_rhiContext, &_shadowCommandPool);
 
 		for (auto p : _submitRenderlist)
 		{
@@ -70,7 +71,7 @@ namespace FOCUS
 			renderInfo.isClearEveryFrame = true;
 
 			// rendering shadow map
-			for (int index = 0; index < _commandBuffers.size(); ++index)
+			for (int index = 0; index < _shadowCommandBuffers.size(); ++index)
 			{
 				renderInfo.targetImage = &_shadowMap->_colorImage[index];//&(*_viewportImages)[index];
 				renderInfo.targetImageView = &_shadowMap->_colorImageView[index];//&(*_viewportImageViews)[index];
@@ -80,23 +81,23 @@ namespace FOCUS
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
 				renderInfo.isClearEveryFrame = true;
 
-				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+				_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
+				_rhiContext->beginRendering(_shadowCommandBuffers[index], renderInfo);
 
 				// binding shadow map pipeline  
 				auto api = _rhiContext->getCurrentAPI();
 				auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-				_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_commandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-				_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_commandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 
 				for (auto p : _submitRenderlist)
 				{
-					p->draw(_rhiContext, &_commandBuffers[index], false);
+					p->draw(_rhiContext, &_shadowCommandBuffers[index], false);
 				}
 
-				_rhiContext->endRendering(_commandBuffers[index], renderInfo);
-				_rhiContext->endCommandBuffer(_commandBuffers[index]);
+				_rhiContext->endRendering(_shadowCommandBuffers[index], renderInfo);
+				_rhiContext->endCommandBuffer(_shadowCommandBuffers[index]);
 			}	
 
 			// rendering scene

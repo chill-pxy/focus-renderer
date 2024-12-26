@@ -31,7 +31,7 @@ namespace FOCUS
 		add(_pointLight);
 
 		// prepare camera
-        _camera->_position = Vector3(-71, 2000, 0.5);
+        _camera->_position = Vector3(-71, 50, 0.5);
         _camera->_rotation = Vector3(-14, -92, 0);
 
 		// prepare obj
@@ -71,12 +71,12 @@ namespace FOCUS
 		_uud.dirLightColor = _dirLight->_color;
 		_uud.dirLightStrength = _dirLight->_intensity;
 
+        shadowMap->updateUniform(_uud);
+
 		for (auto object : _group)
 		{
 			object->updateUniformBuffer(_uud);
 		}
-
-        shadowMap->updateUniform(_uud);
 	}
 
 	void RenderScene::clean(std::shared_ptr<DRHI::DynamicRHI> rhi)

@@ -112,5 +112,5 @@ void main()
     //outColor = vec4((pointLight + dirLight), 1.0);
 
     vec4 color1 = texture(shadowMap, fragTexCoord);
-    outColor = color; //mix(color, color1, 0.5);
+    outColor = mix(color, color1, 0.5);
 } 

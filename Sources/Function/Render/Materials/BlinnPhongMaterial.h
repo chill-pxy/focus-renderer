@@ -109,7 +109,7 @@ namespace FOCUS
             dii[0].imageView = _textureImageView;
             dii[0].sampler = _textureSampler;
 
-            dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;  //imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+            dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
             dii[1].imageView = shadowImageView;
             dii[1].sampler = shadowSampler;
 

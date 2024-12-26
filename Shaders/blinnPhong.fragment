@@ -1,7 +1,7 @@
 #version 450
 
-layout(binding = 1) uniform sampler2D texSampler;
-//layout(binding = 2) uniform sampler2D shadowMap;
+layout(set = 0, binding = 1) uniform sampler2D texSampler;
+layout(set = 0, binding = 2) uniform sampler2D shadowMap;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -101,13 +101,16 @@ vec3 calPointLight(vec3 color)
 
 void main()
 {
-    vec3 color = texture(texSampler, fragTexCoord).rgb;
+    vec4 color = texture(texSampler, fragTexCoord);
     
-    vec3 pointLight = calPointLight(color);
-    vec3 dirLight = calDirLight(color);
+    //vec3 pointLight = calPointLight(color);
+    //vec3 dirLight = calDirLight(color);
     
     //float shadow = textureProj(fragShadowCoord / fragShadowCoord.w, vec2(0.0));
 
     // output
-    outColor = vec4((pointLight + dirLight), 1.0);
+    //outColor = vec4((pointLight + dirLight), 1.0);
+
+    vec4 color1 = texture(shadowMap, fragTexCoord);
+    outColor = color; //mix(color, color1, 0.5);
 } 

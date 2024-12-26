@@ -12,6 +12,7 @@ layout(binding = 0) uniform VertexUniformBufferObject
     vec3 pointLightColor;
     float pointLightStrength;
 
+    mat4 dirLightSpace;
     vec3 dirLightDirection;
     vec3 dirLightColor;
     float dirLightStrength;
@@ -81,5 +82,5 @@ void main()
     fragSpecular = vubo.specular;
     fragShinness = vubo.shinness;
 
-    fragShadowCoord = vec4(1.0, 1.0, 1.0, 1.0); //( biasMat * vubo.dirLightSpace * vubo.model ) * vec4(inPosition, 1.0);
+    fragShadowCoord = ( biasMat * vubo.dirLightSpace * vubo.model ) * vec4(inPosition, 1.0);
 }

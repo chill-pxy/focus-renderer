@@ -22,10 +22,10 @@ namespace FOCUS
         alignas(16) Vector3 pointLightColor;
         alignas(4) float    pointLightIntensity;
 
+        alignas(16) Matrix4 dirLightSpace;
         alignas(16) Vector3 dirLightDirection;
         alignas(16) Vector3 dirLightColor;
         alignas(4) float    dirLightStrength;
-        //alignas(16) Matrix4 dirLightSpace;
 
         alignas(4) float ambient;
         alignas(4) float diffuse;
@@ -61,7 +61,7 @@ namespace FOCUS
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
 
-            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);
+            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(3);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -74,11 +74,11 @@ namespace FOCUS
             dsbs[1].pImmutableSamplers = nullptr;
             dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
-            //dsbs[2].binding = 2;
-            //dsbs[2].descriptorCount = 1;
-            //dsbs[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            //dsbs[2].pImmutableSamplers = nullptr;
-            //dsbs[2].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+            dsbs[2].binding = 2;
+            dsbs[2].descriptorCount = 1;
+            dsbs[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[2].pImmutableSamplers = nullptr;
+            dsbs[2].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
@@ -93,42 +93,41 @@ namespace FOCUS
 
             //rhi->transitionImageLayout(&shadowImage, commandPool, format.FORMAT_B8G8R8A8_SRGB, imageLayout.IMAGE_LAYOUT_UNDEFINED, imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             poolSizes[0].descriptorCount = 3;
             poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             poolSizes[1].descriptorCount = 3;
-           /* poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[2].descriptorCount = 3;*/
+            poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[2].descriptorCount = 3;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
+            DRHI::DynamicDescriptorImageInfo dii[2]{};
+            dii[0].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[0].imageView = _textureImageView;
+            dii[0].sampler = _textureSampler;
+
+            dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;  //imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+            dii[1].imageView = shadowImageView;
+            dii[1].sampler = shadowSampler;
+
+            std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_vdescriptorBufferInfo;
             wds[0].descriptorCount = 1;
 
-            DRHI::DynamicDescriptorImageInfo dii{};
-            dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii.imageView = shadowImageView; //_textureImageView;
-            dii.sampler = shadowSampler; //_textureSampler;
-
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             wds[1].dstBinding = 1;
             wds[1].descriptorCount = 1;
-            wds[1].pImageInfo = &dii;
+            wds[1].pImageInfo = &dii[0];
 
-            //DRHI::DynamicDescriptorImageInfo dii2{};
-            //dii2.imageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-            //dii2.imageView = shadowImageView;
-            //dii2.sampler = shadowSampler;
-
-            //wds[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            //wds[2].dstBinding = 2;
-            //wds[2].descriptorCount = 1;
-            //wds[2].pImageInfo = &dii2;
+            wds[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[2].dstBinding = 2;
+            wds[2].descriptorCount = 1;
+            wds[2].pImageInfo = &dii[1];
 
             rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds);
 
@@ -174,10 +173,10 @@ namespace FOCUS
             ubo.pointLightColor = uud.pointLightColor;
             ubo.pointLightIntensity = uud.pointLightIntensity;
 
+            ubo.dirLightSpace = uud.dirLightSpace;
             ubo.dirLightDirection = uud.dirLightDirection;
             ubo.dirLightColor = uud.dirLightColor;
             ubo.dirLightStrength = uud.dirLightStrength;
-            //ubo.dirLightSpace = uud.dirLightSpace;
 
             ubo.ambient = _ambient;
             ubo.diffuse = _diffuse;

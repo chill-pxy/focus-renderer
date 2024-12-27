@@ -91,7 +91,11 @@ namespace FOCUS
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
-            //rhi->transitionImageLayout(&shadowImage, commandPool, format.FORMAT_B8G8R8A8_SRGB, imageLayout.IMAGE_LAYOUT_UNDEFINED, imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            DRHI::DynamicImage tshadowImage = shadowImage;
+            DRHI::DynamicImageView tshadowImageView;
+            auto aspect = DRHI::DynamicImageAspectFlagBits(rhi->getCurrentAPI());
+            rhi->transitionImageLayout(&tshadowImage, commandPool, format.FORMAT_D16_UNORM, imageLayout.IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL);
+            rhi->createImageView(&tshadowImageView, &tshadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -109,8 +113,8 @@ namespace FOCUS
             dii[0].imageView = _textureImageView;
             dii[0].sampler = _textureSampler;
 
-            dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
-            dii[1].imageView = shadowImageView;
+            dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
+            dii[1].imageView = tshadowImageView;
             dii[1].sampler = shadowSampler;
 
             std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);

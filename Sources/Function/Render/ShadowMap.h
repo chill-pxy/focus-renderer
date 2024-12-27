@@ -62,10 +62,13 @@ namespace FOCUS
 			auto tilling = DRHI::DynamicImageTiling(api);
 			auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
 			auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+			auto aspect = DRHI::DynamicImageAspectFlagBits(api);
 
 			// create Depth image
-			_rhi->createDepthStencil(&_depthImage, &_depthImageView, &_depthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT, rhi->getSwapChainExtentWidth(), rhi->getSwapChainExtentHeight());
-			
+			//_rhi->createDepthStencil(&_depthImage, &_depthImageView, &_depthImageMemory, format.FORMAT_D16_UNORM, rhi->getSwapChainExtentWidth(), rhi->getSwapChainExtentHeight());
+			_rhi->createImage(&_depthImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_depthImageMemory);
+			_rhi->createImageView(&_depthImageView, &_depthImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
+
 			_rhi->createViewportImage(&_colorImage, &_colorImageMemory, commandPool);
 			_rhi->createViewportImageViews(&_colorImageView, &_colorImage);
 
@@ -118,8 +121,8 @@ namespace FOCUS
 			pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
 			pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
 			pci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
-			pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
-			pci.includeStencil = true;
+			pci.depthImageFormat = format.FORMAT_D16_UNORM;
+			pci.includeStencil = false;
 
 			DRHI::DynamicPipelineLayoutCreateInfo plci{};
 			plci.pSetLayouts = &_descriptorSetLayout;

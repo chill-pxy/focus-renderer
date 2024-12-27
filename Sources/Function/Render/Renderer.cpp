@@ -46,7 +46,7 @@ namespace FOCUS
 
 		for (auto p : _submitRenderlist)
 		{
-			p->build(_rhiContext, &_commandPool, _shadowMap->_colorImage[0], _shadowMap->_colorImageView[0], _shadowMap->_shadowSampler);
+			p->build(_rhiContext, &_commandPool, _shadowMap->_depthImage, _shadowMap->_depthImageView, _shadowMap->_shadowSampler);
 		}
 
 		buildCommandBuffer();
@@ -69,16 +69,17 @@ namespace FOCUS
 			DRHI::DynamicRenderingInfo renderInfo{};
 			renderInfo.isRenderOnSwapChain = false;
 			renderInfo.isClearEveryFrame = true;
+			renderInfo.includeStencil = false;
 
 			// rendering shadow map
 			for (int index = 0; index < _shadowCommandBuffers.size(); ++index)
 			{
-				renderInfo.targetImage = &_shadowMap->_colorImage[index];//&(*_viewportImages)[index];
-				renderInfo.targetImageView = &_shadowMap->_colorImageView[index];//&(*_viewportImageViews)[index];
+				renderInfo.targetImage = &_shadowMap->_colorImage[index];
+				renderInfo.targetImageView = &_shadowMap->_colorImageView[index];
 				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
 				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
 				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
-				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
 				renderInfo.isClearEveryFrame = true;
 
 				_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
@@ -109,6 +110,7 @@ namespace FOCUS
 				renderInfo.targetDepthImage = _viewportDepthImage;
 				renderInfo.targetDepthImageView = _viewportDepthImageView;
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+				renderInfo.includeStencil = true;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);

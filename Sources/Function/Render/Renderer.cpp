@@ -65,6 +65,7 @@ namespace FOCUS
 		if (_prepared)
 		{
 			auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+			auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
 
 			DRHI::DynamicRenderingInfo renderInfo{};
 			renderInfo.isRenderOnSwapChain = false;
@@ -81,6 +82,7 @@ namespace FOCUS
 				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
 				renderInfo.isClearEveryFrame = true;
+				renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
 
 				_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
 				_rhiContext->beginRendering(_shadowCommandBuffers[index], renderInfo);
@@ -111,6 +113,7 @@ namespace FOCUS
 				renderInfo.targetDepthImageView = _viewportDepthImageView;
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
 				renderInfo.includeStencil = true;
+				renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);

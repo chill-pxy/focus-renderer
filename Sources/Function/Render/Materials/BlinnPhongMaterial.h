@@ -94,7 +94,7 @@ namespace FOCUS
             DRHI::DynamicImage tshadowImage = shadowImage;
             DRHI::DynamicImageView tshadowImageView;
             auto aspect = DRHI::DynamicImageAspectFlagBits(rhi->getCurrentAPI());
-            rhi->transitionImageLayout(&tshadowImage, commandPool, format.FORMAT_D16_UNORM, imageLayout.IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL);
+           // rhi->transitionImageLayout(&tshadowImage, commandPool, format.FORMAT_D16_UNORM, imageLayout.IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL);
             rhi->createImageView(&tshadowImageView, &tshadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);

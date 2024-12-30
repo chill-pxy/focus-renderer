@@ -117,10 +117,12 @@ namespace FOCUS
 
     void EngineUI::draw()
     {
+        auto imageLayout = DRHI::DynamicImageLayout(_rhi->getCurrentAPI());
         ImDrawData* imDrawData = ImGui::GetDrawData();
         DRHI::DynamicRenderingInfo renderInfo{};
         renderInfo.isRenderOnSwapChain = true;
         renderInfo.isClearEveryFrame = true;
+        renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         if (imDrawData != nullptr)
         {

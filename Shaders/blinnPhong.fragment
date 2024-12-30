@@ -28,19 +28,19 @@ layout(location = 15) in vec4 fragShadowCoord;
 layout(location = 0) out vec4 outColor;
 
 // calculate shadow
-//float textureProj(vec4 shadowCoord, vec2 off)
-//{
-//	float shadow = 1.0;
-//	if ( shadowCoord.z > -1.0 && shadowCoord.z < 1.0 ) 
-//	{
-//		float dist = texture( shadowMap, shadowCoord.st + off ).r;
-//		if ( shadowCoord.w > 0.0 && dist < shadowCoord.z ) 
-//		{
-//			shadow = 0.1;
-//		}
-//	}
-//	return shadow;
-//}
+float textureProj(vec4 shadowCoord, vec2 off)
+{
+	float shadow = 1.0;
+	if ( shadowCoord.z > -1.0 && shadowCoord.z < 1.0 ) 
+	{
+		float dist = texture( shadowMap, shadowCoord.st + off ).r;
+		if ( shadowCoord.w > 0.0 && dist < shadowCoord.z ) 
+		{
+			shadow = 0.1;
+		}
+	}
+	return shadow;
+}
 
 // calculate directional light
 vec3 calDirLight(vec3 color)
@@ -101,16 +101,13 @@ vec3 calPointLight(vec3 color)
 
 void main()
 {
-    vec4 color = texture(texSampler, fragTexCoord);
+    vec3 color = texture(texSampler, fragTexCoord).rgb;
     
-    //vec3 pointLight = calPointLight(color);
-    //vec3 dirLight = calDirLight(color);
+    vec3 pointLight = calPointLight(color);
+    vec3 dirLight = calDirLight(color);
     
-    //float shadow = textureProj(fragShadowCoord / fragShadowCoord.w, vec2(0.0));
+    float shadow = textureProj(fragShadowCoord / fragShadowCoord.w, vec2(0.0));
 
     // output
-    //outColor = vec4((pointLight + dirLight), 1.0);
-
-    vec4 color1 = texture(shadowMap, fragTexCoord);
-    outColor = mix(color, color1, 0.5);
+    outColor = vec4((pointLight + dirLight) * shadow, 1.0);
 } 

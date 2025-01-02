@@ -31,12 +31,15 @@ namespace FOCUS
 		add(_pointLight);
 
 		// prepare camera
-        _camera->_position = Vector3(-71, 50, 0.5);
+        _camera->_position = Vector3(0, 0, 0);
         _camera->_rotation = Vector3(-14, -92, 0);
 
 		// prepare obj
-		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
+		auto obj = loadModel("../../../Asset/Models/box.obj");
 		add(obj);
+
+        auto obj2 = loadModel("../../../Asset/Models/plane.obj");
+        add(obj2);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
@@ -58,7 +61,7 @@ namespace FOCUS
 		_camera->handleMovement(frameTimer);
 
 		_uud.view = _camera->getViewMatrix();
-		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 10.0f, 1000.0f);
+		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 1.0f, 100.0f);
 		_uud.proj[1][1] *= -1;
 
 		_uud.viewPosition = _camera->_position;
@@ -224,7 +227,7 @@ namespace FOCUS
             mesh->_vertices = vertices;
             mesh->_material = model->_materials[count];
             mesh->_name = model->_materials[count]->_name;
-            mesh->_scale = Vector3(0.1, 0.1, 0.1);
+            mesh->_scale = Vector3(1.0, 1.0, 1.0);
 
             model->_meshes.push_back(mesh);
 

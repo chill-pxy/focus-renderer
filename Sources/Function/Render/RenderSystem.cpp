@@ -48,6 +48,7 @@ namespace FOCUS
 
 		// scene tick
 		_scene->tick(_frameTimer, _renderer->_shadowMap);
+		//_renderer->buildCommandBuffer();
 
 		// Convert to clamped timer value
 		_timer += _timerSpeed * _frameTimer;

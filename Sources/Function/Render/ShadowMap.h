@@ -149,7 +149,7 @@ namespace FOCUS
 
 
 			// Matrix from light's point of view
-			Matrix4 depthProjectionMatrix = perspective(radians(15.0f), 1.0f, 10.0f, 1000.0f);
+			Matrix4 depthProjectionMatrix = perspective(radians(15.0f), 1.0f, 10.0f, 500.0f);
 			Matrix4 depthViewMatrix = lookAt(lightPosition, Vector3(0.0f), Vector3(0, -1, 0));
 			Matrix4 depthModelMatrix = Matrix4(1.0f);
 

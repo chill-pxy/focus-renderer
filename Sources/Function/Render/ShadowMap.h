@@ -1,5 +1,8 @@
 #pragma once
 
+#include<chrono>
+#include<thread>
+
 #include<drhi.h>
 
 #include"../../Core/Math.h"

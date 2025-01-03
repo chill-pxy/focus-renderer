@@ -44,8 +44,8 @@ namespace FOCUS
 
 		DRHI::DynamicDescriptorBufferInfo _descriptorBufferInfo{};
 
-		uint32_t _shadowDepthImageWidth{ 512 };
-		uint32_t _shadowDepthImageHeight{ 512 };
+		uint32_t _shadowDepthImageWidth{ 2048 };
+		uint32_t _shadowDepthImageHeight{ 2048 };
 
 		float _zNear = 1.0f;
 		float _zFar = 96.0f;
@@ -66,11 +66,8 @@ namespace FOCUS
 
 			// create Depth image
 			//_rhi->createDepthStencil(&_depthImage, &_depthImageView, &_depthImageMemory, format.FORMAT_D16_UNORM, rhi->getSwapChainExtentWidth(), rhi->getSwapChainExtentHeight());
-			_rhi->createImage(&_depthImage, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_depthImageMemory);
+			_rhi->createImage(&_depthImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_depthImageMemory);
 			_rhi->createImageView(&_depthImageView, &_depthImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
-
-			_rhi->createViewportImage(&_colorImage, &_colorImageMemory, commandPool);
-			_rhi->createViewportImageViews(&_colorImageView, &_colorImage);
 
 			// create sampler
 			auto borderColor = DRHI::DynamicBorderColor(api);
@@ -113,14 +110,14 @@ namespace FOCUS
 			// create pipeline
 			DRHI::DynamicPipelineCreateInfo pci = {};
 			pci.vertexShader = "../../../Shaders/shadowMapVertex.spv";
-			pci.fragmentShader = "../../../Shaders/shadowMapFragment.spv";
+			//pci.fragmentShader = "../../../Shaders/shadowMapFragment.spv";
 			pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 			pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
 			pci.vertexInputAttributes.resize(2);
 			pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
 			pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
-			pci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
+			pci.colorImageFormat = format.FORMAT_UNDEFINED;
 			pci.depthImageFormat = format.FORMAT_D16_UNORM;
 			pci.includeStencil = false;
 			pci.dynamicDepthBias = true;
@@ -137,20 +134,18 @@ namespace FOCUS
 
 		void updateUniform(UniformUpdateData& ubo)
 		{
-			// cal time
+			// 获取当前时间（毫秒）
 			auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
 			auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
 
-			// cal pos
-			float time = millis / 10000.0f; 
-			float radius = 100.0f; 
-			float height = 200.0f;
-			float angle = time * 2 * 3.14159f / 10;
+			// 根据时间计算光源位置
+			float time = millis / 1000.0f;
 			Vector3 lightPosition = Vector3(
-				radius * sin(angle),
-				height,             
-				radius * cos(angle)  
+				sin(time * 2.0f) * 200.0f - 100.0f,
+				200,//cos(time * 1.5f) * 200.0f + 200.0f, 
+				sin(time * 1.0f) * 200.0f + 100.0f 
 			);
+
 
 
 			// Matrix from light's point of view

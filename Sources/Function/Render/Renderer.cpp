@@ -75,14 +75,13 @@ namespace FOCUS
 			// rendering shadow map
 			for (int index = 0; index < _shadowCommandBuffers.size(); ++index)
 			{
-				renderInfo.targetImage = &_shadowMap->_colorImage[index];
-				renderInfo.targetImageView = &_shadowMap->_colorImageView[index];
-				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
 				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
 				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
 				renderInfo.isClearEveryFrame = true;
 				renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
+				renderInfo.targetImageWidth = _shadowMap->_shadowDepthImageWidth;
+				renderInfo.targetImageHeight = _shadowMap->_shadowDepthImageHeight;
 
 				_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
 				_rhiContext->beginRendering(_shadowCommandBuffers[index], renderInfo);
@@ -91,7 +90,7 @@ namespace FOCUS
 				auto api = _rhiContext->getCurrentAPI();
 				auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-				_rhiContext->cmdSetDepthBias(_shadowCommandBuffers[index], 0.01f, 0.0f, 1.7f);
+				_rhiContext->cmdSetDepthBias(_shadowCommandBuffers[index], 1.0f, 0.0f, 1.75f);
 				_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 				_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 
@@ -115,6 +114,8 @@ namespace FOCUS
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
 				renderInfo.includeStencil = true;
 				renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+				renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
+				renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);

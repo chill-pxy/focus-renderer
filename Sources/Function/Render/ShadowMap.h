@@ -123,6 +123,7 @@ namespace FOCUS
 			pci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
 			pci.depthImageFormat = format.FORMAT_D16_UNORM;
 			pci.includeStencil = false;
+			pci.dynamicDepthBias = true;
 
 			DRHI::DynamicPipelineLayoutCreateInfo plci{};
 			plci.pSetLayouts = &_descriptorSetLayout;
@@ -136,9 +137,25 @@ namespace FOCUS
 
 		void updateUniform(UniformUpdateData& ubo)
 		{
+			// cal time
+			auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
+			auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+
+			// cal pos
+			float time = millis / 10000.0f; 
+			float radius = 100.0f; 
+			float height = 200.0f;
+			float angle = time * 2 * 3.14159f / 10;
+			Vector3 lightPosition = Vector3(
+				radius * sin(angle),
+				height,             
+				radius * cos(angle)  
+			);
+
+
 			// Matrix from light's point of view
-			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 10.0f, 300.0f);
-			Matrix4 depthViewMatrix = lookAt(Vector3(-100, 200, 0), Vector3(0.0f), Vector3(0, -1, 0));
+			Matrix4 depthProjectionMatrix = perspective(radians(15.0f), 1.0f, 10.0f, 1000.0f);
+			Matrix4 depthViewMatrix = lookAt(lightPosition, Vector3(0.0f), Vector3(0, -1, 0));
 			Matrix4 depthModelMatrix = Matrix4(1.0f);
 
 			ShadowMapUniformBufferObject subo{};

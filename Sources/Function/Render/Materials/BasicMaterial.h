@@ -106,6 +106,7 @@ namespace FOCUS
             pci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
             pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
             pci.includeStencil = true;
+            pci.dynamicDepthBias = false;
 
             DRHI::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;

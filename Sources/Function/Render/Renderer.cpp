@@ -91,6 +91,7 @@ namespace FOCUS
 				auto api = _rhiContext->getCurrentAPI();
 				auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
+				_rhiContext->cmdSetDepthBias(_shadowCommandBuffers[index], 0.01f, 0.0f, 1.7f);
 				_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 				_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 

@@ -14,10 +14,6 @@ namespace FOCUS
 	typedef struct ShadowMapUniformBufferObject
 	{
 		alignas(16) Matrix4 depthMVP;
-		//alignas(16) Matrix4 model;
-		//alignas(16) Matrix4 view;
-		//alignas(16) Matrix4 proj;
-		//alignas(16) Vector3 color;
 	}ShadowMapUniformBufferObject;
 
 	class ShadowMap
@@ -49,9 +45,6 @@ namespace FOCUS
 
 		uint32_t _shadowDepthImageWidth{ 2048 };
 		uint32_t _shadowDepthImageHeight{ 2048 };
-
-		float _zNear = 1.0f;
-		float _zFar = 96.0f;
 
 	public:
 		ShadowMap() = default;
@@ -131,7 +124,7 @@ namespace FOCUS
 			plci.pushConstantRangeCount = 0;
 
 			_rhi->createPipelineLayout(&_shadowPipelineLayout, &plci);
-
+			
 			_rhi->createPipeline(&_shadowPipeline, &_shadowPipelineLayout, pci);
 		}
 

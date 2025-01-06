@@ -36,6 +36,7 @@ namespace FOCUS
 
 		// prepare obj
 		auto obj = loadModel("../../../Asset/Models/box.obj");
+        obj->_meshes[0]->_position = Vector3(0.0, 0.0, -15.0);
 		add(obj);
 
         auto obj2 = loadModel("../../../Asset/Models/plane.obj");

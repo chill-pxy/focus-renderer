@@ -82,5 +82,5 @@ void main()
     fragSpecular = vubo.specular;
     fragShinness = vubo.shinness;
 
-    fragShadowCoord = ( biasMat * vubo.dirLightSpace * vubo.model ) * vec4(inPosition, 1.0);
+    fragShadowCoord = ( biasMat * vubo.dirLightSpace ) * vec4(inPosition, 1.0);
 }

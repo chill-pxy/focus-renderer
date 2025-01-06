@@ -27,7 +27,11 @@ layout(location = 15) in vec4 fragShadowCoord;
 
 layout(location = 0) out vec4 outColor;
 
-// calculate shadow
+#define LIGHT_WORLD_SIZE 0.05
+#define LIGHT_FRUSTUM_WIDTH 6.0
+#define LIGHT_SIZE_UV (LIGHT_WORLD_SIZE / LIGHT_FRUSTUM_WIDTH)
+
+// shadow mapping
 float shadowMapping(vec4 shadowCoord, vec2 off)
 {
 	float shadow = 1.0;
@@ -43,10 +47,10 @@ float shadowMapping(vec4 shadowCoord, vec2 off)
 }
 
 // pcf
-float filterPCF(vec4 sc)
+float PCF(vec4 shadowCoord, float scale)
 {
 	ivec2 texDim = textureSize(shadowMap, 0);
-	float scale = 1.0;
+
 	float dx = scale * 1.0 / float(texDim.x);
 	float dy = scale * 1.0 / float(texDim.y);
 
@@ -58,12 +62,24 @@ float filterPCF(vec4 sc)
 	{
 		for (int y = -range; y <= range; y++)
 		{
-			shadowFactor += shadowMapping(sc, vec2(dx*x, dy*y));
+			shadowFactor += shadowMapping(shadowCoord, vec2(dx*x, dy*y));
 			count++;
 		}
 	
 	}
 	return shadowFactor / count;
+}
+
+// pcss
+float PCSS(vec4 shadowCoord)
+{
+    float zRecevier = shadowCoord.z;
+
+    float avgBlockDepth = 1.0;
+
+    float penumbra = (zRecevier - avgBlockDepth) * LIGHT_SIZE_UV / avgBlockDepth;
+
+    return PCF(shadowCoord, penumbra);
 }
 
 // calculate directional light
@@ -130,7 +146,7 @@ void main()
     vec3 pointLight = calPointLight(color);
     vec3 dirLight = calDirLight(color);
     
-    float shadow = filterPCF(fragShadowCoord / fragShadowCoord.w); //shadowMapping(fragShadowCoord / fragShadowCoord.w, vec2(0.0));
+    float shadow = PCF(fragShadowCoord / fragShadowCoord.w, 1.0);
 
     // output
     outColor = vec4((pointLight + dirLight) * shadow, 1.0);

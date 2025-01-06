@@ -18,6 +18,11 @@ namespace FOCUS
 
 	class ShadowMap
 	{
+	private:
+		double _angleIncrement = PI / 180.0 / 10;
+		double _theta = 0.0f;
+		int _count = 0;
+
 	public:
 		std::shared_ptr<DRHI::DynamicRHI> _rhi;
 
@@ -101,15 +106,20 @@ namespace FOCUS
 
 		void updateUniform(UniformUpdateData& ubo)
 		{
-			auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
-			auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+			_count++;
+			if (_count >= 3600)
+			{
+				_count = 0;
+				_theta = 0.0;
+			}
 
-			float time = millis / 1000.0f;
 			Vector3 lightPosition = Vector3(
-				sin(time * 2.0f) * 200.0f - 100.0f,
-				200,//cos(time * 1.5f) * 200.0f + 200.0f, 
-				sin(time * 1.0f) * 200.0f + 100.0f 
+			    200.0f * cos(_theta),
+				200, 
+				200.0f * sin(_theta) 
 			);
+
+			_theta += _angleIncrement;
 
 			// Matrix from light's point of view
 			Matrix4 depthProjectionMatrix = perspective(radians(15.0f), 1.0f, 10.0f, 500.0f);

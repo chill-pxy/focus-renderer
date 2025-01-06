@@ -70,12 +70,38 @@ float PCF(vec4 shadowCoord, float scale)
 	return shadowFactor / count;
 }
 
+float unpack(vec4 rgbaDepth) {
+    const vec4 bitShift = vec4(1.0, 1.0/256.0, 1.0/(256.0*256.0), 1.0/(256.0*256.0*256.0));
+    return dot(rgbaDepth, bitShift);
+}
+
 // pcss
 float PCSS(vec4 shadowCoord)
 {
     float zRecevier = shadowCoord.z;
 
     float avgBlockDepth = 1.0;
+
+    // calculate blocker averager depth
+    int blockerNum = 0;
+    float blockDepth = 0.0;
+
+    float searchRadius = LIGHT_SIZE_UV * ( fragShadowCoord.z - 0.01 ) / fragShadowCoord.z;
+
+    for(int i = 0; i < 20; i++)
+    {
+        float shadowDepth = unpack(texture(shadowMap, fragShadowCoord.xy * searchRadius));
+        if(zRecevier > shadowDepth)
+        {
+            blockerNum++;
+            blockDepth += shadowDepth;
+        }
+    }
+
+    if(blockerNum == 0)
+        avgBlockDepth = -1.0;
+    else 
+        avgBlockDepth = blockDepth / float(blockerNum);
 
     float penumbra = (zRecevier - avgBlockDepth) * LIGHT_SIZE_UV / avgBlockDepth;
 

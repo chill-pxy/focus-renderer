@@ -9,7 +9,6 @@
 #include"DirectionalLight.h"
 #include"RenderCamera.h"
 #include"Materials/MaterialManager.h"
-#include"ShadowMap.h"
 
 namespace FOCUS
 {
@@ -40,7 +39,7 @@ namespace FOCUS
 		void prepareRenderResources();
 		void add(std::shared_ptr<RenderResource> resource);
 		void add(std::shared_ptr<Model> model);
-		void tick(float frameTimer, std::shared_ptr<ShadowMap> shadowMap);
+		void tick(float frameTimer);
 		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi);
 
 		std::shared_ptr<Model> loadModel(std::string modelPath);

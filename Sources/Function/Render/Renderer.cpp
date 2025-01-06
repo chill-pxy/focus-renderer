@@ -22,8 +22,6 @@ namespace FOCUS
 			_rhiContext = std::make_shared<DRHI::VulkanDRHI>(rhiCI);
 			break;
 		}
-
-		_shadowMap = std::make_shared<ShadowMap>();
 	}
 
 	void Renderer::initialize()
@@ -32,6 +30,26 @@ namespace FOCUS
 
 		_rhiContext->createCommandPool(&_shadowCommandPool);
 		_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
+
+		// initialize shadow map
+		// create Depth image
+		auto api = _rhiContext->getCurrentAPI();
+		auto format = DRHI::DynamicFormat(api);
+		auto tilling = DRHI::DynamicImageTiling(api);
+		auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
+		auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
+
+		_rhiContext->createImage(&_shadowImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_shadowImageMemory);
+		_rhiContext->createImageView(&_shadowImageView, &_shadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
+
+		// create sampler
+		auto borderColor = DRHI::DynamicBorderColor(api);
+		auto addressMode = DRHI::DynamicSamplerAddressMode(api);
+		DRHI::DynamicSamplerCreateInfo sci{};
+		sci.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+		sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_REPEAT;
+		_rhiContext->createSampler(&_shadowSampler, sci);
 
 		_prepared = true;
 	}
@@ -42,11 +60,9 @@ namespace FOCUS
 		_commandBuffers = *commandBuffers;
 		_commandPool = *commandPool;
 
-		_shadowMap->initialize(_rhiContext, &_shadowCommandPool);
-
 		for (auto p : _submitRenderlist)
 		{
-			p->build(_rhiContext, &_commandPool, _shadowMap->_depthImage, _shadowMap->_depthImageView, _shadowMap->_shadowSampler);
+			p->build(_rhiContext, &_commandPool, _shadowImage, _shadowImageView, _shadowSampler);
 		}
 
 		buildCommandBuffer();
@@ -75,28 +91,20 @@ namespace FOCUS
 			// rendering shadow map
 			for (int index = 0; index < _shadowCommandBuffers.size(); ++index)
 			{
-				renderInfo.targetDepthImage = &_shadowMap->_depthImage;
-				renderInfo.targetDepthImageView = &_shadowMap->_depthImageView;
+				renderInfo.targetDepthImage = &_shadowImage;
+				renderInfo.targetDepthImageView = &_shadowImageView;
 				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
 				renderInfo.isClearEveryFrame = true;
 				renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
-				renderInfo.targetImageWidth = _shadowMap->_shadowDepthImageWidth;
-				renderInfo.targetImageHeight = _shadowMap->_shadowDepthImageHeight;
+				renderInfo.targetImageWidth = _shadowDepthImageWidth;
+				renderInfo.targetImageHeight = _shadowDepthImageHeight;
 
 				_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
 				_rhiContext->beginRendering(_shadowCommandBuffers[index], renderInfo);
 
-				// binding shadow map pipeline  
-				auto api = _rhiContext->getCurrentAPI();
-				auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
-
-				_rhiContext->cmdSetDepthBias(_shadowCommandBuffers[index], 1.8f, 0.0f, 5.0f);
-				_rhiContext->bindPipeline(_shadowMap->_shadowPipeline, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-				_rhiContext->bindDescriptorSets(&_shadowMap->_descriptorSet, _shadowMap->_shadowPipelineLayout, &_shadowCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-
 				for (auto p : _submitRenderlist)
 				{
-					p->draw(_rhiContext, &_shadowCommandBuffers[index], false);
+					p->draw(_rhiContext, &_shadowCommandBuffers[index], true);
 				}
 
 				_rhiContext->endRendering(_shadowCommandBuffers[index], renderInfo);
@@ -122,7 +130,7 @@ namespace FOCUS
 
 				for (auto p : _submitRenderlist)
 				{
-					p->draw(_rhiContext, &_commandBuffers[index], true);
+					p->draw(_rhiContext, &_commandBuffers[index], false);
 				}
 
 				_rhiContext->endRendering(_commandBuffers[index], renderInfo);

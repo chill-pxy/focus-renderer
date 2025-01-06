@@ -28,23 +28,11 @@ namespace FOCUS
 		DRHI::DynamicDescriptorSet       _descriptorSet{};
 		DRHI::DynamicDescriptorSetLayout _descriptorSetLayout{};
 
-		DRHI::DynamicImage        _depthImage{};
-		DRHI::DynamicDeviceMemory _depthImageMemory{};
-		DRHI::DynamicImageView    _depthImageView{};
-		DRHI::DynamicSampler      _shadowSampler{};
-
-		std::vector<DRHI::DynamicImage>        _colorImage{};
-		std::vector<DRHI::DynamicDeviceMemory> _colorImageMemory{};
-		std::vector<DRHI::DynamicImageView>    _colorImageView{};
-
 		DRHI::DynamicBuffer       _uniformBuffer{};
 		DRHI::DynamicDeviceMemory _uniformBufferMemory{};
 		void*                     _uniformBufferMapped{ nullptr };
 
 		DRHI::DynamicDescriptorBufferInfo _descriptorBufferInfo{};
-
-		uint32_t _shadowDepthImageWidth{ 2048 };
-		uint32_t _shadowDepthImageHeight{ 2048 };
 
 	public:
 		ShadowMap() = default;
@@ -55,23 +43,6 @@ namespace FOCUS
 
 			auto api = _rhi->getCurrentAPI();
 			auto format = DRHI::DynamicFormat(api);
-			auto tilling = DRHI::DynamicImageTiling(api);
-			auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
-			auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
-			auto aspect = DRHI::DynamicImageAspectFlagBits(api);
-
-			// create Depth image
-			//_rhi->createDepthStencil(&_depthImage, &_depthImageView, &_depthImageMemory, format.FORMAT_D16_UNORM, rhi->getSwapChainExtentWidth(), rhi->getSwapChainExtentHeight());
-			_rhi->createImage(&_depthImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_depthImageMemory);
-			_rhi->createImageView(&_depthImageView, &_depthImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
-
-			// create sampler
-			auto borderColor = DRHI::DynamicBorderColor(api);
-			auto addressMode = DRHI::DynamicSamplerAddressMode(api);
-			DRHI::DynamicSamplerCreateInfo sci{};
-			sci.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-			sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_REPEAT;
-			_rhi->createSampler(&_shadowSampler, sci);
 
 			// create uniform buffer
 			_rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(ShadowMapUniformBufferObject));
@@ -130,11 +101,9 @@ namespace FOCUS
 
 		void updateUniform(UniformUpdateData& ubo)
 		{
-			// 获取当前时间（毫秒）
 			auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
 			auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
 
-			// 根据时间计算光源位置
 			float time = millis / 1000.0f;
 			Vector3 lightPosition = Vector3(
 				sin(time * 2.0f) * 200.0f - 100.0f,
@@ -142,18 +111,26 @@ namespace FOCUS
 				sin(time * 1.0f) * 200.0f + 100.0f 
 			);
 
-
-
 			// Matrix from light's point of view
 			Matrix4 depthProjectionMatrix = perspective(radians(15.0f), 1.0f, 10.0f, 500.0f);
 			Matrix4 depthViewMatrix = lookAt(lightPosition, Vector3(0.0f), Vector3(0, -1, 0));
-			Matrix4 depthModelMatrix = Matrix4(1.0f);
+			Matrix4 depthModelMatrix = ubo.model;
 
 			ShadowMapUniformBufferObject subo{};
 			subo.depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 			ubo.dirLightSpace = subo.depthMVP;
 
 			memcpy(_uniformBufferMapped, &subo, sizeof(ShadowMapUniformBufferObject));
+		}
+
+		void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
+		{
+			auto api = _rhi->getCurrentAPI();
+			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+
+			_rhi->cmdSetDepthBias(*commandBuffer, 1.8f, 0.0f, 5.0f);
+			_rhi->bindPipeline(_shadowPipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			_rhi->bindDescriptorSets(&_descriptorSet, _shadowPipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 		}
 	};
 

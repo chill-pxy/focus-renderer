@@ -5,6 +5,7 @@
 #include<memory>
 
 #include"Materials/Material.h"
+#include"ShadowMap.h"
 
 namespace FOCUS
 {
@@ -20,6 +21,7 @@ namespace FOCUS
         DRHI::DynamicDeviceMemory _indexDeviceMemory;
 
         std::shared_ptr<Material> _material{};
+        std::shared_ptr<ShadowMap> _shadow{};
 
         Vector3 _position{ 0.0,0.0,0.0 };
         Vector3 _color{ 1.0f, 1.0f, 1.0f };

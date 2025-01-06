@@ -7,7 +7,6 @@
 
 #include"../../Core/Math.h"
 #include"RenderResource.h"
-#include"ShadowMap.h"
 
 namespace FOCUS
 {
@@ -28,9 +27,16 @@ namespace FOCUS
 		DRHI::DynamicImage* _viewportDepthImage{nullptr};
 		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
 
-		std::shared_ptr<ShadowMap> _shadowMap;
-
 		bool _prepared = false;
+
+	private:
+		DRHI::DynamicImage        _shadowImage{};
+		DRHI::DynamicDeviceMemory _shadowImageMemory{};
+		DRHI::DynamicImageView    _shadowImageView{};
+		DRHI::DynamicSampler      _shadowSampler{};
+
+		uint32_t _shadowDepthImageWidth{ 2048 };
+		uint32_t _shadowDepthImageHeight{ 2048 };
 
 	public:
 		Renderer() = delete;

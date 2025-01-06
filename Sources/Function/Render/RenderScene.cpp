@@ -55,7 +55,7 @@ namespace FOCUS
 		}
 	}
 
-	void RenderScene::tick(float frameTimer, std::shared_ptr<ShadowMap> shadowMap)
+	void RenderScene::tick(float frameTimer)
 	{
 		// camera tick
 		_camera->handleMovement(frameTimer);
@@ -73,8 +73,6 @@ namespace FOCUS
 		_uud.dirLightDirection = _dirLight->_direction;
 		_uud.dirLightColor = _dirLight->_color;
 		_uud.dirLightStrength = _dirLight->_intensity;
-
-        shadowMap->updateUniform(_uud);
 
 		for (auto object : _group)
 		{

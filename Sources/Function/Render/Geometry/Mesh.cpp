@@ -18,20 +18,29 @@ namespace FOCUS
 		auto indexBufferSize = sizeof(_indices[0]) * _indices.size();
 		rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, commandPool, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
+        //initiailize shadow map
+        _shadow = std::make_shared<ShadowMap>();
+        _shadow->initialize(rhi, commandPool);
+
+        //build material
         _material->build(rhi, commandPool, shadowImage, shadowImageView, shadowSampler);
     }
 
-    void Mesh::draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool usingMaterial)
+    void Mesh::draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool isShadowPass)
     {
         if (!_indexBuffer.valid() || !_vertexBuffer.valid()) return;
 
         auto api = rhi->getCurrentAPI();
         auto indexType = DRHI::DynamicIndexType(api);
 
-        if(usingMaterial)
+        if(isShadowPass)
+        {
+            _shadow->draw(rhi, commandBuffer);
+        }  
+        else
         {
             _material->draw(rhi, commandBuffer);
-        }   
+        }
 
         rhi->bindVertexBuffers(&_vertexBuffer, commandBuffer);
         rhi->bindIndexBuffer(&_indexBuffer, commandBuffer, indexType.INDEX_TYPE_UINT32);
@@ -52,6 +61,7 @@ namespace FOCUS
 
         uud.model = transMatrix * scaleMatrix;
 
+        _shadow->updateUniform(uud);
         _material->updateUniformBuffer(uud);
     }
 }

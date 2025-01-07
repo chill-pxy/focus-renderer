@@ -60,6 +60,7 @@ namespace FOCUS
             auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
+            auto cullMode = DRHI::DynamicCullMode(api);
 
             std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(3);
             dsbs[0].binding = 0;
@@ -91,12 +92,6 @@ namespace FOCUS
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
-            DRHI::DynamicImage tshadowImage = shadowImage;
-            DRHI::DynamicImageView tshadowImageView;
-            auto aspect = DRHI::DynamicImageAspectFlagBits(rhi->getCurrentAPI());
-           // rhi->transitionImageLayout(&tshadowImage, commandPool, format.FORMAT_D16_UNORM, imageLayout.IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL, imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL);
-            rhi->createImageView(&tshadowImageView, &tshadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
-
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             poolSizes[0].descriptorCount = 3;
@@ -114,7 +109,7 @@ namespace FOCUS
             dii[0].sampler = _textureSampler;
 
             dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
-            dii[1].imageView = tshadowImageView;
+            dii[1].imageView = shadowImageView;
             dii[1].sampler = shadowSampler;
 
             std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);
@@ -151,6 +146,7 @@ namespace FOCUS
             pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
             pci.includeStencil = true;
             pci.dynamicDepthBias = false;
+            pci.cullMode = cullMode.CULL_MODE_BACK_BIT;
 
             DRHI::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;

@@ -23,6 +23,8 @@ namespace FOCUS
         std::shared_ptr<Material> _material{};
         std::shared_ptr<ShadowMap> _shadow{};
 
+        bool _castShadow{ true };
+
         Vector3 _position{ 0.0,0.0,0.0 };
         Vector3 _color{ 1.0f, 1.0f, 1.0f };
         Vector3 _scale{ 1.0f, 1.0f, 1.0f };

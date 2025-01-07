@@ -18,6 +18,7 @@ namespace FOCUS
 			_color = Vector3(1.0f, 1.0f, 1.0f);
 			_intensity = 1.0f;
 			_material = std::make_shared<GeometryMaterial>();
+			_castShadow = false;
 		}
 	};
 }

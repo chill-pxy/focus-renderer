@@ -104,7 +104,10 @@ namespace FOCUS
 
 				for (auto p : _submitRenderlist)
 				{
-					p->draw(_rhiContext, &_shadowCommandBuffers[index], true);
+					if (p->_castShadow)
+					{
+						p->draw(_rhiContext, &_shadowCommandBuffers[index], true);
+					}
 				}
 
 				_rhiContext->endRendering(_shadowCommandBuffers[index], renderInfo);

@@ -44,6 +44,8 @@ namespace FOCUS
 
         auto sphere = std::make_shared<Sphere>();
         sphere->_material = std::make_shared<GeometryMaterial>();
+        sphere->_scale = Vector3(50, 50, 50);
+        sphere->_castShadow = false;
         add(sphere);
 	}
 

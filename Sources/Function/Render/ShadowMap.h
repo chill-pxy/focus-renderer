@@ -82,7 +82,6 @@ namespace FOCUS
 			// create pipeline
 			DRHI::DynamicPipelineCreateInfo pci = {};
 			pci.vertexShader = "../../../Shaders/shadowMapVertex.spv";
-			//pci.fragmentShader = "../../../Shaders/shadowMapFragment.spv";
 			pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 			pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
@@ -114,15 +113,15 @@ namespace FOCUS
 			}
 
 			Vector3 lightPosition = Vector3(
-			    200.0f * cos(_theta),
-				200, 
-				200.0f * sin(_theta) 
+			    500.0f * cos(_theta),
+				1000, 
+				500.0f * sin(_theta) 
 			);
 
 			_theta += _angleIncrement;
 
 			// Matrix from light's point of view
-			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 10.0f, 1000.0f);
+			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 100.0f, 2000.0f);
 			Matrix4 depthViewMatrix = lookAt(lightPosition, Vector3(0.0f), Vector3(0, -1, 0));
 			Matrix4 depthModelMatrix = ubo.model;
 

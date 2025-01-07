@@ -40,6 +40,9 @@ namespace FOCUS
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
             auto cullMode = DRHI::DynamicCullMode(api);
 
+            if (_cullMode == 0)
+                _cullMode = cullMode.CULL_MODE_BACK_BIT;
+
             std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
@@ -82,7 +85,7 @@ namespace FOCUS
             pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
             pci.includeStencil = true;
             pci.dynamicDepthBias = false;
-            pci.cullMode = cullMode.CULL_MODE_FRONT_BIT;
+            pci.cullMode = _cullMode;
 
             DRHI::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;

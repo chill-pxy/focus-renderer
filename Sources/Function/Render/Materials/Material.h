@@ -54,6 +54,8 @@ namespace FOCUS
         std::string _diffuseTex{ "" };
         std::string _specularTex{ "" };
 
+        uint32_t _cullMode = { 0 };
+
         float _ambient{ 1.0 };
         float _diffuse{ 1.0 };
         float _specular{ 0.0 };

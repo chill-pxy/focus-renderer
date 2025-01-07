@@ -16,10 +16,10 @@ namespace FOCUS
 		_dirLight = std::make_shared<DirectionalLight>();
 		_camera = std::make_shared<RenderCamera>();
 
-		prepareRenderResources();
+		prepareRenderResources(rhi);
 	}
 
-	void RenderScene::prepareRenderResources()
+	void RenderScene::prepareRenderResources(std::shared_ptr<DRHI::DynamicRHI> rhi)
 	{
 		// prepare light
 		_pointLight->_position = Vector3(0.0f, 55.0f, 0.0f);
@@ -31,21 +31,21 @@ namespace FOCUS
 		add(_pointLight);
 
 		// prepare camera
-        _camera->_position = Vector3(0, 0, 0);
+        _camera->_position = Vector3(0, 50, 0);
         _camera->_rotation = Vector3(-14, -92, 0);
 
 		// prepare obj
-		auto obj = loadModel("../../../Asset/Models/box.obj");
-        obj->_meshes[0]->_position = Vector3(0.0, 0.0, -15.0);
+		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
 		add(obj);
 
-        auto obj2 = loadModel("../../../Asset/Models/plane.obj");
-        add(obj2);
+        //auto obj2 = loadModel("../../../Asset/Models/plane.obj");
+        //add(obj2);
 
         auto sphere = std::make_shared<Sphere>();
-        auto texture = loadTexture("../../../Asset/Images/sky.jpg");
+        auto texture = loadTexture("../../../Asset/Images/sky.png");
         sphere->_material = std::make_shared<BasicMaterial>(texture);
-        sphere->_scale = Vector3(500, 500, 500);
+        sphere->_material->_cullMode = DRHI::DynamicCullMode(rhi->getCurrentAPI()).CULL_MODE_FRONT_BIT;
+        sphere->_scale = Vector3(1000, 1000, 1000);
         sphere->_rotation = rotate(identity<Matrix4>(), radians(90.0f), Vector3(-1, 0, 0));
         sphere->_castShadow = false;
         add(sphere);
@@ -70,7 +70,7 @@ namespace FOCUS
 		_camera->handleMovement(frameTimer);
 
 		_uud.view = _camera->getViewMatrix();
-		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 1.0f, 1000.0f);
+		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 1.0f, 3000.0f);
 		_uud.proj[1][1] *= -1;
 
 		_uud.viewPosition = _camera->_position;
@@ -235,7 +235,7 @@ namespace FOCUS
             mesh->_vertices = vertices;
             mesh->_material = model->_materials[count];
             mesh->_name = model->_materials[count]->_name;
-            mesh->_scale = Vector3(1.0, 1.0, 1.0);
+            mesh->_scale = Vector3(0.1, 0.1, 0.1);
 
             model->_meshes.push_back(mesh);
 

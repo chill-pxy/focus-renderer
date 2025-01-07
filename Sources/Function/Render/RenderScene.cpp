@@ -43,8 +43,10 @@ namespace FOCUS
         add(obj2);
 
         auto sphere = std::make_shared<Sphere>();
-        sphere->_material = std::make_shared<GeometryMaterial>();
-        sphere->_scale = Vector3(50, 50, 50);
+        auto texture = loadTexture("../../../Asset/Images/sky.jpg");
+        sphere->_material = std::make_shared<BasicMaterial>(texture);
+        sphere->_scale = Vector3(500, 500, 500);
+        sphere->_rotation = rotate(identity<Matrix4>(), radians(90.0f), Vector3(-1, 0, 0));
         sphere->_castShadow = false;
         add(sphere);
 	}

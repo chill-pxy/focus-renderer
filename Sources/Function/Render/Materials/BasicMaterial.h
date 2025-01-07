@@ -108,7 +108,7 @@ namespace FOCUS
             pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
             pci.includeStencil = true;
             pci.dynamicDepthBias = false;
-            pci.cullMode = cullMode.CULL_MODE_BACK_BIT;
+            pci.cullMode = cullMode.CULL_MODE_FRONT_BIT;
 
             DRHI::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;

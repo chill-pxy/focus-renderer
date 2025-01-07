@@ -107,7 +107,7 @@ namespace FOCUS
 			// handle translate
 			auto transMatrix = translate(identity<Matrix4>(), _position);
 
-			uud.model = transMatrix * scaleMatrix;
+			uud.model = transMatrix * scaleMatrix * _rotation;
 
 			_shadow->updateUniform(uud);
 			_material->updateUniformBuffer(uud);

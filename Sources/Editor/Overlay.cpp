@@ -211,6 +211,14 @@ namespace FOCUS
         _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);    
         
+        _rhi->clearImage(&_viewportDepthImageView, &_viewportDepthImage, &_viewportDepthImageMemory);
+        auto api = _rhi->getCurrentAPI();
+        auto format = DRHI::DynamicFormat(api);
+        auto tilling = DRHI::DynamicImageTiling(api);
+        auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
+        auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+        _rhi->createDepthStencil(&_viewportDepthImage, &_viewportDepthImageView, &_viewportDepthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight());
+
         _descriptorSets.resize(_viewportImageViews.size());
         if (_backend == DRHI::VULKAN)
         {

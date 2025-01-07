@@ -41,6 +41,10 @@ namespace FOCUS
 
         auto obj2 = loadModel("../../../Asset/Models/plane.obj");
         add(obj2);
+
+        auto sphere = std::make_shared<Sphere>();
+        sphere->_material = std::make_shared<GeometryMaterial>();
+        add(sphere);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
@@ -90,6 +94,7 @@ namespace FOCUS
 			rhi->clearBuffer(&r->_vertexBuffer, &r->_vertexDeviceMemory);
 
 			r->_material->clean(rhi);
+            r->_shadow->clean(rhi);
 		}
 
 		rhi->freeCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);

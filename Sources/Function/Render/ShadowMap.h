@@ -142,6 +142,18 @@ namespace FOCUS
 			_rhi->bindPipeline(_shadowPipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 			_rhi->bindDescriptorSets(&_descriptorSet, _shadowPipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 		}
+
+		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		{
+			rhi->clearBuffer(&_uniformBuffer, &_uniformBufferMemory);
+
+			rhi->freeDescriptorSets(&_descriptorSet, &_descriptorPool);
+			rhi->clearDescriptorPool(&_descriptorPool);
+			rhi->clearDescriptorSetLayout(&_descriptorSetLayout);
+
+
+			rhi->clearPipeline(&_shadowPipeline, &_shadowPipelineLayout);
+		}
 	};
 
 

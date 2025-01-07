@@ -235,6 +235,8 @@ namespace FOCUS
             _rhi->clearImage(&_viewportImageViews[i], &_viewportImages[i], &_viewportImageMemorys[i]);
         }
 
+        _rhi->clearImage(&_viewportDepthImageView, &_viewportDepthImage, &_viewportDepthImageMemory);
+
         _rhi->clearSampler(&_textureSampler);
 
         // clear command buffer

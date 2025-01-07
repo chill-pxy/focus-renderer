@@ -143,6 +143,12 @@ namespace FOCUS
 	{
 		_prepared = false;
 
+		_rhiContext->clearImage(&_shadowImageView, &_shadowImage, &_shadowImageMemory);
+		_rhiContext->clearSampler(&_shadowSampler);
+
+		_rhiContext->freeCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
+		_rhiContext->destroyCommandPool(&_shadowCommandPool);
+
 		_rhiContext->clean();
 	}
 

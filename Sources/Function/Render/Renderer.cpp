@@ -39,8 +39,9 @@ namespace FOCUS
 		auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
 		auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
 		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
+		auto sampleCount = DRHI::DynamicSampleCountFlags(api);
 
-		_rhiContext->createImage(&_shadowImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_shadowImageMemory);
+		_rhiContext->createImage(&_shadowImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT , memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_shadowImageMemory);
 		_rhiContext->createImageView(&_shadowImageView, &_shadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
 
 		// create sampler
@@ -129,7 +130,7 @@ namespace FOCUS
 				renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 
 				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+   				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
 
 				for (auto p : _submitRenderlist)
 				{

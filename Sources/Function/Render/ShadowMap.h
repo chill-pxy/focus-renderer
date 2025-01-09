@@ -48,6 +48,7 @@ namespace FOCUS
 
 			auto api = _rhi->getCurrentAPI();
 			auto format = DRHI::DynamicFormat(api);
+			auto sampleCount = DRHI::DynamicSampleCountFlags(api);
 
 			// create uniform buffer
 			_rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(ShadowMapUniformBufferObject));
@@ -92,6 +93,7 @@ namespace FOCUS
 			pci.depthImageFormat = format.FORMAT_D16_UNORM;
 			pci.includeStencil = false;
 			pci.dynamicDepthBias = true;
+			pci.sampleCounts = sampleCount.SAMPLE_COUNT_1_BIT;
 
 			DRHI::DynamicPipelineLayoutCreateInfo plci{};
 			plci.pSetLayouts = &_descriptorSetLayout;

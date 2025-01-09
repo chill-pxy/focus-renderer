@@ -61,6 +61,7 @@ namespace FOCUS
             auto stageFlags = DRHI::DynamicShaderStageFlags(api);
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
             auto cullMode = DRHI::DynamicCullMode(api);
+            auto sampleCount = DRHI::DynamicSampleCountFlags(api);
 
             if(_cullMode == 0)
                 _cullMode = cullMode.CULL_MODE_BACK_BIT;
@@ -150,6 +151,7 @@ namespace FOCUS
             pci.includeStencil = true;
             pci.dynamicDepthBias = false;
             pci.cullMode = _cullMode;
+            pci.sampleCounts = sampleCount.SAMPLE_COUNT_1_BIT;
 
             DRHI::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;

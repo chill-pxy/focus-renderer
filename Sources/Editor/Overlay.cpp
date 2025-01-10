@@ -219,7 +219,7 @@ namespace FOCUS
         auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
         auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
         auto sampleCount = DRHI::DynamicSampleCountFlags(api);
-        _rhi->createDepthStencil(&_viewportDepthImage, &_viewportDepthImageView, &_viewportDepthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_4_BIT);
+        _rhi->createDepthStencil(&_viewportDepthImage, &_viewportDepthImageView, &_viewportDepthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_1_BIT);
 
         _descriptorSets.resize(_viewportImageViews.size());
         if (_backend == DRHI::VULKAN)

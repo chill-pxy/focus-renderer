@@ -4,4 +4,7 @@ A realtime rendering engine run on Windows(will be support more platforms in fut
 This is an early develop version!
 
 [Feature]
-1.Load OBJ models
+1.Load OBJ models / materials
+2.Blinn-Phong shading
+3.PCF Shadow mapping
+![alt text](image.png)

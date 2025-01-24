@@ -1,0 +1,92 @@
+#version 450
+
+layout(set = 0, binding = 1) uniform sampler2D texSampler;
+layout(set = 0, binding = 2) uniform sampler2D shadowMap;
+
+layout(location = 0) in vec3 fragColor;
+layout(location = 1) in vec2 fragTexCoord;
+layout(location = 2) in vec3 fragPosition;
+layout(location = 3) in vec3 fragNormal;
+
+layout(location = 4) in vec3 fragViewPosition;
+
+layout(location = 5) in vec3 fragPointLightPosition;
+layout(location = 6) in vec3 fragPointLightColor;
+layout(location = 7) in float fragPointLightStrength;
+
+layout(location = 8) in vec3 fragDirLightDirection;
+layout(location = 9) in vec3 fragDirLightColor;
+layout(location = 10) in float fragDirLightStrength;
+
+layout(location = 11) in float fragAmbient;
+layout(location = 12) in float fragDiffuse;
+layout(location = 13) in float fragSpecular;
+layout(location = 14) in float fragShinness;
+
+layout(location = 15) in vec4 fragShadowCoord;
+
+layout(location = 0) out vec4 outColor;
+
+// shadow mapping
+float shadowMapping(vec4 shadowCoord, vec2 off)
+{
+	float shadow = 1.0;
+	if ( shadowCoord.z > -1.0 && shadowCoord.z < 1.0 ) 
+	{
+		float dist = texture( shadowMap, shadowCoord.st + off ).r;
+		if ( shadowCoord.w > 0.0 && dist < shadowCoord.z ) 
+		{
+			shadow = 0.1;
+		}
+	}
+	return shadow;
+}
+
+// pcf
+float PCF(vec4 shadowCoord, float scale)
+{
+	ivec2 texDim = textureSize(shadowMap, 0);
+
+	float dx = scale * 1.0 / float(texDim.x);
+	float dy = scale * 1.0 / float(texDim.y);
+
+	float shadowFactor = 0.0;
+	int count = 0;
+	int range = 3;
+	
+	for (int x = -range; x <= range; x++)
+	{
+		for (int y = -range; y <= range; y++)
+		{
+			shadowFactor += shadowMapping(shadowCoord, vec2(dx*x, dy*y));
+			count++;
+		}
+	
+	}
+	return shadowFactor / count;
+}
+
+// calculate directional light
+vec3 calDirLight(vec3 color)
+{
+
+}
+
+// calculate point light
+vec3 calPointLight(vec3 color)
+{
+
+}
+
+void main()
+{
+    vec3 color = texture(texSampler, fragTexCoord).rgb;
+    
+    vec3 pointLight = calPointLight(color);
+    vec3 dirLight = calDirLight(color);
+    
+    float shadow = PCF(fragShadowCoord / fragShadowCoord.w, 1.0);
+
+    // output
+    outColor = vec4((pointLight + dirLight) * shadow, 1.0);
+} 

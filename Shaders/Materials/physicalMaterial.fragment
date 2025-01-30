@@ -27,6 +27,10 @@ layout(location = 15) in vec4 fragShadowCoord;
 
 layout(location = 0) out vec4 outColor;
 
+#define PI 3.1415926
+#define MEDIUMP_FLT_MAX    65504.0
+#define saturateMediump(x) min(x, MEDIUMP_FLT_MAX)
+
 // shadow mapping
 float shadowMapping(vec4 shadowCoord, vec2 off)
 {
@@ -66,10 +70,18 @@ float PCF(vec4 shadowCoord, float scale)
 	return shadowFactor / count;
 }
 
+// from filament by Google
+float D_GGX(float roughness, float NoH, const vec3 n, const vec3 h) {
+    vec3 NxH = cross(n, h);
+    float a = NoH * roughness;
+    float k = roughness / (dot(NxH, NxH) + a * a);
+    float d = k * k * (1.0 / PI);
+    return saturateMediump(d);
+}
 // calculate directional light
 vec3 calDirLight(vec3 color)
 {
-
+	
 }
 
 // calculate point light

@@ -49,5 +49,9 @@ namespace FOCUS
 		void submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews, DRHI::DynamicImage* depthImage, DRHI::DynamicImageView* depthImageView);
 		void clean();
 		void recreate();
+
+	private:
+		void shadowPass();
+		void scenePass();
 	};
 }

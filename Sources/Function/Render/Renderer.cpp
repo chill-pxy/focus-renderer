@@ -81,65 +81,8 @@ namespace FOCUS
 	{
 		if (_prepared)
 		{
-			auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
-			auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
-
-			DRHI::DynamicRenderingInfo renderInfo{};
-			renderInfo.isRenderOnSwapChain = false;
-			renderInfo.isClearEveryFrame = true;
-			renderInfo.includeStencil = false;
-
-			// rendering shadow map
-			for (int index = 0; index < _shadowCommandBuffers.size(); ++index)
-			{
-				renderInfo.targetDepthImage = &_shadowImage;
-				renderInfo.targetDepthImageView = &_shadowImageView;
-				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
-				renderInfo.isClearEveryFrame = true;
-				renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
-				renderInfo.targetImageWidth = _shadowDepthImageWidth;
-				renderInfo.targetImageHeight = _shadowDepthImageHeight;
-
-				_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
-				_rhiContext->beginRendering(_shadowCommandBuffers[index], renderInfo);
-
-				for (auto p : _submitRenderlist)
-				{
-					if (p->_castShadow)
-					{
-						p->draw(_rhiContext, &_shadowCommandBuffers[index], true);
-					}
-				}
-
-				_rhiContext->endRendering(_shadowCommandBuffers[index], renderInfo);
-				_rhiContext->endCommandBuffer(_shadowCommandBuffers[index]);
-			}	
-
-			// rendering scene
-			for (int index = 0; index < _commandBuffers.size(); ++index)
-			{
-				renderInfo.targetImage = &(*_viewportImages)[index];
-				renderInfo.targetImageView = &(*_viewportImageViews)[index];
-				renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
-				renderInfo.targetDepthImage = _viewportDepthImage;
-				renderInfo.targetDepthImageView = _viewportDepthImageView;
-				renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
-				renderInfo.includeStencil = true;
-				renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-				renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
-				renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
-
-				_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-   				_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
-
-				for (auto p : _submitRenderlist)
-				{
-					p->draw(_rhiContext, &_commandBuffers[index], false);
-				}
-
-				_rhiContext->endRendering(_commandBuffers[index], renderInfo);
-				_rhiContext->endCommandBuffer(_commandBuffers[index]);
-			}
+			shadowPass();
+			scenePass();
 		}
 	}
 
@@ -160,5 +103,84 @@ namespace FOCUS
 	{
 		_prepared = true;
 		buildCommandBuffer();
+	}
+
+
+
+
+
+
+
+	//-------------------------- private function ----------------------------
+	void Renderer::shadowPass()
+	{
+		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+		auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
+
+		DRHI::DynamicRenderingInfo renderInfo{};
+		renderInfo.isRenderOnSwapChain = false;
+		renderInfo.isClearEveryFrame = true;
+		renderInfo.includeStencil = false;
+
+		for (int index = 0; index < _shadowCommandBuffers.size(); ++index)
+		{
+			renderInfo.targetDepthImage = &_shadowImage;
+			renderInfo.targetDepthImageView = &_shadowImageView;
+			renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT;
+			renderInfo.isClearEveryFrame = true;
+			renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
+			renderInfo.targetImageWidth = _shadowDepthImageWidth;
+			renderInfo.targetImageHeight = _shadowDepthImageHeight;
+
+			_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
+			_rhiContext->beginRendering(_shadowCommandBuffers[index], renderInfo);
+
+			for (auto p : _submitRenderlist)
+			{
+				if (p->_castShadow)
+				{
+					p->draw(_rhiContext, &_shadowCommandBuffers[index], true);
+				}
+			}
+
+			_rhiContext->endRendering(_shadowCommandBuffers[index], renderInfo);
+			_rhiContext->endCommandBuffer(_shadowCommandBuffers[index]);
+		}
+	}
+
+	void Renderer::scenePass()
+	{
+		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+		auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
+
+		DRHI::DynamicRenderingInfo renderInfo{};
+		renderInfo.isRenderOnSwapChain = false;
+		renderInfo.isClearEveryFrame = true;
+		renderInfo.includeStencil = false;
+
+		for (int index = 0; index < _commandBuffers.size(); ++index)
+		{
+			renderInfo.targetImage = &(*_viewportImages)[index];
+			renderInfo.targetImageView = &(*_viewportImageViews)[index];
+			renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+			renderInfo.targetDepthImage = _viewportDepthImage;
+			renderInfo.targetDepthImageView = _viewportDepthImageView;
+			renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+			renderInfo.includeStencil = true;
+			renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
+			renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
+
+			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
+			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+
+			for (auto p : _submitRenderlist)
+			{
+				p->draw(_rhiContext, &_commandBuffers[index], false);
+			}
+
+			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
+			_rhiContext->endCommandBuffer(_commandBuffers[index]);
+		}
 	}
 }

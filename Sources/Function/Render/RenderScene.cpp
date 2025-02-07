@@ -1,8 +1,8 @@
 #include"RenderScene.h"
 #include"Materials/BasicMaterial.h"
 #include"Materials/BlinnPhongMaterial.h"
-#include"Geometry/Sphere.h"
 #include"Geometry/Model.h"
+#include"SkySphere.h"
 
 
 namespace FOCUS
@@ -41,14 +41,11 @@ namespace FOCUS
         //auto obj2 = loadModel("../../../Asset/Models/plane.obj");
         //add(obj2);
 
-        auto sphere = std::make_shared<Sphere>();
+        // prepare sky box
         auto texture = loadTexture("../../../Asset/Images/sky.png");
-        sphere->_material = std::make_shared<BasicMaterial>(texture);
-        sphere->_material->_cullMode = DRHI::DynamicCullMode(rhi->getCurrentAPI()).CULL_MODE_FRONT_BIT;
-        sphere->_scale = Vector3(1000, 1000, 1000);
-        sphere->_rotation = rotate(identity<Matrix4>(), radians(90.0f), Vector3(-1, 0, 0));
-        sphere->_castShadow = false;
-        add(sphere);
+        auto sky = std::make_shared<SkySphere>();
+        sky->initialize(rhi, texture);
+        add(sky);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

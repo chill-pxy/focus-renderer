@@ -192,8 +192,13 @@ namespace FOCUS
 		auto usage = DRHI::DynamicImageUsageFlagBits(api);
 		auto samples = DRHI::DynamicSampleCountFlags(api);
 		auto memory = DRHI::DynamicMemoryPropertyFlagBits(api);
+		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
 
+		// create brdf lut image
 		_rhiContext->createImage(&_brdflutImage, 512, 512, format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_brdflutImageMemory);
+
+		// create brdf lut iamge view
+		_rhiContext->createImageView(&_brdflutImageView, &_brdflutImage, format.FORMAT_B8G8R8A8_SRGB, aspect.IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	void Renderer::prefilterEnvironmentMap()

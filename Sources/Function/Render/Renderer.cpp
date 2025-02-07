@@ -183,4 +183,21 @@ namespace FOCUS
 			_rhiContext->endCommandBuffer(_commandBuffers[index]);
 		}
 	}
+
+	void Renderer::precomputeBRDFLUT()
+	{
+		auto api = _rhiContext->getCurrentAPI();
+		auto format = DRHI::DynamicFormat(api);
+		auto tilling = DRHI::DynamicImageTiling(api);
+		auto usage = DRHI::DynamicImageUsageFlagBits(api);
+		auto samples = DRHI::DynamicSampleCountFlags(api);
+		auto memory = DRHI::DynamicMemoryPropertyFlagBits(api);
+
+		_rhiContext->createImage(&_brdflutImage, 512, 512, format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_brdflutImageMemory);
+	}
+
+	void Renderer::prefilterEnvironmentMap()
+	{
+
+	}
 }

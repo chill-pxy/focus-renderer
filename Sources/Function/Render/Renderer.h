@@ -30,6 +30,7 @@ namespace FOCUS
 		bool _prepared = false;
 
 	private:
+		// members of shadow
 		DRHI::DynamicImage        _shadowImage{};
 		DRHI::DynamicDeviceMemory _shadowImageMemory{};
 		DRHI::DynamicImageView    _shadowImageView{};
@@ -37,6 +38,12 @@ namespace FOCUS
 
 		uint32_t _shadowDepthImageWidth{ 2048 };
 		uint32_t _shadowDepthImageHeight{ 2048 };
+
+		// members of brdf lut
+		DRHI::DynamicImage        _brdflutImage{};
+		DRHI::DynamicDeviceMemory _brdflutImageMemory{};
+		DRHI::DynamicImageView    _brdflutImageView{};
+		DRHI::DynamicSampler      _brdflutSampler{};
 
 	public:
 		Renderer() = delete;
@@ -53,5 +60,8 @@ namespace FOCUS
 	private:
 		void shadowPass();
 		void scenePass();
+	
+		void precomputeBRDFLUT();
+		void prefilterEnvironmentMap();
 	};
 }

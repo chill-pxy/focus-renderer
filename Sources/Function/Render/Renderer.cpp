@@ -241,7 +241,7 @@ namespace FOCUS
 		auto stage = DRHI::DynamicPipelineStageFlags(api);
 		auto access = DRHI::DynamicAccessFlagBits(api);
 		auto dependcyFlag = DRHI::DynamicDependencyFlagBits(api);
-		std::array<DRHI::DynamicSubpassDependency, 2> dependencies{};
+		std::vector<DRHI::DynamicSubpassDependency> dependencies{2};
 		dependencies[0].srcSubpass = ~0U;
 		dependencies[0].dstSubpass = 0;
 		dependencies[0].srcStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -265,7 +265,7 @@ namespace FOCUS
 		rpcreateInfo.subpassCount = 1;
 		rpcreateInfo.pSubpasses = &subpassDescription;
 		rpcreateInfo.dependencyCount = 2;
-		rpcreateInfo.pDependencies = dependencies.data();
+		rpcreateInfo.pDependencies = &dependencies;
 
 		DRHI::DynamicRenderPass renderPass{};
 		_rhiContext->createRenderPass(&renderPass, &rpcreateInfo);

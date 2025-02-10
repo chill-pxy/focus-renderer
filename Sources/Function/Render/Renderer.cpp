@@ -201,16 +201,18 @@ namespace FOCUS
 		auto addressmode = DRHI::DynamicSamplerAddressMode(api);
 
 		// create brdf lut image
-		_rhiContext->createImage(&_brdflutImage, 512, 512, format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_brdflutImageMemory);
+		{
+			_rhiContext->createImage(&_brdflutImage, 512, 512, format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_brdflutImageMemory);
 
-		// create brdf lut image view
-		_rhiContext->createImageView(&_brdflutImageView, &_brdflutImage, format.FORMAT_B8G8R8A8_SRGB, aspect.IMAGE_ASPECT_COLOR_BIT);
-	
-		// create brdf lut image sampler
-		DRHI::DynamicSamplerCreateInfo sci{};
-		sci.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		sci.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		_rhiContext->createSampler(&_brdflutSampler, sci);
+			// create brdf lut image view
+			_rhiContext->createImageView(&_brdflutImageView, &_brdflutImage, format.FORMAT_B8G8R8A8_SRGB, aspect.IMAGE_ASPECT_COLOR_BIT);
+
+			// create brdf lut image sampler
+			DRHI::DynamicSamplerCreateInfo sci{};
+			sci.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+			sci.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			_rhiContext->createSampler(&_brdflutSampler, sci);
+		}
 
 		// prepare resources for creating render pass
 		auto loadOp = DRHI::DynamicAttachmentLoadOp(api);
@@ -269,7 +271,67 @@ namespace FOCUS
 
 		DRHI::DynamicRenderPass renderPass{};
 		_rhiContext->createRenderPass(&renderPass, &rpcreateInfo);
-	}
+
+		// create framebuffer
+		DRHI::DynamicFramebufferCreateInfo fcreateInfo{};
+		fcreateInfo.renderPass = renderPass;
+		fcreateInfo.attachmentCount = 1;
+		fcreateInfo.pAttachments = &_brdflutImageView;
+		fcreateInfo.width = 512;
+		fcreateInfo.height = 512;
+		fcreateInfo.layers = 1;
+
+		DRHI::DynamicFramebuffer framebuffer{};
+		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
+
+		// descriptors
+		DRHI::DynamicDescriptorSetLayout dsl{};
+		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> bindings{};
+		_rhiContext->createDescriptorSetLayout(&dsl, &bindings);
+
+		// descriptor pool
+		auto desciptorType = DRHI::DynamicDescriptorType(api);
+		std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes{ 1 };
+		poolSizes[0].descriptorCount = 1;
+		poolSizes[0].type = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+		DRHI::DynamicDescriptorPoolCreateInfo pci{};
+		pci.pPoolSizes = &poolSizes;
+		pci.maxSets = 2;
+
+		DRHI::DynamicDescriptorPool desciptorPool;
+		_rhiContext->createDescriptorPool(&desciptorPool, &pci);
+
+		// descriptor sets
+		DRHI::DynamicDescriptorSet desciptorSet;
+		_rhiContext->createDescriptorSet(&desciptorSet, &dsl, &desciptorPool, nullptr, 1);
+
+		// pipeline layout
+		DRHI::DynamicPipelineLayout pipelineLayout{};
+		DRHI::DynamicPipelineLayoutCreateInfo plci{};
+		plci.pPushConstantRanges = 0;
+		plci.pSetLayouts = &dsl;
+		plci.setLayoutCount = 1;
+		_rhiContext->createPipelineLayout(&pipelineLayout, &plci);
+
+		// pipeline
+		auto cullmode = DRHI::DynamicCullMode(api);
+		DRHI::DynamicPipelineCreateInfo pipelineci{};
+		pipelineci.vertexShader = "../../../Shaders/IBL/brdflutVertex.spv";
+		pipelineci.fragmentShader = "../../../Shaders/IBL/brdflutFragment.spv";
+		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
+		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+		pipelineci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
+		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
+		pipelineci.includeStencil = false;
+		pipelineci.dynamicDepthBias = false;
+		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
+		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
+
+		DRHI::DynamicPipeline pipeline;
+		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
+}
 
 	void Renderer::prefilterEnvironmentMap()
 	{

@@ -285,7 +285,7 @@ namespace FOCUS
 		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
 
 		// descriptors
-		DRHI::DynamicDescriptorSetLayout dsl{};
+		DRHI::DynamicDescriptorSetLayout dsl{nullptr};
 		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> bindings{};
 		_rhiContext->createDescriptorSetLayout(&dsl, &bindings);
 
@@ -331,7 +331,13 @@ namespace FOCUS
 
 		DRHI::DynamicPipeline pipeline;
 		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
-}
+
+		// start render
+		DRHI::DynamicCommandBuffer commandBuffer{};
+		DRHI::DynamicCommandPool commandPool{};
+		_rhiContext->createCommandPool(&commandPool);
+		_rhiContext->createCommandBuffer(&commandBuffer, &commandPool);
+	}
 
 	void Renderer::prefilterEnvironmentMap()
 	{

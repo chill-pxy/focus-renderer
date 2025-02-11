@@ -328,15 +328,47 @@ namespace FOCUS
 		pipelineci.dynamicDepthBias = false;
 		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
+		pipelineci.renderPass = &renderPass;
 
 		DRHI::DynamicPipeline pipeline;
 		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
 
 		// start render
+		DRHI::DynamicRenderPassBeginInfo beginInfo{};
+		beginInfo.framebuffer = framebuffer;
+		beginInfo.renderPass = renderPass;
+		beginInfo.renderArea.extent.width = 512;
+		beginInfo.renderArea.extent.height = 512;
+
 		DRHI::DynamicCommandBuffer commandBuffer{};
 		DRHI::DynamicCommandPool commandPool{};
 		_rhiContext->createCommandPool(&commandPool);
 		_rhiContext->createCommandBuffer(&commandBuffer, &commandPool);
+	
+		_rhiContext->beginCommandBuffer(commandBuffer);
+
+		auto content = DRHI::DynamicSubpassContents(api);
+		_rhiContext->beginRenderPass(&commandBuffer, &beginInfo, content.SUBPASS_CONTENTS_INLINE);
+		
+		DRHI::DynamicViewport viewport{};
+		viewport.width = 512;
+		viewport.height = 512;
+		viewport.maxDepth = 1.0f;
+		viewport.minDepth = 0.0f;
+		_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
+
+		DRHI::DynamicRect2D scissor{};
+		scissor.extent.width = 512;
+		scissor.extent.height = 512;
+		scissor.offset.x = 0;
+		scissor.offset.y = 0;
+		_rhiContext->cmdSetScissor(commandBuffer, 0, 1, scissor);
+
+		_rhiContext->bindPipeline(pipeline, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+		_rhiContext->cmdDraw(commandBuffer, 3, 1, 0, 0);
+		_rhiContext->endRenderPass(&commandBuffer);
+		_rhiContext->flushCommandBuffer(commandBuffer, commandPool, true);
+		_rhiContext->cmdQueueWaitIdle();
 	}
 
 	void Renderer::prefilterEnvironmentMap()

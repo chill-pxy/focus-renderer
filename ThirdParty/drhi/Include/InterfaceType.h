@@ -1072,6 +1072,7 @@ namespace DRHI
 		bool dynamicDepthBias;
 		uint32_t cullMode;
 		uint32_t sampleCounts;
+		DynamicRenderPass* renderPass;
 	}DynamicPipelineCreateInfo;
 
 	typedef struct DynamicDescriptorPoolSize {
@@ -1615,6 +1616,16 @@ namespace DRHI
 		uint32_t                height;
 		uint32_t                layers;
 	}DynamicFramebufferCreateInfo;
+
+	typedef struct DynamicViewport 
+	{
+		float    x;
+		float    y;
+		float    width;
+		float    height;
+		float    minDepth;
+		float    maxDepth;
+	}DynamicViewport;
 
 	typedef struct RenderingInfo
 	{

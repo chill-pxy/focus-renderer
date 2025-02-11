@@ -449,9 +449,13 @@ namespace FOCUS
 			_rhiContext->createImageView(&_irradianceImageView, &_irradianceImage, vci);
 
 			// create irradiance image sampler
+			auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
 			DRHI::DynamicSamplerCreateInfo sci{};
 			sci.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 			sci.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			sci.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+			sci.minLod = 0.0f;
+			sci.maxLod = static_cast<float>(numMips);
 			_rhiContext->createSampler(&_irradianceSampler, sci);
 		}
 

@@ -100,11 +100,16 @@ namespace FOCUS
 	{
 		_prepared = false;
 
+		// shadows
 		_rhiContext->clearImage(&_shadowImageView, &_shadowImage, &_shadowImageMemory);
 		_rhiContext->clearSampler(&_shadowSampler);
 
 		_rhiContext->freeCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
 		_rhiContext->destroyCommandPool(&_shadowCommandPool);
+
+		// brdf
+		_rhiContext->clearImage(&_brdflutImageView, &_brdflutImage, &_brdflutImageMemory);
+		_rhiContext->clearSampler(&_brdflutSampler);
 
 		_rhiContext->clean();
 	}
@@ -384,6 +389,7 @@ namespace FOCUS
 		_rhiContext->clearFramebuffer(&framebuffer);
 		_rhiContext->clearDescriptorSetLayout(&dsl);
 		_rhiContext->clearDescriptorPool(&desciptorPool);
+		_rhiContext->destroyCommandPool(&commandPool);
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

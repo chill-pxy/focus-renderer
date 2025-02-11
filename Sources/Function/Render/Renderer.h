@@ -45,6 +45,12 @@ namespace FOCUS
 		DRHI::DynamicImageView    _brdflutImageView{};
 		DRHI::DynamicSampler      _brdflutSampler{};
 
+		// members of irradiance map
+		DRHI::DynamicImage        _irradianceImage{};
+		DRHI::DynamicDeviceMemory _irradianceImageMemory{};
+		DRHI::DynamicImageView    _irradianceImageView{};
+		DRHI::DynamicSampler      _irradianceSampler{};
+
 	public:
 		Renderer() = delete;
 

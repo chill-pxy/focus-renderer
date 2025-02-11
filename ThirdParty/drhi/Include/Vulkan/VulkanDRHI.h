@@ -177,9 +177,11 @@ namespace DRHI
 		virtual void createRenderPass(DynamicRenderPass* renderPass, DynamicRenderPassCreateInfo* createInfo);
 		virtual void beginRenderPass(DynamicCommandBuffer* cmdBuffer, DynamicRenderPassBeginInfo* info, uint32_t subpassContents);
 		virtual void endRenderPass(DynamicCommandBuffer* cmdBuffer);
+		virtual void clearRenderPass(DynamicRenderPass* renderPass);
 
 		//framebuffer functions
 		virtual void createFramebuffer(DynamicFramebuffer* frameBuffer, DynamicFramebufferCreateInfo* createInfo);
+		virtual void clearFramebuffer(DynamicFramebuffer* frameBuffer);
 
 		//-------------------------------------------------------------------------------------------------------------------------- 
 		//--------------------------------------------------------------------------------------------------------------------------  

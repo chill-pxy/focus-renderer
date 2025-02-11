@@ -62,6 +62,7 @@ namespace FOCUS
 		void scenePass();
 	
 		void precomputeBRDFLUT();
+		void precomputeIrradianceMap();
 		void prefilterEnvironmentMap();
 	};
 }

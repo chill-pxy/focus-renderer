@@ -55,8 +55,14 @@ namespace FOCUS
 
 		_prepared = true;
 
-		////for test
+		// precomputing
+		std::cout << "####################################################" << std::endl;
 		precomputeBRDFLUT();
+		std::cout << "####################################################" << std::endl;
+		precomputeIrradianceMap();
+		std::cout << "####################################################" << std::endl;
+		prefilterEnvironmentMap();
+		std::cout << "####################################################" << std::endl;
 	}
 
 	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)
@@ -190,6 +196,8 @@ namespace FOCUS
 
 	void Renderer::precomputeBRDFLUT()
 	{
+		auto tStart = std::chrono::high_resolution_clock::now();
+
 		auto api = _rhiContext->getCurrentAPI();
 		auto format = DRHI::DynamicFormat(api);
 		auto tilling = DRHI::DynamicImageTiling(api);
@@ -369,10 +377,43 @@ namespace FOCUS
 		_rhiContext->endRenderPass(&commandBuffer);
 		_rhiContext->flushCommandBuffer(commandBuffer, commandPool, true);
 		_rhiContext->cmdQueueWaitIdle();
+
+		//free value
+		_rhiContext->clearPipeline(&pipeline, &pipelineLayout);
+		_rhiContext->clearRenderPass(&renderPass);
+		_rhiContext->clearFramebuffer(&framebuffer);
+		_rhiContext->clearDescriptorSetLayout(&dsl);
+		_rhiContext->clearDescriptorPool(&desciptorPool);
+
+		// cal time
+		auto tEnd = std::chrono::high_resolution_clock::now();
+		auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
+		std::cout << "                                                    " << std::endl;
+		std::cout << "      Generating BRDF LUT took" << tDiff << " ms" << std::endl;
+		std::cout << "                                                    " << std::endl;
+	}
+
+	void Renderer::precomputeIrradianceMap()
+	{
+		auto tStart = std::chrono::high_resolution_clock::now();
+
+		// cal time
+		auto tEnd = std::chrono::high_resolution_clock::now();
+		auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
+		std::cout << "                                                    " << std::endl;
+		std::cout << "    Generating Irradiance Map took" << tDiff << " ms" << std::endl;
+		std::cout << "                                                    " << std::endl;
 	}
 
 	void Renderer::prefilterEnvironmentMap()
 	{
+		auto tStart = std::chrono::high_resolution_clock::now();
 
+		// cal time
+		auto tEnd = std::chrono::high_resolution_clock::now();
+		auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
+		std::cout << "                                                    " << std::endl;
+		std::cout << "    Prefilter Environment Map took" << tDiff << " ms" << std::endl;
+		std::cout << "                                                    " << std::endl;
 	}
 }

@@ -6,7 +6,6 @@
 #include<imgui_impl_vulkan.h>
 #include<imgui_impl_win32.h>
 
-
 #include"Renderer.h"
 #include"RenderResource.h"
 
@@ -111,6 +110,10 @@ namespace FOCUS
 		_rhiContext->clearImage(&_brdflutImageView, &_brdflutImage, &_brdflutImageMemory);
 		_rhiContext->clearSampler(&_brdflutSampler);
 
+		// irradiance
+		_rhiContext->clearImage(&_irradianceImageView, &_irradianceImage, &_irradianceImageMemory);
+		_rhiContext->clearSampler(&_irradianceSampler);
+
 		_rhiContext->clean();
 	}
 
@@ -213,9 +216,11 @@ namespace FOCUS
 		auto bordercolor = DRHI::DynamicBorderColor(api);
 		auto addressmode = DRHI::DynamicSamplerAddressMode(api);
 
+		uint32_t texSize = 512;
+
 		// create brdf lut image
 		{
-			_rhiContext->createImage(&_brdflutImage, 512, 512, format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_brdflutImageMemory);
+			_rhiContext->createImage(&_brdflutImage, texSize, texSize, format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_brdflutImageMemory);
 
 			// create brdf lut image view
 			_rhiContext->createImageView(&_brdflutImageView, &_brdflutImage, format.FORMAT_B8G8R8A8_SRGB, aspect.IMAGE_ASPECT_COLOR_BIT);
@@ -290,8 +295,8 @@ namespace FOCUS
 		fcreateInfo.renderPass = renderPass;
 		fcreateInfo.attachmentCount = 1;
 		fcreateInfo.pAttachments = &_brdflutImageView;
-		fcreateInfo.width = 512;
-		fcreateInfo.height = 512;
+		fcreateInfo.width = texSize;
+		fcreateInfo.height = texSize;
 		fcreateInfo.layers = 1;
 
 		DRHI::DynamicFramebuffer framebuffer{};
@@ -350,8 +355,8 @@ namespace FOCUS
 		DRHI::DynamicRenderPassBeginInfo beginInfo{};
 		beginInfo.framebuffer = framebuffer;
 		beginInfo.renderPass = renderPass;
-		beginInfo.renderArea.extent.width = 512;
-		beginInfo.renderArea.extent.height = 512;
+		beginInfo.renderArea.extent.width = texSize;
+		beginInfo.renderArea.extent.height = texSize;
 
 		DRHI::DynamicCommandBuffer commandBuffer{};
 		DRHI::DynamicCommandPool commandPool{};
@@ -364,15 +369,15 @@ namespace FOCUS
 		_rhiContext->beginRenderPass(&commandBuffer, &beginInfo, content.SUBPASS_CONTENTS_INLINE);
 		
 		DRHI::DynamicViewport viewport{};
-		viewport.width = 512;
-		viewport.height = 512;
+		viewport.width = texSize;
+		viewport.height = texSize;
 		viewport.maxDepth = 1.0f;
 		viewport.minDepth = 0.0f;
 		_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
 
 		DRHI::DynamicRect2D scissor{};
-		scissor.extent.width = 512;
-		scissor.extent.height = 512;
+		scissor.extent.width = texSize;
+		scissor.extent.height = texSize;
 		scissor.offset.x = 0;
 		scissor.offset.y = 0;
 		_rhiContext->cmdSetScissor(commandBuffer, 0, 1, scissor);
@@ -402,6 +407,55 @@ namespace FOCUS
 	void Renderer::precomputeIrradianceMap()
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
+
+		uint32_t texSize = 64;
+		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
+
+		auto api = _rhiContext->getCurrentAPI();
+		auto format = DRHI::DynamicFormat(api);
+		auto tilling = DRHI::DynamicImageTiling(api);
+		auto usage = DRHI::DynamicImageUsageFlagBits(api);
+		auto samples = DRHI::DynamicSampleCountFlags(api);
+		auto memory = DRHI::DynamicMemoryPropertyFlagBits(api);
+		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
+		auto bordercolor = DRHI::DynamicBorderColor(api);
+		auto addressmode = DRHI::DynamicSamplerAddressMode(api);
+		auto imageflags = DRHI::DynamicImageCreateFlags(api);
+		auto viewType = DRHI::DynamicImageViewType(api);
+
+		// create irradiance image
+		{
+			DRHI::DynamicImageCreateInfo imageci{};
+			imageci.flags = imageflags.IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+			imageci.format = format.FORMAT_B8G8R8A8_SRGB;
+			imageci.extent.width = texSize;
+			imageci.extent.height = texSize;
+			imageci.extent.depth = 1;
+			imageci.mipLevels = numMips;
+			imageci.arrayLayers = 6;
+			imageci.samples = samples.SAMPLE_COUNT_1_BIT;
+			imageci.tiling = tilling.IMAGE_TILING_OPTIMAL;
+			imageci.usage = usage.IMAGE_USAGE_SAMPLED_BIT | usage.IMAGE_USAGE_TRANSFER_DST_BIT;
+			_rhiContext->createImage(&_irradianceImage, &_irradianceImageMemory, imageci, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+			// create irradiance image view
+			DRHI::DynamicImageViewCreateInfo vci{};
+			vci.type = viewType.IMAGE_VIEW_TYPE_CUBE;
+			vci.format = format.FORMAT_B8G8R8A8_SRGB;
+			vci.image = _irradianceImage;
+			vci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+			vci.subresourceRange.layerCount = 6;
+			vci.subresourceRange.levelCount = numMips;
+			_rhiContext->createImageView(&_irradianceImageView, &_irradianceImage, vci);
+
+			// create irradiance image sampler
+			DRHI::DynamicSamplerCreateInfo sci{};
+			sci.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+			sci.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			_rhiContext->createSampler(&_irradianceSampler, sci);
+		}
+
+
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

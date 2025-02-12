@@ -328,6 +328,7 @@ namespace FOCUS
 		DRHI::DynamicPipelineLayout pipelineLayout{};
 		DRHI::DynamicPipelineLayoutCreateInfo plci{};
 		plci.pPushConstantRanges = 0;
+		plci.pushConstantRangeCount = 0;
 		plci.pSetLayouts = &dsl;
 		plci.setLayoutCount = 1;
 		_rhiContext->createPipelineLayout(&pipelineLayout, &plci);
@@ -556,6 +557,99 @@ namespace FOCUS
 
 		DRHI::DynamicFramebuffer framebuffer{};
 		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
+
+		// set image layout
+		DRHI::DynamicCommandPool commandPool{};
+		_rhiContext->createCommandPool(&commandPool);
+
+		// once commandbuffer
+		DRHI::DynamicCommandBuffer onceCmdBuf{};
+		_rhiContext->createCommandBuffer(&onceCmdBuf, &commandPool);
+
+		_rhiContext->beginCommandBuffer(onceCmdBuf);
+
+		_rhiContext->setImageLayout(&onceCmdBuf, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT,
+			layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		_rhiContext->flushCommandBuffer(onceCmdBuf, commandPool, true);
+
+		// descriptors
+		DRHI::DynamicDescriptorSetLayout dsl{ nullptr };
+		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> bindings{};
+		_rhiContext->createDescriptorSetLayout(&dsl, &bindings);
+
+		// descriptor pool
+		auto desciptorType = DRHI::DynamicDescriptorType(api);
+		std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes{ 1 };
+		poolSizes[0].descriptorCount = 1;
+		poolSizes[0].type = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+		DRHI::DynamicDescriptorPoolCreateInfo pci{};
+		pci.pPoolSizes = &poolSizes;
+		pci.maxSets = 2;
+
+		DRHI::DynamicDescriptorPool desciptorPool;
+		_rhiContext->createDescriptorPool(&desciptorPool, &pci);
+
+		// descriptor sets
+		DRHI::DynamicDescriptorSet desciptorSet;
+
+		DRHI::DynamicDescriptorImageInfo dii{};
+		dii.imageLayout = layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		//*environment map value
+		//dii.imageView = 
+		//dii.sampler = 
+
+		std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
+		wds[0].descriptorType = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		wds[0].dstBinding = 0;
+		wds[0].descriptorCount = 1;
+		wds[0].pImageInfo = &dii;
+
+		_rhiContext->createDescriptorSet(&desciptorSet, &dsl, &desciptorPool, &wds, 1);
+
+		// pipeline layout
+		struct PushBlock
+		{
+			Matrix4 mvp;
+			float deltaPhi = (2.0f * float(PI) / 180.f);
+			float deltaTheta = (0.5f * float(PI) / 64.f);
+		}pushBlock;
+
+		auto pushStage = DRHI::DynamicShaderStageFlags(api);
+		DRHI::DynamicPushConstantRange pcr{};
+		pcr.stageFlags = pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT;
+		pcr.offset = 0;
+		pcr.size = sizeof(PushBlock);
+
+		DRHI::DynamicPipelineLayout pipelineLayout{};
+		DRHI::DynamicPipelineLayoutCreateInfo plci{};
+		plci.pPushConstantRanges = &pcr;
+		plci.pushConstantRangeCount = 1;
+		plci.pSetLayouts = &dsl;
+		plci.setLayoutCount = 1;
+		_rhiContext->createPipelineLayout(&pipelineLayout, &plci);
+
+		// pipeline
+		auto cullmode = DRHI::DynamicCullMode(api);
+		DRHI::DynamicPipelineCreateInfo pipelineci{};
+		pipelineci.vertexShader = "../../../Shaders/IBL/prefilterCubeVertex.spv";
+		pipelineci.fragmentShader = "../../../Shaders/IBL/irradianceMapFragment.spv";
+		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
+		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+		pipelineci.vertexInputAttributes.resize(1);
+		pipelineci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
+		pipelineci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
+		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
+		pipelineci.includeStencil = false;
+		pipelineci.dynamicDepthBias = false;
+		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
+		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
+		pipelineci.renderPass = &renderPass;
+
+		DRHI::DynamicPipeline pipeline;
+		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
+
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

@@ -459,7 +459,103 @@ namespace FOCUS
 			_rhiContext->createSampler(&_irradianceSampler, sci);
 		}
 
+		// attachment
+		auto loadOp = DRHI::DynamicAttachmentLoadOp(api);
+		auto storeOp = DRHI::DynamicAttachmentStoreOp(api);
+		auto layout = DRHI::DynamicImageLayout(api);
+		DRHI::DynamicAttachmentDescription ad{};
+		ad.format = format.FORMAT_B8G8R8A8_SRGB;
+		ad.samples = samples.SAMPLE_COUNT_1_BIT;
+		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
+		ad.storeOp = storeOp.ATTACHMENT_STORE_OP_STORE;
+		ad.stencilLoadOp = loadOp.ATTACHMENT_LOAD_OP_DONT_CARE;
+		ad.stencilStoreOp = storeOp.ATTACHMENT_STORE_OP_DONT_CARE;
+		ad.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
+		ad.finalLayout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
+		DRHI::DynamicAttachmentReference ar{};
+		ar.attachment = 0;
+		ar.layout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		// subpass description
+		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+		DRHI::DynamicSubpassDescription subpassDescription{};
+		subpassDescription.pipelineBindPoint = bindPoint.PIPELINE_BIND_POINT_GRAPHICS;
+		subpassDescription.colorAttachmentCount = 1;
+		subpassDescription.pColorAttachments = &ar;
+
+		// subpass dependency
+		auto stage = DRHI::DynamicPipelineStageFlags(api);
+		auto access = DRHI::DynamicAccessFlagBits(api);
+		auto dependcyFlag = DRHI::DynamicDependencyFlagBits(api);
+		std::vector<DRHI::DynamicSubpassDependency> dependencies{ 2 };
+		dependencies[0].srcSubpass = ~0U;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[0].dstStageMask = stage.PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[0].srcAccessMask = access.ACCESS_MEMORY_READ_BIT;
+		dependencies[0].dstAccessMask = access.ACCESS_COLOR_ATTACHMENT_READ_BIT | access.ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[0].dependencyFlags = dependcyFlag.DEPENDENCY_BY_REGION_BIT;
+
+		dependencies[1].srcSubpass = 0;
+		dependencies[1].dstSubpass = ~0U;
+		dependencies[1].srcStageMask = stage.PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[1].dstStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[1].srcAccessMask = access.ACCESS_COLOR_ATTACHMENT_READ_BIT | access.ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[1].dstAccessMask = access.ACCESS_MEMORY_READ_BIT;
+		dependencies[1].dependencyFlags = dependcyFlag.DEPENDENCY_BY_REGION_BIT;
+
+		// create render pass
+		DRHI::DynamicRenderPassCreateInfo rpcreateInfo{};
+		rpcreateInfo.attachmentCount = 1;
+		rpcreateInfo.pAttachments = &ad;
+		rpcreateInfo.subpassCount = 1;
+		rpcreateInfo.pSubpasses = &subpassDescription;
+		rpcreateInfo.dependencyCount = 2;
+		rpcreateInfo.pDependencies = &dependencies;
+
+		DRHI::DynamicRenderPass renderPass{};
+		_rhiContext->createRenderPass(&renderPass, &rpcreateInfo);
+
+		// create offscreen image
+		{
+			DRHI::DynamicImageCreateInfo ici{};
+			ici.format = format.FORMAT_B8G8R8A8_SRGB;
+			ici.extent.width = texSize;
+			ici.extent.height = texSize;
+			ici.extent.depth = 1;
+			ici.mipLevels = 1;
+			ici.arrayLayers = 1;
+			ici.samples = samples.SAMPLE_COUNT_1_BIT;
+			ici.tiling = tilling.IMAGE_TILING_OPTIMAL;
+			ici.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
+			ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_DST_BIT;
+			_rhiContext->createImage(&_irradianceOffscreenImage, &_irradianceOffscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+			DRHI::DynamicImageViewCreateInfo ivci{};
+			ivci.format = format.FORMAT_B8G8R8A8_SRGB;
+			ivci.image = _irradianceOffscreenImage;
+			ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
+			ivci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+			ivci.subresourceRange.baseMipLevel = 0;
+			ivci.subresourceRange.levelCount = 1;
+			ivci.subresourceRange.baseArrayLayer = 0;
+			ivci.subresourceRange.layerCount = 1;
+
+			_rhiContext->createImageView(&_irradianceOffscreenImageView, &_irradianceOffscreenImage, ivci);
+		}
+
+		// create framebuffer
+		DRHI::DynamicFramebufferCreateInfo fcreateInfo{};
+		fcreateInfo.renderPass = renderPass;
+		fcreateInfo.attachmentCount = 1;
+		fcreateInfo.pAttachments = &_irradianceOffscreenImageView;
+		fcreateInfo.width = texSize;
+		fcreateInfo.height = texSize;
+		fcreateInfo.layers = 1;
+
+		DRHI::DynamicFramebuffer framebuffer{};
+		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

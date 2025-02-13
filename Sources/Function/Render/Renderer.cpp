@@ -58,7 +58,7 @@ namespace FOCUS
 		std::cout << "####################################################" << std::endl;
 		precomputeBRDFLUT();
 		std::cout << "####################################################" << std::endl;
-		precomputeIrradianceMap();
+		//precomputeIrradianceMap();
 		std::cout << "####################################################" << std::endl;
 		prefilterEnvironmentMap();
 		std::cout << "####################################################" << std::endl;
@@ -130,6 +130,11 @@ namespace FOCUS
 
 
 	//-------------------------- private function ----------------------------
+	void Renderer::environmentMapPass()
+	{
+
+	}
+
 	void Renderer::shadowPass()
 	{
 		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());

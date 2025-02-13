@@ -2,8 +2,6 @@
 #include"Materials/BasicMaterial.h"
 #include"Materials/BlinnPhongMaterial.h"
 #include"Geometry/Model.h"
-#include"SkySphere.h"
-
 
 namespace FOCUS
 {
@@ -43,9 +41,9 @@ namespace FOCUS
 
         // prepare sky box
         auto texture = loadTexture("../../../Asset/Images/sky.png");
-        auto sky = std::make_shared<SkySphere>();
-        sky->initialize(rhi, texture);
-        add(sky);
+        _sky = std::make_shared<SkySphere>();
+        _sky->initialize(rhi, texture);
+        add(_sky);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

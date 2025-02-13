@@ -7,6 +7,7 @@
 
 #include"../../Core/Math.h"
 #include"RenderResource.h"
+#include"SkySphere.h"
 
 namespace FOCUS
 {
@@ -26,6 +27,9 @@ namespace FOCUS
 		std::vector<DRHI::DynamicImageView>* _viewportImageViews{nullptr};
 		DRHI::DynamicImage* _viewportDepthImage{nullptr};
 		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
+
+		// environment map
+		std::shared_ptr<SkySphere> _environmentMap{};
 
 		bool _prepared = false;
 
@@ -68,6 +72,7 @@ namespace FOCUS
 		void recreate();
 
 	private:
+		void environmentMapPass();
 		void shadowPass();
 		void scenePass();
 	

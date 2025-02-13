@@ -1,7 +1,6 @@
 #include<drhi.h>
 
 #include"RenderSystem.h"
-#include"RenderScene.h"
 
 #define IMGUI_IMPL_VULKAN_USE_VOLK
 #include<imgui.h>
@@ -24,6 +23,8 @@ namespace FOCUS
 		// initialize scene
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
+
+		_renderer->_environmentMap = _scene->_sky;
 
 		_isInitialized = true;
 	}

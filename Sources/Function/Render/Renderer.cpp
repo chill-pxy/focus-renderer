@@ -673,6 +673,7 @@ namespace FOCUS
 		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
 
 		// rendering
+		auto content = DRHI::DynamicSubpassContents(api);
 		DRHI::DynamicRenderPassBeginInfo binfo{};
 		binfo.framebuffer = framebuffer;
 		binfo.renderPass = renderPass;
@@ -685,24 +686,67 @@ namespace FOCUS
 		DRHI::DynamicCommandBuffer commandBuffer{};
 		_rhiContext->createCommandBuffer(&commandBuffer, &commandPool);
 
-		//_rhiContext->beginCommandBuffer(commandBuffer);
+		_rhiContext->beginCommandBuffer(commandBuffer);
 
-		//// scissor
-		//DRHI::DynamicViewport viewport{};
-		//viewport.width = texSize;
-		//viewport.height = texSize;
-		//viewport.maxDepth = 1.0f;
-		//viewport.minDepth = 0.0f;
-		//_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
+		// scissor
+		DRHI::DynamicViewport viewport{};
+		viewport.width = texSize;
+		viewport.height = texSize;
+		viewport.maxDepth = 1.0f;
+		viewport.minDepth = 0.0f;
+		_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
 
-		//DRHI::DynamicRect2D scissor{};
-		//scissor.extent.width = texSize;
-		//scissor.extent.height = texSize;
-		//scissor.offset.x = 0;
-		//scissor.offset.y = 0;
-		//_rhiContext->cmdSetScissor(commandBuffer, 0, 1, scissor);
+		DRHI::DynamicRect2D scissor{};
+		scissor.extent.width = texSize;
+		scissor.extent.height = texSize;
+		scissor.offset.x = 0;
+		scissor.offset.y = 0;
+		_rhiContext->cmdSetScissor(commandBuffer, 0, 1, scissor);
 
+		// rotation matrix
+		std::vector<Matrix4> matrices = {
+			rotate(rotate(Matrix4(1.0f), radians(90.0f), Vector3(0.0f, 1.0f, 0.0f)), radians(180.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			rotate(rotate(Matrix4(1.0f), radians(-90.0f), Vector3(0.0f, 1.0f, 0.0f)), radians(180.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			rotate(Matrix4(1.0f), radians(-90.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			rotate(Matrix4(1.0f), radians(90.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			rotate(Matrix4(1.0f), radians(180.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			rotate(Matrix4(1.0f), radians(180.0f), Vector3(0.0f, 0.0f, 1.0f)),
+		};
 
+		// set image layout
+		DRHI::DynamicImageSubresourceRange range{};
+		range.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+		range.baseMipLevel = 0;
+		range.levelCount = numMips;
+		range.layerCount = 6;
+		_rhiContext->setImageLayout(&commandBuffer, &_irradianceImage, layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, range);
+
+		// start render pass
+		for (uint32_t m = 0; m < numMips; ++m)
+		{
+			for (uint32_t f = 0; f < 6; ++f)
+			{
+				viewport.width = static_cast<float>(texSize * std::pow(0.5f, m));
+				viewport.height = static_cast<float>(texSize * std::pow(0.5f, m));
+				_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
+
+				_rhiContext->beginRenderPass(&commandBuffer, &binfo, content.SUBPASS_CONTENTS_INLINE);
+
+				pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.0f) * matrices[f];
+
+				_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
+
+				_rhiContext->bindPipeline(pipeline, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				_rhiContext->bindDescriptorSets(&desciptorSet, pipelineLayout, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				_environmentMap->draw(_rhiContext, &commandBuffer, false);
+
+				_rhiContext->endRenderPass(&commandBuffer);
+
+				_rhiContext->setImageLayout(&commandBuffer, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+			}
+		}
+
+		_rhiContext->flushCommandBuffer(commandBuffer, commandPool, true);
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

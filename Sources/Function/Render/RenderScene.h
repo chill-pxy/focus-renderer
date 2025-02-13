@@ -9,7 +9,6 @@
 #include"DirectionalLight.h"
 #include"RenderCamera.h"
 #include"Materials/MaterialManager.h"
-#include"SkySphere.h"
 
 namespace FOCUS
 {
@@ -27,7 +26,6 @@ namespace FOCUS
 		std::shared_ptr<PointLight> _pointLight;
 		std::shared_ptr<DirectionalLight> _dirLight;
 		std::shared_ptr<RenderCamera> _camera;
-		std::shared_ptr<SkySphere> _sky;
 
 		UniformUpdateData _uud{};
 

@@ -38,12 +38,6 @@ namespace FOCUS
 
         //auto obj2 = loadModel("../../../Asset/Models/plane.obj");
         //add(obj2);
-
-        // prepare sky box
-        auto texture = loadTexture("../../../Asset/Images/sky.png");
-        _sky = std::make_shared<SkySphere>();
-        _sky->initialize(rhi, texture);
-        add(_sky);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

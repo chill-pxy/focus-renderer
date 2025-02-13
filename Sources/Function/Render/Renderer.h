@@ -30,6 +30,7 @@ namespace FOCUS
 
 		// environment map
 		std::shared_ptr<SkySphere> _environmentMap{};
+		DRHI::DynamicCommandPool _environmentMapCommandPool{};
 
 		bool _prepared = false;
 

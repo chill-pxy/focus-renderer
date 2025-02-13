@@ -52,13 +52,21 @@ namespace FOCUS
 		sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_REPEAT;
 		_rhiContext->createSampler(&_shadowSampler, sci);
 
+		// prepare environment map
+		_rhiContext->createCommandPool(&_environmentMapCommandPool);
+
+		auto texture = loadTexture("../../../Asset/Images/sky.png");
+		_environmentMap = std::make_shared<SkySphere>();
+		_environmentMap->initialize(_rhiContext, texture);
+		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
+
 		_prepared = true;
 
 		// precomputing
 		std::cout << "####################################################" << std::endl;
 		precomputeBRDFLUT();
 		std::cout << "####################################################" << std::endl;
-		//precomputeIrradianceMap();
+		precomputeIrradianceMap();
 		std::cout << "####################################################" << std::endl;
 		prefilterEnvironmentMap();
 		std::cout << "####################################################" << std::endl;
@@ -196,6 +204,9 @@ namespace FOCUS
 
 			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
 			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+
+			// draw environment
+			_environmentMap->draw(_rhiContext, &_commandBuffers[index], false);
 
 			for (auto p : _submitRenderlist)
 			{
@@ -578,9 +589,16 @@ namespace FOCUS
 		_rhiContext->flushCommandBuffer(onceCmdBuf, commandPool, true);
 
 		// descriptors
+		auto descriptorType = DRHI::DynamicDescriptorType(api);
+		auto stageFlags = DRHI::DynamicShaderStageFlags(api);
 		DRHI::DynamicDescriptorSetLayout dsl{ nullptr };
-		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> bindings{};
-		_rhiContext->createDescriptorSetLayout(&dsl, &bindings);
+		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
+		dsbs[0].binding = 0;
+		dsbs[0].descriptorCount = 1;
+		dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		dsbs[0].pImmutableSamplers = nullptr;
+		dsbs[0].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+		_rhiContext->createDescriptorSetLayout(&dsl, &dsbs);
 
 		// descriptor pool
 		auto desciptorType = DRHI::DynamicDescriptorType(api);
@@ -601,8 +619,8 @@ namespace FOCUS
 		DRHI::DynamicDescriptorImageInfo dii{};
 		dii.imageLayout = layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		//*environment map value
-		//dii.imageView = 
-		//dii.sampler = 
+		dii.imageView = _environmentMap->_material->_textureImageView;
+		dii.sampler = _environmentMap->_material->_textureSampler;
 
 		std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
 		wds[0].descriptorType = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;

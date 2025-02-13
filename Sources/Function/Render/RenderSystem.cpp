@@ -24,8 +24,6 @@ namespace FOCUS
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
-		_renderer->_environmentMap = _scene->_sky;
-
 		_isInitialized = true;
 	}
 
@@ -49,6 +47,7 @@ namespace FOCUS
 
 		// scene tick
 		_scene->tick(_frameTimer);
+		_renderer->_environmentMap->updateUniformBuffer(_scene->_uud);
 		//_renderer->buildCommandBuffer();
 
 		// Convert to clamped timer value

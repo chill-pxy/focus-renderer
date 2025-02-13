@@ -55,7 +55,7 @@ namespace FOCUS
 		// prepare environment map
 		_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-		auto texture = loadTexture("../../../Asset/Images/sky.png");
+		auto texture = loadTexture("../../../Asset/Images/sky.jpg");
 		_environmentMap = std::make_shared<SkySphere>();
 		_environmentMap->initialize(_rhiContext, texture);
 		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
@@ -618,7 +618,6 @@ namespace FOCUS
 
 		DRHI::DynamicDescriptorImageInfo dii{};
 		dii.imageLayout = layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		//*environment map value
 		dii.imageView = _environmentMap->_material->_textureImageView;
 		dii.sampler = _environmentMap->_material->_textureSampler;
 
@@ -672,6 +671,37 @@ namespace FOCUS
 
 		DRHI::DynamicPipeline pipeline;
 		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
+
+		// rendering
+		DRHI::DynamicRenderPassBeginInfo binfo{};
+		binfo.framebuffer = framebuffer;
+		binfo.renderPass = renderPass;
+		binfo.renderArea.extent.width = texSize;
+		binfo.renderArea.extent.height = texSize;
+		binfo.renderArea.offset.x = 0;
+		binfo.renderArea.offset.y = 0;
+
+		// prepare command buffer
+		DRHI::DynamicCommandBuffer commandBuffer{};
+		_rhiContext->createCommandBuffer(&commandBuffer, &commandPool);
+
+		//_rhiContext->beginCommandBuffer(commandBuffer);
+
+		//// scissor
+		//DRHI::DynamicViewport viewport{};
+		//viewport.width = texSize;
+		//viewport.height = texSize;
+		//viewport.maxDepth = 1.0f;
+		//viewport.minDepth = 0.0f;
+		//_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
+
+		//DRHI::DynamicRect2D scissor{};
+		//scissor.extent.width = texSize;
+		//scissor.extent.height = texSize;
+		//scissor.offset.x = 0;
+		//scissor.offset.y = 0;
+		//_rhiContext->cmdSetScissor(commandBuffer, 0, 1, scissor);
+
 
 
 		// cal time

@@ -10,6 +10,7 @@ namespace FOCUS
     {
         alignas(16) Matrix4 proj;
         alignas(16) Matrix4 model;
+        alignas(16) Matrix4 view;
     } EUniformBufferObject;
 
     class EnvironmentMap : public Material
@@ -131,6 +132,7 @@ namespace FOCUS
             EUniformBufferObject ubo{};
             ubo.model = uud.model;
             ubo.proj = uud.proj;
+            ubo.view = uud.view;
 
             memcpy(_uniformBufferMapped, &ubo, sizeof(EUniformBufferObject));
         }

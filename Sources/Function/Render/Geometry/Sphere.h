@@ -97,6 +97,22 @@ namespace FOCUS
 			rhi->drawIndexed(commandBuffer ,static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
 		}
 
+		virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, DRHI::DynamicPipeline pipeline, DRHI::DynamicPipelineLayout pipelineLayout, DRHI::DynamicDescriptorSet set)
+		{
+			auto api = rhi->getCurrentAPI();
+			auto indexType = DRHI::DynamicIndexType(api);
+			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+
+			rhi->bindPipeline(pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			rhi->bindDescriptorSets(&set, pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+
+			rhi->bindVertexBuffers(&_vertexBuffer, commandBuffer);
+			rhi->bindIndexBuffer(&_indexBuffer, commandBuffer, indexType.INDEX_TYPE_UINT32);
+
+			//draw model
+			rhi->drawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
+		}
+
 		virtual void updateUniformBuffer(UniformUpdateData uud)
 		{
 			uud.vertexColor = _color;

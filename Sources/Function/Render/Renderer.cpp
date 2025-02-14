@@ -546,7 +546,7 @@ namespace FOCUS
 			ici.samples = samples.SAMPLE_COUNT_1_BIT;
 			ici.tiling = tilling.IMAGE_TILING_OPTIMAL;
 			ici.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
-			ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_DST_BIT;
+			ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_SRC_BIT;
 			_rhiContext->createImage(&_irradianceOffscreenImage, &_irradianceOffscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 			DRHI::DynamicImageViewCreateInfo ivci{};
@@ -738,7 +738,7 @@ namespace FOCUS
 
 				_rhiContext->bindPipeline(pipeline, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 				_rhiContext->bindDescriptorSets(&desciptorSet, pipelineLayout, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-				_environmentMap->draw(_rhiContext, &commandBuffer, false);
+				_environmentMap->draw(_rhiContext, &commandBuffer, pipeline, pipelineLayout, desciptorSet);
 
 				_rhiContext->endRenderPass(&commandBuffer);
 

@@ -55,7 +55,7 @@ namespace FOCUS
 		// prepare environment map
 		_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-		auto texture = loadTexture("../../../Asset/Images/sky.jpg");
+		auto texture = loadTexture("../../../Asset/Images/indoor.hdr");
 		_environmentMap = std::make_shared<SkySphere>();
 		_environmentMap->initialize(_rhiContext, texture);
 		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);

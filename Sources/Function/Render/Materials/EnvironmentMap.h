@@ -25,6 +25,8 @@ namespace FOCUS
         std::shared_ptr<Texture> _basicTexture{ nullptr };
         EUniformBufferObject      _uniformObject{};
 
+        bool _isCube{ false };
+
     public:
         EnvironmentMap() = delete;
         EnvironmentMap(std::shared_ptr<Texture> texture) : _basicTexture{ texture } {};
@@ -67,7 +69,26 @@ namespace FOCUS
 
             //binding sampler and image view
             rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
-            rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
+            
+            if (_isCube)
+            {
+                auto type = DRHI::DynamicImageViewType(api);
+                DRHI::DynamicImageViewCreateInfo viewInfo{};
+                viewInfo.format = format.FORMAT_B8G8R8A8_SRGB;
+                viewInfo.image = _textureImage;
+                viewInfo.type = type.IMAGE_VIEW_TYPE_CUBE;
+                viewInfo.subresourceRange.aspectMask = imageAspect.IMAGE_ASPECT_COLOR_BIT;
+                viewInfo.subresourceRange.layerCount = 6;
+                viewInfo.subresourceRange.baseArrayLayer = 0;
+                viewInfo.subresourceRange.baseMipLevel = 1;
+                viewInfo.subresourceRange.levelCount = 0;
+                rhi->createImageView(&_textureImageView, &_textureImage, viewInfo);
+            }
+            else
+            {
+                rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
+            }
+           
             rhi->createTextureSampler(&_textureSampler);
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
@@ -99,8 +120,16 @@ namespace FOCUS
 
             // create pipeline
             DRHI::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = "../../../Shaders/Materials/environmentMapVertex.spv";
-            pci.fragmentShader = "../../../Shaders/Materials/environmentMapFragment.spv";
+            if (_isCube)
+            {
+                pci.vertexShader = "../../../Shaders/Materials/skybox.vert.spv";
+                pci.fragmentShader = "../../../Shaders/Materials/skybox.frag.spv";
+            }
+            else
+            {
+                pci.vertexShader = "../../../Shaders/Materials/environmentMapVertex.spv";
+                pci.fragmentShader = "../../../Shaders/Materials/environmentMapFragment.spv";
+            }
             pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();

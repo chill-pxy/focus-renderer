@@ -18,21 +18,24 @@ namespace FOCUS
 		double _height{};
 
 	public:
+		Box() : _width(1), _length(1), _height(1) {};
+
 		Box(double width, double length, double height) : _width(width), _length(length), _height(height){};
 	
 		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
 		{
 			// create vertices
-			_vertices = {
-				(-_width / 2, -_length / 2, _height / 2),
-				(_width / 2, -_length / 2, _height / 2),
-				(_width / 2, _length / 2, _height / 2),
-				(-_width / 2, _length / 2, _height / 2),
-				(-_width / 2, -_length / 2, -_height / 2),
-				(_width / 2, -_length / 2, _height / 2),
-				(_width / 2, _length / 2, -_height / 2),
-				(-_width / 2, _length / 2, -_height / 2),
-			};
+			Vertex v1{},v2{},v3{},v4{},v5{},v6{},v7{},v8{};
+			v1.pos = Vector3(-_width / 2, -_length / 2, _height / 2);
+			v2.pos = Vector3(_width / 2, -_length / 2, _height / 2);
+			v3.pos = Vector3(_width / 2, _length / 2, _height / 2);
+			v4.pos = Vector3(-_width / 2, _length / 2, _height / 2);
+			v5.pos = Vector3(-_width / 2, -_length / 2, -_height / 2);
+			v6.pos = Vector3(_width / 2, -_length / 2, -_height / 2);
+			v7.pos = Vector3(_width / 2, _length / 2, -_height / 2);
+			v8.pos = Vector3(-_width / 2, _length / 2, -_height / 2);
+
+			_vertices = { v1,v2,v3,v4,v5,v6,v7,v8 };
 
 			_indices = {
 				0, 1, 2,
@@ -81,6 +84,22 @@ namespace FOCUS
 			{
 				_material->draw(rhi, commandBuffer);
 			}
+
+			rhi->bindVertexBuffers(&_vertexBuffer, commandBuffer);
+			rhi->bindIndexBuffer(&_indexBuffer, commandBuffer, indexType.INDEX_TYPE_UINT32);
+
+			//draw model
+			rhi->drawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
+		}
+
+		virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, DRHI::DynamicPipeline pipeline, DRHI::DynamicPipelineLayout pipelineLayout, DRHI::DynamicDescriptorSet set)
+		{
+			auto api = rhi->getCurrentAPI();
+			auto indexType = DRHI::DynamicIndexType(api);
+			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+
+			rhi->bindPipeline(pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			rhi->bindDescriptorSets(&set, pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 
 			rhi->bindVertexBuffers(&_vertexBuffer, commandBuffer);
 			rhi->bindIndexBuffer(&_indexBuffer, commandBuffer, indexType.INDEX_TYPE_UINT32);

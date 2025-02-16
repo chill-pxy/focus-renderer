@@ -8,6 +8,7 @@
 #include"../../Core/Math.h"
 #include"RenderResource.h"
 #include"SkySphere.h"
+#include"SkyCube.h"
 
 namespace FOCUS
 {
@@ -29,7 +30,8 @@ namespace FOCUS
 		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
 
 		// environment map
-		std::shared_ptr<SkySphere> _environmentMap{};
+		//std::shared_ptr<SkySphere> _environmentMap{};
+		std::shared_ptr<SkyCube> _environmentMap{};
 		DRHI::DynamicCommandPool _environmentMapCommandPool{};
 
 		bool _prepared = false;

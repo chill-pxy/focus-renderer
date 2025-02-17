@@ -56,7 +56,7 @@ namespace FOCUS
 		_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
 		auto texture = loadTexture("../../../Asset/Images/indoor.hdr");
-		_environmentMap = std::make_shared<SkyCube>();
+		_environmentMap = std::make_shared<SkySphere>();
 		_environmentMap->initialize(_rhiContext, texture);
 		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
 
@@ -426,7 +426,6 @@ namespace FOCUS
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		uint32_t texSize = 64;
-		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
 
 		auto api = _rhiContext->getCurrentAPI();
 		auto format = DRHI::DynamicFormat(api);
@@ -448,7 +447,7 @@ namespace FOCUS
 			imageci.extent.width = texSize;
 			imageci.extent.height = texSize;
 			imageci.extent.depth = 1;
-			imageci.mipLevels = numMips;
+			imageci.mipLevels = 1;
 			imageci.arrayLayers = 6;
 			imageci.samples = samples.SAMPLE_COUNT_1_BIT;
 			imageci.tiling = tilling.IMAGE_TILING_OPTIMAL;
@@ -462,7 +461,7 @@ namespace FOCUS
 			vci.image = _irradianceImage;
 			vci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 			vci.subresourceRange.layerCount = 6;
-			vci.subresourceRange.levelCount = numMips;
+			vci.subresourceRange.levelCount = 1;
 			_rhiContext->createImageView(&_irradianceImageView, &_irradianceImage, vci);
 
 			// create irradiance image sampler
@@ -472,7 +471,7 @@ namespace FOCUS
 			sci.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 			sci.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
 			sci.minLod = 0.0f;
-			sci.maxLod = static_cast<float>(numMips);
+			sci.maxLod = 1;
 			_rhiContext->createSampler(&_irradianceSampler, sci);
 		}
 
@@ -717,33 +716,28 @@ namespace FOCUS
 		DRHI::DynamicImageSubresourceRange range{};
 		range.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 		range.baseMipLevel = 0;
-		range.levelCount = numMips;
+		range.levelCount = 1;
 		range.layerCount = 6;
 		_rhiContext->setImageLayout(&commandBuffer, &_irradianceImage, layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, range);
 
 		// start render pass
-		for (uint32_t m = 0; m < numMips; ++m)
+		for (uint32_t f = 0; f < 6; ++f)
 		{
-			for (uint32_t f = 0; f < 6; ++f)
-			{
-				viewport.width = static_cast<float>(texSize * std::pow(0.5f, m));
-				viewport.height = static_cast<float>(texSize * std::pow(0.5f, m));
-				_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
+			viewport.width = static_cast<float>(texSize);
+			viewport.height = static_cast<float>(texSize);
+			_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
 
-				_rhiContext->beginRenderPass(&commandBuffer, &binfo, content.SUBPASS_CONTENTS_INLINE);
+			_rhiContext->beginRenderPass(&commandBuffer, &binfo, content.SUBPASS_CONTENTS_INLINE);
 
-				pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.0f) * matrices[f];
+			pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.0f) * matrices[f];
 
-				_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
+			_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
 
-				_rhiContext->bindPipeline(pipeline, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-				_rhiContext->bindDescriptorSets(&desciptorSet, pipelineLayout, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-				_environmentMap->draw(_rhiContext, &commandBuffer, false);
+			_environmentMap->draw(_rhiContext, &commandBuffer, pipeline, pipelineLayout, desciptorSet);
 
-				_rhiContext->endRenderPass(&commandBuffer);
+			_rhiContext->endRenderPass(&commandBuffer);
 
-				_rhiContext->setImageLayout(&commandBuffer, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-			}
+			_rhiContext->setImageLayout(&commandBuffer, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 		}
 
 		_rhiContext->flushCommandBuffer(commandBuffer, commandPool, true);

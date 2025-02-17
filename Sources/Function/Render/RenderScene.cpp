@@ -40,12 +40,6 @@ namespace FOCUS
 
         //auto obj2 = loadModel("../../../Asset/Models/plane.obj");
         //add(obj2);
-
-        auto obj2 = std::make_shared<Box>(10, 10, 10);
-        obj2->_position = Vector3(0, 50, 0);
-        auto texture = loadTexture("../../../Asset/Images/indoor.hdr");
-        obj2->_material = std::make_shared<EnvironmentMap>(texture, true);
-        add(obj2);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

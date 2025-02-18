@@ -70,6 +70,9 @@ namespace FOCUS
 		std::cout << "####################################################" << std::endl;
 		prefilterEnvironmentMap();
 		std::cout << "####################################################" << std::endl;
+
+		// init ray tracing
+		_rhiContext->initRayTracing();
 	}
 
 	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)

@@ -786,6 +786,90 @@ namespace FOCUS
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
 
+		uint32_t texSize = 512;
+
+		auto api = _rhiContext->getCurrentAPI();
+		auto format = DRHI::DynamicFormat(api);
+		auto tilling = DRHI::DynamicImageTiling(api);
+		auto usage = DRHI::DynamicImageUsageFlagBits(api);
+		auto samples = DRHI::DynamicSampleCountFlags(api);
+		auto memory = DRHI::DynamicMemoryPropertyFlagBits(api);
+		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
+		auto bordercolor = DRHI::DynamicBorderColor(api);
+		auto addressmode = DRHI::DynamicSamplerAddressMode(api);
+		auto imageflags = DRHI::DynamicImageCreateFlags(api);
+		auto viewType = DRHI::DynamicImageViewType(api);
+
+		// create image
+		{
+			DRHI::DynamicImageCreateInfo imageCI{};
+			imageCI.format = format.FORMAT_B8G8R8A8_SRGB;
+			imageCI.extent.width = texSize;
+			imageCI.extent.height = texSize;
+			imageCI.extent.depth = 1;
+			imageCI.mipLevels = 1;
+			imageCI.arrayLayers = 6;
+			imageCI.samples = samples.SAMPLE_COUNT_1_BIT;
+			imageCI.tiling = tilling.IMAGE_TILING_OPTIMAL;
+			imageCI.usage = usage.IMAGE_USAGE_SAMPLED_BIT | usage.IMAGE_USAGE_TRANSFER_DST_BIT;
+			imageCI.flags = imageflags.IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+
+			_rhiContext->createImage(&_filteredImage, &_filteredImageMemory, imageCI, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		
+			DRHI::DynamicImageViewCreateInfo viewInfo{};
+			viewInfo.format = format.FORMAT_B8G8R8A8_SRGB;
+			viewInfo.image = _filteredImage;
+			viewInfo.type = viewType.IMAGE_VIEW_TYPE_CUBE;
+			viewInfo.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+			viewInfo.subresourceRange.baseArrayLayer = 0;
+			viewInfo.subresourceRange.baseMipLevel = 0;
+			viewInfo.subresourceRange.layerCount = 6;
+			viewInfo.subresourceRange.levelCount = 1;
+
+			_rhiContext->createImageView(&_filteredImageView, &_filteredImage, viewInfo);
+
+			auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
+			DRHI::DynamicSamplerCreateInfo samplerInfo{};
+			samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+			samplerInfo.maxLod = 1;
+			samplerInfo.minLod = 0.0f;
+			samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+			samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+			_rhiContext->createSampler(&_filteredImageSampler, samplerInfo);
+		}
+
+		// color attachment
+		auto loadOp = DRHI::DynamicAttachmentLoadOp(api);
+		auto storeOp = DRHI::DynamicAttachmentStoreOp(api);
+		auto layout = DRHI::DynamicImageLayout(api);
+		DRHI::DynamicAttachmentDescription ad{};
+		ad.format = format.FORMAT_B8G8R8A8_SRGB;
+		ad.samples = samples.SAMPLE_COUNT_1_BIT;
+		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
+		ad.storeOp = storeOp.ATTACHMENT_STORE_OP_STORE;
+		ad.stencilLoadOp = loadOp.ATTACHMENT_LOAD_OP_DONT_CARE;
+		ad.stencilStoreOp = storeOp.ATTACHMENT_STORE_OP_DONT_CARE;
+		ad.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
+		ad.finalLayout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		DRHI::DynamicAttachmentReference ar{};
+		ar.attachment = 0;
+		ar.layout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		
+		// subpass description
+		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+		DRHI::DynamicSubpassDescription subpassDescription{};
+		subpassDescription.pipelineBindPoint = bindPoint.PIPELINE_BIND_POINT_GRAPHICS;
+		subpassDescription.colorAttachmentCount = 1;
+		subpassDescription.pColorAttachments = &ar;
+
+		// subpass dependencies
+		std::vector<DRHI::DynamicSubpassDependency> dependencies{2};
+		dependencies[0].srcSubpass = ~0U;
+		dependencies[0].dstSubpass = 0;
+		//dependencies[0].srcStageMask = 
+
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();
 		auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();

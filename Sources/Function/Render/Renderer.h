@@ -30,7 +30,6 @@ namespace FOCUS
 		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
 
 		// environment map
-		//std::shared_ptr<SkySphere> _environmentMap{};
 		std::shared_ptr<SkySphere> _environmentMap{};
 		DRHI::DynamicCommandPool _environmentMapCommandPool{};
 
@@ -61,6 +60,12 @@ namespace FOCUS
 		DRHI::DynamicDeviceMemory _irradianceOffscreenImageMemory{};
 		DRHI::DynamicImageView    _irradianceOffscreenImageView{};
 		DRHI::DynamicSampler      _irradianceOffscreenSampler{};
+
+		// members of prefilteredImage
+		DRHI::DynamicImage        _filteredImage{};
+		DRHI::DynamicDeviceMemory _filteredImageMemory{};
+		DRHI::DynamicImageView    _filteredImageView{};
+		DRHI::DynamicSampler      _filteredImageSampler{};
 
 	public:
 		Renderer() = delete;

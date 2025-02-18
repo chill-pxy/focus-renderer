@@ -75,7 +75,6 @@ namespace FOCUS
 		void recreate();
 
 	private:
-		void environmentMapPass();
 		void shadowPass();
 		void scenePass();
 	

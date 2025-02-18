@@ -21,5 +21,12 @@ namespace FOCUS
 			_rotation = rotate(identity<Matrix4>(), radians(90.0f), Vector3(-1, 0, 0));
 			_castShadow = false;
 		}
+
+		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		{
+			__super::clean(rhi);
+			_shadow->clean(rhi);
+			_material->clean(rhi);
+		}
 	};
 }

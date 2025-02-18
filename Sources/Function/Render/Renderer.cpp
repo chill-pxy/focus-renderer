@@ -117,6 +117,10 @@ namespace FOCUS
 		_rhiContext->freeCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
 		_rhiContext->destroyCommandPool(&_shadowCommandPool);
 
+		// environment
+		_environmentMap->clean(_rhiContext);
+		_rhiContext->destroyCommandPool(&_environmentMapCommandPool);
+
 		// brdf
 		_rhiContext->clearImage(&_brdflutImageView, &_brdflutImage, &_brdflutImageMemory);
 		_rhiContext->clearSampler(&_brdflutSampler);
@@ -141,11 +145,6 @@ namespace FOCUS
 
 
 	//-------------------------- private function ----------------------------
-	void Renderer::environmentMapPass()
-	{
-
-	}
-
 	void Renderer::shadowPass()
 	{
 		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
@@ -741,9 +740,39 @@ namespace FOCUS
 			_rhiContext->endRenderPass(&commandBuffer);
 
 			_rhiContext->setImageLayout(&commandBuffer, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+		
+			DRHI::DynamicImageCopy copy{};
+			copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+			copy.srcSubresource.baseArrayLayer = 0;
+			copy.srcSubresource.mipLevel = 0;
+			copy.srcSubresource.layerCount = 1;
+			copy.srcOffset = { 0,0,0 };
+
+			copy.dstSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+			copy.dstSubresource.baseArrayLayer = f;
+			copy.dstSubresource.mipLevel = 0;
+			copy.dstSubresource.layerCount = 1;
+			copy.dstOffset = { 0,0,0 };
+
+			copy.extent = { texSize, texSize, 1 };
+			
+			_rhiContext->cmdCopyImage(commandBuffer, &_irradianceOffscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
+		
+			_rhiContext->setImageLayout(&commandBuffer, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		}
 
+		_rhiContext->setImageLayout(&commandBuffer, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, range);
+
 		_rhiContext->flushCommandBuffer(commandBuffer, commandPool, true);
+
+		_rhiContext->clearRenderPass(&renderPass);
+		_rhiContext->clearFramebuffer(&framebuffer);
+		_rhiContext->clearImage(&_irradianceOffscreenImageView, &_irradianceOffscreenImage, &_irradianceOffscreenImageMemory);
+		_rhiContext->clearSampler(&_irradianceOffscreenSampler);
+		_rhiContext->clearDescriptorPool(&desciptorPool);
+		_rhiContext->clearDescriptorSetLayout(&dsl);
+		_rhiContext->clearPipeline(&pipeline, &pipelineLayout);
+		_rhiContext->destroyCommandPool(&commandPool);
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

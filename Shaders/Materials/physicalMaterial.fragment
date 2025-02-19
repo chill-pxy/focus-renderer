@@ -1,4 +1,7 @@
 #version 450
+#extension GL_GOOGLE_include_directive : enable
+
+#include "../Chunks/shadowShading.glsl"
 
 layout(set = 0, binding = 1) uniform sampler2D texSampler;
 layout(set = 0, binding = 2) uniform sampler2D shadowMap;
@@ -30,45 +33,6 @@ layout(location = 0) out vec4 outColor;
 #define PI 3.1415926
 #define MEDIUMP_FLT_MAX    65504.0
 #define saturateMediump(x) min(x, MEDIUMP_FLT_MAX)
-
-// shadow mapping
-float shadowMapping(vec4 shadowCoord, vec2 off)
-{
-	float shadow = 1.0;
-	if ( shadowCoord.z > -1.0 && shadowCoord.z < 1.0 ) 
-	{
-		float dist = texture( shadowMap, shadowCoord.st + off ).r;
-		if ( shadowCoord.w > 0.0 && dist < shadowCoord.z ) 
-		{
-			shadow = 0.1;
-		}
-	}
-	return shadow;
-}
-
-// pcf
-float PCF(vec4 shadowCoord, float scale)
-{
-	ivec2 texDim = textureSize(shadowMap, 0);
-
-	float dx = scale * 1.0 / float(texDim.x);
-	float dy = scale * 1.0 / float(texDim.y);
-
-	float shadowFactor = 0.0;
-	int count = 0;
-	int range = 3;
-	
-	for (int x = -range; x <= range; x++)
-	{
-		for (int y = -range; y <= range; y++)
-		{
-			shadowFactor += shadowMapping(shadowCoord, vec2(dx*x, dy*y));
-			count++;
-		}
-	
-	}
-	return shadowFactor / count;
-}
 
 // from filament by Google
 float D_GGX(float NoH, float a) 
@@ -115,7 +79,7 @@ void main()
     vec3 pointLight = calPointLight(color);
     vec3 dirLight = calDirLight(color);
     
-    float shadow = PCF(fragShadowCoord / fragShadowCoord.w, 1.0);
+    float shadow = PCF(shadowMap, fragShadowCoord / fragShadowCoord.w, 1.0);
 
     // output
     outColor = vec4((pointLight + dirLight) * shadow, 1.0);

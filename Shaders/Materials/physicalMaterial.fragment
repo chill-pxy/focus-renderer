@@ -99,13 +99,13 @@ float Fd_Lambert()
 // calculate directional light
 vec3 calDirLight(vec3 color)
 {
-	
+	return vec3(0,0,0);
 }
 
 // calculate point light
 vec3 calPointLight(vec3 color)
 {
-
+	return vec3(0,0,0);
 }
 
 void main()

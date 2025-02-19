@@ -115,15 +115,15 @@ namespace FOCUS
 			}
 
 			Vector3 lightPosition = Vector3(
-			    500.0f * cos(_theta),
+			    300.0f * cos(_theta),
 				1000, 
-				500.0f * sin(_theta) 
+				300.0f * sin(_theta) 
 			);
 
 			_theta += _angleIncrement;
 
 			// Matrix from light's point of view
-			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 100.0f, 2000.0f);
+			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 200.0f, 1200.0f);
 			Matrix4 depthViewMatrix = lookAt(lightPosition, Vector3(0.0f), Vector3(0, -1, 0));
 			Matrix4 depthModelMatrix = ubo.model;
 
@@ -139,7 +139,7 @@ namespace FOCUS
 			auto api = _rhi->getCurrentAPI();
 			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-			_rhi->cmdSetDepthBias(*commandBuffer, 1.8f, 0.0f, 2.0f);
+			_rhi->cmdSetDepthBias(*commandBuffer, 1.0f, 0.0f, 2.0f);
 			_rhi->bindPipeline(_shadowPipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 			_rhi->bindDescriptorSets(&_descriptorSet, _shadowPipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 		}

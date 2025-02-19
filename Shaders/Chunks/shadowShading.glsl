@@ -33,7 +33,7 @@ float PCF(sampler2D shadowMap, vec4 shadowCoord, float scale)
 
 	float shadowFactor = 0.0;
 	int count = 0;
-	int range = 3;
+	int range = 1;
 
 	for (int x = -range; x <= range; x++)
 	{
@@ -42,7 +42,6 @@ float PCF(sampler2D shadowMap, vec4 shadowCoord, float scale)
 			shadowFactor += shadowMapping(shadowMap, shadowCoord, vec2(dx * x, dy * y));
 			count++;
 		}
-
 	}
 	return shadowFactor / count;
 }

@@ -29,7 +29,7 @@ namespace FOCUS
 		{
 			_position = { 0.0f, 0.0f, 1.0f };
 			_front = { 1.0f,0.0f,0.0f };
-			_speed = 25.0f;
+			_speed = 75.0f;
 			_rotateSpeed = 0.01f;
 
 			updateViewMatrix();

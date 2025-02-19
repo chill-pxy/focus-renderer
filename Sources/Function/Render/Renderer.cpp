@@ -129,6 +129,10 @@ namespace FOCUS
 		_rhiContext->clearImage(&_irradianceImageView, &_irradianceImage, &_irradianceImageMemory);
 		_rhiContext->clearSampler(&_irradianceSampler);
 
+		// prefilted
+		_rhiContext->clearImage(&_filteredImageView, &_filteredImage, &_filteredImageMemory);
+		_rhiContext->clearSampler(&_filteredImageSampler);
+
 		_rhiContext->clean();
 	}
 
@@ -536,38 +540,41 @@ namespace FOCUS
 		_rhiContext->createRenderPass(&renderPass, &rpcreateInfo);
 
 		// create offscreen image
-		{
-			DRHI::DynamicImageCreateInfo ici{};
-			ici.format = format.FORMAT_B8G8R8A8_SRGB;
-			ici.extent.width = texSize;
-			ici.extent.height = texSize;
-			ici.extent.depth = 1;
-			ici.mipLevels = 1;
-			ici.arrayLayers = 1;
-			ici.samples = samples.SAMPLE_COUNT_1_BIT;
-			ici.tiling = tilling.IMAGE_TILING_OPTIMAL;
-			ici.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
-			ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_SRC_BIT;
-			_rhiContext->createImage(&_irradianceOffscreenImage, &_irradianceOffscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		DRHI::DynamicImage        irradianceOffscreenImage{};
+		DRHI::DynamicDeviceMemory irradianceOffscreenImageMemory{};
+		DRHI::DynamicImageView    irradianceOffscreenImageView{};
+		DRHI::DynamicSampler      irradianceOffscreenSampler{};
 
-			DRHI::DynamicImageViewCreateInfo ivci{};
-			ivci.format = format.FORMAT_B8G8R8A8_SRGB;
-			ivci.image = _irradianceOffscreenImage;
-			ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
-			ivci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
-			ivci.subresourceRange.baseMipLevel = 0;
-			ivci.subresourceRange.levelCount = 1;
-			ivci.subresourceRange.baseArrayLayer = 0;
-			ivci.subresourceRange.layerCount = 1;
+		DRHI::DynamicImageCreateInfo ici{};
+		ici.format = format.FORMAT_B8G8R8A8_SRGB;
+		ici.extent.width = texSize;
+		ici.extent.height = texSize;
+		ici.extent.depth = 1;
+		ici.mipLevels = 1;
+		ici.arrayLayers = 1;
+		ici.samples = samples.SAMPLE_COUNT_1_BIT;
+		ici.tiling = tilling.IMAGE_TILING_OPTIMAL;
+		ici.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
+		ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_SRC_BIT;
+		_rhiContext->createImage(&irradianceOffscreenImage, &irradianceOffscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-			_rhiContext->createImageView(&_irradianceOffscreenImageView, &_irradianceOffscreenImage, ivci);
-		}
+		DRHI::DynamicImageViewCreateInfo ivci{};
+		ivci.format = format.FORMAT_B8G8R8A8_SRGB;
+		ivci.image = irradianceOffscreenImage;
+		ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
+		ivci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+		ivci.subresourceRange.baseMipLevel = 0;
+		ivci.subresourceRange.levelCount = 1;
+		ivci.subresourceRange.baseArrayLayer = 0;
+		ivci.subresourceRange.layerCount = 1;
+
+		_rhiContext->createImageView(&irradianceOffscreenImageView, &irradianceOffscreenImage, ivci);
 
 		// create framebuffer
 		DRHI::DynamicFramebufferCreateInfo fcreateInfo{};
 		fcreateInfo.renderPass = renderPass;
 		fcreateInfo.attachmentCount = 1;
-		fcreateInfo.pAttachments = &_irradianceOffscreenImageView;
+		fcreateInfo.pAttachments = &irradianceOffscreenImageView;
 		fcreateInfo.width = texSize;
 		fcreateInfo.height = texSize;
 		fcreateInfo.layers = 1;
@@ -585,7 +592,7 @@ namespace FOCUS
 
 		_rhiContext->beginCommandBuffer(onceCmdBuf);
 
-		_rhiContext->setImageLayout(&onceCmdBuf, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT,
+		_rhiContext->setImageLayout(&onceCmdBuf, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT,
 			layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		_rhiContext->flushCommandBuffer(onceCmdBuf, commandPool, true);
 
@@ -739,7 +746,7 @@ namespace FOCUS
 
 			_rhiContext->endRenderPass(&commandBuffer);
 
-			_rhiContext->setImageLayout(&commandBuffer, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+			_rhiContext->setImageLayout(&commandBuffer, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 		
 			DRHI::DynamicImageCopy copy{};
 			copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
@@ -756,9 +763,9 @@ namespace FOCUS
 
 			copy.extent = { texSize, texSize, 1 };
 			
-			_rhiContext->cmdCopyImage(commandBuffer, &_irradianceOffscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
+			_rhiContext->cmdCopyImage(commandBuffer, &irradianceOffscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
 		
-			_rhiContext->setImageLayout(&commandBuffer, &_irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			_rhiContext->setImageLayout(&commandBuffer, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		}
 
 		_rhiContext->setImageLayout(&commandBuffer, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, range);
@@ -767,8 +774,8 @@ namespace FOCUS
 
 		_rhiContext->clearRenderPass(&renderPass);
 		_rhiContext->clearFramebuffer(&framebuffer);
-		_rhiContext->clearImage(&_irradianceOffscreenImageView, &_irradianceOffscreenImage, &_irradianceOffscreenImageMemory);
-		_rhiContext->clearSampler(&_irradianceOffscreenSampler);
+		_rhiContext->clearImage(&irradianceOffscreenImageView, &irradianceOffscreenImage, &irradianceOffscreenImageMemory);
+		_rhiContext->clearSampler(&irradianceOffscreenSampler);
 		_rhiContext->clearDescriptorPool(&desciptorPool);
 		_rhiContext->clearDescriptorSetLayout(&dsl);
 		_rhiContext->clearPipeline(&pipeline, &pipelineLayout);
@@ -865,10 +872,149 @@ namespace FOCUS
 		subpassDescription.pColorAttachments = &ar;
 
 		// subpass dependencies
-		std::vector<DRHI::DynamicSubpassDependency> dependencies{2};
+		auto stage = DRHI::DynamicPipelineStageFlags(api);
+		auto access = DRHI::DynamicAccessFlagBits(api);
+		auto dependcyFlag = DRHI::DynamicDependencyFlagBits(api);
+		std::vector<DRHI::DynamicSubpassDependency> dependencies{ 2 };
 		dependencies[0].srcSubpass = ~0U;
 		dependencies[0].dstSubpass = 0;
-		//dependencies[0].srcStageMask = 
+		dependencies[0].srcStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[0].dstStageMask = stage.PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[0].srcAccessMask = access.ACCESS_MEMORY_READ_BIT;
+		dependencies[0].dstAccessMask = access.ACCESS_COLOR_ATTACHMENT_READ_BIT | access.ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[0].dependencyFlags = dependcyFlag.DEPENDENCY_BY_REGION_BIT;
+
+		dependencies[1].srcSubpass = 0;
+		dependencies[1].dstSubpass = ~0U;
+		dependencies[1].srcStageMask = stage.PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[1].dstStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[1].srcAccessMask = access.ACCESS_COLOR_ATTACHMENT_READ_BIT | access.ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[1].dstAccessMask = access.ACCESS_MEMORY_READ_BIT;
+		dependencies[1].dependencyFlags = dependcyFlag.DEPENDENCY_BY_REGION_BIT;
+
+		// create renderpass
+		DRHI::DynamicRenderPassCreateInfo renderPassCI{};
+		renderPassCI.attachmentCount = 1;
+		renderPassCI.pAttachments = &ad;
+		renderPassCI.subpassCount = 1;
+		renderPassCI.pSubpasses = &subpassDescription;
+		renderPassCI.dependencyCount = 2;
+		renderPassCI.pDependencies = &dependencies;
+
+		DRHI::DynamicRenderPass renderPass{};
+		_rhiContext->createRenderPass(&renderPass, &renderPassCI);
+
+		// create offscreen image
+		DRHI::DynamicImage        offscreenImage{};
+		DRHI::DynamicDeviceMemory offscreenImageMemory{};
+		DRHI::DynamicImageView    offscreenImageView{};
+		DRHI::DynamicSampler      offscreenSampler{};
+
+		DRHI::DynamicImageCreateInfo ici{};
+		ici.format = format.FORMAT_B8G8R8A8_SRGB;
+		ici.extent.width = texSize;
+		ici.extent.height = texSize;
+		ici.extent.depth = 1;
+		ici.mipLevels = 1;
+		ici.arrayLayers = 1;
+		ici.samples = samples.SAMPLE_COUNT_1_BIT;
+		ici.tiling = tilling.IMAGE_TILING_OPTIMAL;
+		ici.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
+		ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_SRC_BIT;
+		_rhiContext->createImage(&offscreenImage, &offscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		DRHI::DynamicImageViewCreateInfo ivci{};
+		ivci.format = format.FORMAT_B8G8R8A8_SRGB;
+		ivci.image = offscreenImage;
+		ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
+		ivci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+		ivci.subresourceRange.baseMipLevel = 0;
+		ivci.subresourceRange.levelCount = 1;
+		ivci.subresourceRange.baseArrayLayer = 0;
+		ivci.subresourceRange.layerCount = 1;
+
+		_rhiContext->createImageView(&offscreenImageView, &offscreenImage, ivci);
+
+		// create framebuffer
+		DRHI::DynamicFramebufferCreateInfo fcreateInfo{};
+		fcreateInfo.renderPass = renderPass;
+		fcreateInfo.attachmentCount = 1;
+		fcreateInfo.pAttachments = &offscreenImageView;
+		fcreateInfo.width = texSize;
+		fcreateInfo.height = texSize;
+		fcreateInfo.layers = 1;
+
+		DRHI::DynamicFramebuffer framebuffer{};
+		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
+
+		DRHI::DynamicCommandPool cmdPool{};
+		DRHI::DynamicCommandBuffer cmdBuffer{};
+		_rhiContext->createCommandPool(&cmdPool);
+		_rhiContext->createCommandBuffer(&cmdBuffer, &cmdPool);
+		_rhiContext->beginCommandBuffer(cmdBuffer);
+		_rhiContext->setImageLayout(&cmdBuffer, &offscreenImage,aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		_rhiContext->flushCommandBuffer(cmdBuffer, cmdPool, true);
+
+		// descriptors
+		DRHI::DynamicDescriptorSetLayout dsl{ nullptr };
+		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> bindings{};
+		_rhiContext->createDescriptorSetLayout(&dsl, &bindings);
+
+		// descriptor pool
+		auto desciptorType = DRHI::DynamicDescriptorType(api);
+		std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes{ 1 };
+		poolSizes[0].descriptorCount = 1;
+		poolSizes[0].type = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+		DRHI::DynamicDescriptorPoolCreateInfo pci{};
+		pci.pPoolSizes = &poolSizes;
+		pci.maxSets = 2;
+
+		DRHI::DynamicDescriptorPool desciptorPool;
+		_rhiContext->createDescriptorPool(&desciptorPool, &pci);
+
+		// descriptor sets
+		DRHI::DynamicDescriptorSet desciptorSet;
+		_rhiContext->createDescriptorSet(&desciptorSet, &dsl, &desciptorPool, nullptr, 1);
+
+		// pipeline layout
+		struct PushBlock {
+			glm::mat4 mvp;
+			float roughness;
+			uint32_t numSamples = 32u;
+		} pushBlock;
+
+		auto pushStage = DRHI::DynamicShaderStageFlags(api);
+		DRHI::DynamicPushConstantRange pcr{};
+		pcr.stageFlags = pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT;
+		pcr.offset = 0;
+		pcr.size = sizeof(PushBlock);
+
+		DRHI::DynamicPipelineLayout pipelineLayout{};
+		DRHI::DynamicPipelineLayoutCreateInfo plci{};
+		plci.pPushConstantRanges = &pcr;
+		plci.pushConstantRangeCount = 1;
+		plci.pSetLayouts = &dsl;
+		plci.setLayoutCount = 1;
+		_rhiContext->createPipelineLayout(&pipelineLayout, &plci);
+
+		// pipeline
+		auto cullmode = DRHI::DynamicCullMode(api);
+		DRHI::DynamicPipelineCreateInfo pipelineci{};
+		pipelineci.vertexShader = "../../../Shaders/IBL/prefilterCubeVertex.spv";
+		pipelineci.fragmentShader = "../../../Shaders/IBL/prefilterEnvmapFragment.spv";
+		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
+		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+		pipelineci.vertexInputAttributes.resize(1);
+		pipelineci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
+		pipelineci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
+		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
+		pipelineci.includeStencil = false;
+		pipelineci.dynamicDepthBias = false;
+		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
+		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
+		pipelineci.renderPass = &renderPass;
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

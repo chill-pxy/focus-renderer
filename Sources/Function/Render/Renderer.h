@@ -56,10 +56,6 @@ namespace FOCUS
 		DRHI::DynamicDeviceMemory _irradianceImageMemory{};
 		DRHI::DynamicImageView    _irradianceImageView{};
 		DRHI::DynamicSampler      _irradianceSampler{};
-		DRHI::DynamicImage        _irradianceOffscreenImage{};
-		DRHI::DynamicDeviceMemory _irradianceOffscreenImageMemory{};
-		DRHI::DynamicImageView    _irradianceOffscreenImageView{};
-		DRHI::DynamicSampler      _irradianceOffscreenSampler{};
 
 		// members of prefilteredImage
 		DRHI::DynamicImage        _filteredImage{};

@@ -49,7 +49,7 @@ namespace FOCUS
 		auto addressMode = DRHI::DynamicSamplerAddressMode(api);
 		DRHI::DynamicSamplerCreateInfo sci{};
 		sci.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_REPEAT;
+		sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 		_rhiContext->createSampler(&_shadowSampler, sci);
 
 		// prepare environment map

@@ -41,6 +41,7 @@ namespace FOCUS
         for (auto& m : obj2->_meshes)
         {
             m->_castShadow = false;
+            m->_scale = Vector3(0.1, 0.1, 0.1);
         }
         add(obj2);
 
@@ -76,8 +77,8 @@ namespace FOCUS
 		_uud.pointLightColor = _pointLight->_color;
 		_uud.pointLightIntensity = _pointLight->_intensity;
 
-		_uud.dirLightDirection = -(_dirLight->_position - _dirLight->_target);
-        _uud.dirLightPosition = _dirLight->_position;
+		_uud.dirLightDirection =  -_dirLight->_target;
+        _uud.dirLightTarget = _dirLight->_target;
 		_uud.dirLightColor = _dirLight->_color;
 		_uud.dirLightStrength = _dirLight->_intensity;
 

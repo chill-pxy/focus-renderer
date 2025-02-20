@@ -108,8 +108,9 @@ namespace FOCUS
 		void updateUniform(UniformUpdateData& ubo)
 		{
 			// Matrix from light's point of view
-			Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 500.0f, 1300.0f);
-			Matrix4 depthViewMatrix = lookAt(ubo.dirLightPosition, Vector3(0.0,0.0,0.0), Vector3(0, -1, 0)); //lookAt(lightPosition, Vector3(0.0f), Vector3(0, -1, 0));
+			Matrix4 depthProjectionMatrix = ortho(-300.0f, 300.0f, -300.0f, 300.0f, 10.0f, 1200.0f);
+			//Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 300.0f, 1200.0f);
+			Matrix4 depthViewMatrix = lookAt(Vector3(1.0, 1000.0 ,1.0), ubo.dirLightTarget, Vector3(0, 1, 0));
 			Matrix4 depthModelMatrix = ubo.model;
 
 			ShadowMapUniformBufferObject subo{};
@@ -124,7 +125,7 @@ namespace FOCUS
 			auto api = _rhi->getCurrentAPI();
 			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-			_rhi->cmdSetDepthBias(*commandBuffer, 0.001f, 0.0f, 0.001f);
+			_rhi->cmdSetDepthBias(*commandBuffer, 0.1f, 0.0f, 0.1f);
 			_rhi->bindPipeline(_shadowPipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 			_rhi->bindDescriptorSets(&_descriptorSet, _shadowPipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 		}

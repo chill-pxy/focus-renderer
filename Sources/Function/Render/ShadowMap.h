@@ -110,7 +110,7 @@ namespace FOCUS
 			// Matrix from light's point of view
 			Matrix4 depthProjectionMatrix = ortho(-300.0f, 300.0f, -300.0f, 300.0f, 10.0f, 1200.0f);
 			//Matrix4 depthProjectionMatrix = perspective(radians(45.0f), 1.0f, 300.0f, 1200.0f);
-			Matrix4 depthViewMatrix = lookAt(Vector3(1.0, 1000.0 ,1.0), ubo.dirLightTarget, Vector3(0, 1, 0));
+			Matrix4 depthViewMatrix = lookAt(ubo.dirLightPosition, Vector3(0.0f), Vector3(0, 1, 0));
 			Matrix4 depthModelMatrix = ubo.model;
 
 			ShadowMapUniformBufferObject subo{};

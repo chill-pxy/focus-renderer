@@ -464,9 +464,9 @@ namespace FOCUS
         ImGui::DragFloat("point strength", &RenderSystem::getInstance()->_scene->_pointLight->_intensity, 0.1f);
 
         // dir light
-        ImGui::DragFloat("DirLight direction x", &RenderSystem::getInstance()->_scene->_dirLight->_target.x, 0.1f);
-        ImGui::DragFloat("DirLight direction y", &RenderSystem::getInstance()->_scene->_dirLight->_target.y, 0.1f);
-        ImGui::DragFloat("DirLight direction z", &RenderSystem::getInstance()->_scene->_dirLight->_target.z, 0.1f);
+        ImGui::DragFloat("DirLight direction x", &RenderSystem::getInstance()->_scene->_dirLight->_position.x, 0.1f);
+        ImGui::DragFloat("DirLight direction y", &RenderSystem::getInstance()->_scene->_dirLight->_position.y, 0.1f);
+        ImGui::DragFloat("DirLight direction z", &RenderSystem::getInstance()->_scene->_dirLight->_position.z, 0.1f);
 
         //dir color
         ImGui::DragFloat("DirLight color r", &RenderSystem::getInstance()->_scene->_dirLight->_color.x, 0.1f);

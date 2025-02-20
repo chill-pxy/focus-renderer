@@ -78,7 +78,7 @@ namespace FOCUS
 		_uud.pointLightIntensity = _pointLight->_intensity;
 
 		_uud.dirLightDirection =  -_dirLight->_target;
-        _uud.dirLightTarget = _dirLight->_target;
+        _uud.dirLightPosition = _dirLight->_position;
 		_uud.dirLightColor = _dirLight->_color;
 		_uud.dirLightStrength = _dirLight->_intensity;
 

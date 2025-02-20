@@ -55,7 +55,7 @@ namespace FOCUS
 		// prepare environment map
 		_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-		auto texture = loadTexture("../../../Asset/Images/indoor.hdr");
+		auto texture = loadTexture("../../../Asset/Images/pureSky.hdr");
 		_environmentMap = std::make_shared<SkySphere>();
 		_environmentMap->initialize(_rhiContext, texture);
 		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
@@ -72,7 +72,7 @@ namespace FOCUS
 		std::cout << "####################################################" << std::endl;
 
 		// init ray tracing
-		_rhiContext->initRayTracing();
+		//_rhiContext->initRayTracing();
 	}
 
 	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)

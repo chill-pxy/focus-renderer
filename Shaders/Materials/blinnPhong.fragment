@@ -94,8 +94,8 @@ void main()
     vec3 pointLight = calPointLight(color);
     vec3 dirLight = calDirLight(color);
     
-    float shadow = PCF(shadowMap, fragShadowCoord / fragShadowCoord.w, 1.0);
+    float shadow = PCFrandomSamples(shadowMap, fragShadowCoord / fragShadowCoord.w, 1.0);
 
     // output
-    outColor = vec4((pointLight + dirLight) * shadow, 1.0);
+    outColor = vec4((pointLight + dirLight) * (shadow + 0.1), 1.0);
 } 

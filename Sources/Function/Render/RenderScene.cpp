@@ -26,8 +26,7 @@ namespace FOCUS
 		_pointLight->_intensity = 1000.0f;
 		_pointLight->_name = "PointLight";
 
-		_dirLight->_direction = Vector3(-2.8f, -5.2f, 0.0f);
-		_dirLight->_intensity = 0.05f;
+		_dirLight->_intensity = 1.0f;
 		add(_pointLight);
 
 		// prepare camera
@@ -37,6 +36,13 @@ namespace FOCUS
 		// prepare obj
 		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
 		add(obj);
+
+        auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
+        for (auto& m : obj2->_meshes)
+        {
+            m->_castShadow = false;
+        }
+        add(obj2);
 
         //auto obj2 = loadModel("../../../Asset/Models/plane.obj");
         //add(obj2);
@@ -70,7 +76,8 @@ namespace FOCUS
 		_uud.pointLightColor = _pointLight->_color;
 		_uud.pointLightIntensity = _pointLight->_intensity;
 
-		_uud.dirLightDirection = _dirLight->_direction;
+		_uud.dirLightDirection = -(_dirLight->_position - _dirLight->_target);
+        _uud.dirLightPosition = _dirLight->_position;
 		_uud.dirLightColor = _dirLight->_color;
 		_uud.dirLightStrength = _dirLight->_intensity;
 

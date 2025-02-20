@@ -20,8 +20,9 @@ namespace FOCUS
         Vector3 pointLightColor;
         float   pointLightIntensity;
 
-        Vector3 dirLightDirection;
+        Vector3 dirLightPosition;
         Vector3 dirLightColor;
+        Vector3 dirLightDirection;
         float   dirLightStrength;
         Matrix4 dirLightSpace;
 

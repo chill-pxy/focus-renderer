@@ -1,6 +1,9 @@
 #define LIGHT_WORLD_SIZE 0.05
 #define LIGHT_FRUSTUM_WIDTH 6.0
 #define LIGHT_SIZE_UV (LIGHT_WORLD_SIZE / LIGHT_FRUSTUM_WIDTH)
+#define PI 3.141592653589793
+#define PI2 6.283185307179586
+#define SAMPLES 50
 
 float unpack(vec4 rgbaDepth) 
 {
@@ -9,18 +12,18 @@ float unpack(vec4 rgbaDepth)
 }
 
 // shadow mapping
-float shadowMapping(sampler2D shadowMap, vec4 shadowCoord, vec2 off)
+float shadowMapping(sampler2D shadowMap, vec4 shadowCoord)
 {
-	float shadow = 1.0;
-	if (shadowCoord.z > -1.0 && shadowCoord.z < 1.0)
+	float depth = unpack(texture(shadowMap, shadowCoord.xy));
+	float cur_depth = shadowCoord.z;
+	if (cur_depth >= depth + 1e-3 )
 	{
-		float dist = texture(shadowMap, shadowCoord.st + off).r;
-		if (shadowCoord.w > 0.0 && dist < shadowCoord.z)
-		{
-			shadow = 0.1;
-		}
+		return 0.1;
 	}
-	return shadow;
+	else 
+	{
+		return 1.0;
+	}
 }
 
 // pcf
@@ -28,8 +31,8 @@ float PCF(sampler2D shadowMap, vec4 shadowCoord, float scale)
 {
 	ivec2 texDim = textureSize(shadowMap, 0);
 
-	float dx = scale * 1.0 / float(texDim.x);
-	float dy = scale * 1.0 / float(texDim.y);
+	float dx = scale * 0.1 / float(texDim.x);
+	float dy = scale * 0.1 / float(texDim.y);
 
 	float shadowFactor = 0.0;
 	int count = 0;
@@ -39,11 +42,56 @@ float PCF(sampler2D shadowMap, vec4 shadowCoord, float scale)
 	{
 		for (int y = -range; y <= range; y++)
 		{
-			shadowFactor += shadowMapping(shadowMap, shadowCoord, vec2(dx * x, dy * y));
+			shadowFactor += shadowMapping(shadowMap, shadowCoord);// , vec2(dx * x, dy * y));
 			count++;
 		}
 	}
 	return shadowFactor / count;
+}
+
+highp float rand_2to1(vec2 uv) 
+{
+	// 0 - 1
+	const highp float a = 12.9898, b = 78.233, c = 43758.5453;
+	highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);
+	return fract(sin(sn) * c);
+}
+
+vec2 poissonDisk[SAMPLES];
+void poissonDiskSamples(const in vec2 randomSeed)
+{
+	int rings = 10;
+	float ANGLE_STEP = PI2 * float(rings) / float(SAMPLES);
+	float INV_NUM_SAMPLES = 1.0 / float(SAMPLES);
+
+	float angle = rand_2to1(randomSeed) * PI2;
+	float radius = INV_NUM_SAMPLES;
+	float radiusStep = radius;
+
+	for (int i = 0; i < SAMPLES; i++) {
+		poissonDisk[i] = vec2(cos(angle), sin(angle)) * pow(radius, 0.75);
+		radius += radiusStep;
+		angle += ANGLE_STEP;
+	}
+}
+
+float PCFrandomSamples(sampler2D shadowMap, vec4 shadowCoord, float scale)
+{
+	poissonDiskSamples(shadowCoord.xy);
+
+	float visibility = 0.0;
+
+	for (int i = 0; i < SAMPLES; i++)
+	{
+		vec2 offset = poissonDisk[i] / 1500;
+		float shadowDepth = shadowMapping(shadowMap, shadowCoord + vec4(offset, 0.0, 0.0));
+		if (shadowCoord.z > shadowDepth + 1e-3)
+		{
+			visibility++;
+		}
+	}
+
+	return 1.0 - visibility / float(SAMPLES);
 }
 
 // pcss

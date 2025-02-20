@@ -956,9 +956,16 @@ namespace FOCUS
 		_rhiContext->flushCommandBuffer(cmdBuffer, cmdPool, true);
 
 		// descriptors
+		auto descriptorType = DRHI::DynamicDescriptorType(api);
+		auto stageFlags = DRHI::DynamicShaderStageFlags(api);
 		DRHI::DynamicDescriptorSetLayout dsl{ nullptr };
-		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> bindings{};
-		_rhiContext->createDescriptorSetLayout(&dsl, &bindings);
+		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
+		dsbs[0].binding = 0;
+		dsbs[0].descriptorCount = 1;
+		dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		dsbs[0].pImmutableSamplers = nullptr;
+		dsbs[0].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+		_rhiContext->createDescriptorSetLayout(&dsl, &dsbs);
 
 		// descriptor pool
 		auto desciptorType = DRHI::DynamicDescriptorType(api);
@@ -975,11 +982,23 @@ namespace FOCUS
 
 		// descriptor sets
 		DRHI::DynamicDescriptorSet desciptorSet;
-		_rhiContext->createDescriptorSet(&desciptorSet, &dsl, &desciptorPool, nullptr, 1);
+
+		DRHI::DynamicDescriptorImageInfo dii{};
+		dii.imageLayout = layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		dii.imageView = _environmentMap->_material->_textureImageView;
+		dii.sampler = _environmentMap->_material->_textureSampler;
+
+		std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
+		wds[0].descriptorType = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		wds[0].dstBinding = 0;
+		wds[0].descriptorCount = 1;
+		wds[0].pImageInfo = &dii;
+
+		_rhiContext->createDescriptorSet(&desciptorSet, &dsl, &desciptorPool, &wds, 1);
 
 		// pipeline layout
 		struct PushBlock {
-			glm::mat4 mvp;
+			Matrix4 mvp;
 			float roughness;
 			uint32_t numSamples = 32u;
 		} pushBlock;
@@ -1015,6 +1034,116 @@ namespace FOCUS
 		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
 		pipelineci.renderPass = &renderPass;
+
+		DRHI::DynamicPipeline pipeline{};
+		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
+
+		// begin render pass
+		DRHI::DynamicRenderPassBeginInfo rbinfo{};
+		rbinfo.renderPass = renderPass;
+		rbinfo.framebuffer = framebuffer;
+		rbinfo.renderArea.extent.width = texSize;
+		rbinfo.renderArea.extent.height = texSize;
+		
+		std::vector<Matrix4> matrices = {
+			// POSITIVE_X
+			rotate(rotate(Matrix4(1.0f), radians(90.0f), Vector3(0.0f, 1.0f, 0.0f)), radians(180.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			// NEGATIVE_X
+			rotate(rotate(Matrix4(1.0f), radians(-90.0f), Vector3(0.0f, 1.0f, 0.0f)), radians(180.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			// POSITIVE_Y
+			rotate(Matrix4(1.0f), radians(-90.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			// NEGATIVE_Y
+			rotate(Matrix4(1.0f), radians(90.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			// POSITIVE_Z
+			rotate(Matrix4(1.0f), radians(180.0f), Vector3(1.0f, 0.0f, 0.0f)),
+			// NEGATIVE_Z
+			rotate(Matrix4(1.0f), radians(180.0f), Vector3(0.0f, 0.0f, 1.0f)),
+		};
+
+		DRHI::DynamicCommandBuffer commandBuffer{};
+		_rhiContext->createCommandBuffer(&commandBuffer, &cmdPool);
+		_rhiContext->beginCommandBuffer(commandBuffer);
+
+		DRHI::DynamicViewport viewPort{};
+		viewPort.width = texSize;
+		viewPort.height = texSize;
+		viewPort.minDepth = 0.0f;
+		viewPort.maxDepth = 1.0f;
+		viewPort.x = 0;
+		viewPort.y = 0;
+
+		_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewPort);
+
+		DRHI::DynamicRect2D scissor{};
+		scissor.extent.width = texSize;
+		scissor.extent.height = texSize;
+		scissor.offset.x = 0;
+		scissor.offset.y = 0;
+		_rhiContext->cmdSetScissor(commandBuffer, 0, 1, scissor);
+
+		DRHI::DynamicImageSubresourceRange range{};
+		range.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+		range.baseMipLevel = 0;
+		range.levelCount = 1;
+		range.layerCount = 6;
+		_rhiContext->setImageLayout(&commandBuffer, &_filteredImage, layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, range);
+
+		auto content = DRHI::DynamicSubpassContents(api);
+		auto shaderStage = DRHI::DynamicShaderStageFlags(api);
+		// rendering
+		for (uint32_t f = 0; f < 6; ++f)
+		{
+			_rhiContext->beginRenderPass(&commandBuffer, &rbinfo, content.SUBPASS_CONTENTS_INLINE);
+
+			pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.f) * matrices[f];
+
+			_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, shaderStage.SHADER_STAGE_VERTEX_BIT | shaderStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
+
+			_rhiContext->bindPipeline(pipeline, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			_rhiContext->bindDescriptorSets(&desciptorSet, pipelineLayout, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+
+			_environmentMap->draw(_rhiContext, &commandBuffer, pipeline, pipelineLayout, desciptorSet);
+
+			_rhiContext->endRenderPass(&commandBuffer);
+
+			_rhiContext->setImageLayout(&commandBuffer, &offscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+	
+			DRHI::DynamicImageCopy copy{};
+			copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+			copy.srcSubresource.baseArrayLayer = 0;
+			copy.srcSubresource.mipLevel = 0;
+			copy.srcSubresource.layerCount = 1;
+			copy.srcOffset = { 0,0,0 };
+
+			copy.dstSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+			copy.dstSubresource.baseArrayLayer = f;
+			copy.dstSubresource.mipLevel = 0;
+			copy.dstSubresource.layerCount = 1;
+			copy.dstOffset = { 0,0,0 };
+
+			copy.extent = { texSize, texSize, 1 };
+
+			_rhiContext->cmdCopyImage(commandBuffer, &offscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_filteredImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
+
+			_rhiContext->setImageLayout(&commandBuffer, &offscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);	
+		}
+
+		_rhiContext->setImageLayout(&commandBuffer, &_filteredImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, range);
+
+		_rhiContext->flushCommandBuffer(commandBuffer, cmdPool, true);
+
+		_rhiContext->clearRenderPass(&renderPass);
+		_rhiContext->clearFramebuffer(&framebuffer);
+
+		_rhiContext->clearImage(&offscreenImageView, &offscreenImage, &offscreenImageMemory);
+		_rhiContext->clearSampler(&offscreenSampler);
+
+		_rhiContext->clearDescriptorPool(&desciptorPool);
+		_rhiContext->clearDescriptorSetLayout(&dsl);
+
+		_rhiContext->clearPipeline(&pipeline, &pipelineLayout);
+
+		_rhiContext->destroyCommandPool(&cmdPool);
 
 		// cal time
 		auto tEnd = std::chrono::high_resolution_clock::now();

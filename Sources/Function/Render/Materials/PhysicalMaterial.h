@@ -27,10 +27,8 @@ namespace FOCUS
         alignas(16) Vector3 dirLightColor;
         alignas(4) float    dirLightStrength;
 
-        alignas(4) float ambient;
-        alignas(4) float diffuse;
-        alignas(4) float specular;
-        alignas(4) float shinness;
+        alignas(4) float metallic;
+        alignas(4) float roughness;
 
     } PhysicalUniformBufferObject;
 
@@ -235,10 +233,8 @@ namespace FOCUS
             ubo.dirLightColor = uud.dirLightColor;
             ubo.dirLightStrength = uud.dirLightStrength;
 
-            ubo.ambient = _ambient;
-            ubo.diffuse = _diffuse;
-            ubo.specular = _specular;
-            ubo.shinness = _shinness;
+            ubo.metallic = _metallic;
+            ubo.roughness = _roughness;
 
             memcpy(_vuniformBufferMapped, &ubo, sizeof(ubo));
         }

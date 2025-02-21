@@ -31,6 +31,7 @@ namespace FOCUS
         float specular;
         float roughness;
         float shinness;
+        float metallic;
  
     }UniformUpdateData;
 
@@ -74,6 +75,7 @@ namespace FOCUS
         float _roughness{ 0.0 };
         float _shinness{ 0.0 };
         float _ior{ 0.0 };
+        float _metallic{ 0.0 };
 
         bool _built{ false };
         bool _cleared{ false };

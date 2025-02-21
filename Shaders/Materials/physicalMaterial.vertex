@@ -17,10 +17,8 @@ layout(binding = 0) uniform VertexUniformBufferObject
     vec3 dirLightColor;
     float dirLightStrength;
 
-    float ambient;
-    float diffuse;
-    float specular;
-    float shinness;
+    float metallic;
+    float roughness;
 } vubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -43,12 +41,10 @@ layout(location = 8) out vec3 fragDirLightDirection;
 layout(location = 9) out vec3 fragDirLightColor;
 layout(location = 10) out float fragDirLightStrength;
 
-layout(location = 11) out float fragAmbient;
-layout(location = 12) out float fragDiffuse;
-layout(location = 13) out float fragSpecular;
-layout(location = 14) out float fragShinness;
+layout(location = 11) out float fragMetallic;
+layout(location = 12) out float fragRoughness;
 
-layout(location = 15) out vec4 fragShadowCoord;
+layout(location = 13) out vec4 fragShadowCoord;
 
 const mat4 biasMat = mat4(
     0.5, 0.0, 0.0, 0.0,
@@ -76,10 +72,8 @@ void main()
     fragDirLightColor = vubo.dirLightColor;
     fragDirLightStrength = vubo.dirLightStrength;
 
-    fragAmbient = vubo.ambient;
-    fragDiffuse = vubo.diffuse;
-    fragSpecular = vubo.specular;
-    fragShinness = vubo.shinness;
+    fragMetallic = vubo.metallic;
+    fragRoughness = vubo.roughness;
 
     fragShadowCoord = ( biasMat * vubo.dirLightSpace ) * vec4(inPosition, 1.0);
 }

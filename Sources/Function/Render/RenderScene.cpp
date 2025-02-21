@@ -35,21 +35,31 @@ namespace FOCUS
         _camera->_rotation = Vector3(-14, -92, 0);
 
 		// prepare obj
-		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
-		add(obj);
+		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
+		//add(obj);
 
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
+            m->_material->_metallic = 0.0;
+            m->_material->_roughness = 1.0;
             m->_castShadow = false;
             m->_scale = Vector3(0.1, 0.1, 0.1);
         }
         add(obj2);
 
-        //auto sphere = std::make_shared<Sphere>();
-        //auto texture = loadTexture("../../../Asset/Images/white.png");
-        //sphere->_material = std::make_shared<PhysicalMaterial>(texture);
-        //add(sphere);
+        for (int i = 0; i < 10; ++i)
+        {
+            auto sphere = std::make_shared<Sphere>();
+            auto texture = loadTexture("../../../Asset/Images/white.png");
+            sphere->_material = std::make_shared<PhysicalMaterial>(texture);
+            sphere->_material->_metallic = 0.0;//1.0 - (float(i) / 10);
+            sphere->_material->_roughness = (float)i / 10;
+            sphere->_scale = Vector3(5.0, 5.0, 5.0);
+            sphere->_position = Vector3( i * 15, 20.0, 0.0);
+            sphere->_name = "obj" + std::to_string(i);
+            add(sphere);
+        }
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
@@ -150,6 +160,7 @@ namespace FOCUS
                 material->_roughness = shininessToRoughness(mat.shininess);
                 material->_shinness = mat.shininess;
                 material->_ior = mat.ior;
+                material->_metallic = mat.metallic;
 
                 material->_ambientTex = mat.ambient_texname;
                 material->_diffuseTex = mat.diffuse_texname;

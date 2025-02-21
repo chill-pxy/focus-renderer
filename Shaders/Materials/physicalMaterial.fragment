@@ -24,12 +24,10 @@ layout(location = 8) in vec3 fragDirLightDirection;
 layout(location = 9) in vec3 fragDirLightColor;
 layout(location = 10) in float fragDirLightStrength;
 
-layout(location = 11) in float fragAmbient;
-layout(location = 12) in float fragDiffuse;
-layout(location = 13) in float fragSpecular;
-layout(location = 14) in float fragShinness;
+layout(location = 11) in float fragMetallic;
+layout(location = 12) in float fragRoughness;
 
-layout(location = 15) in vec4 fragShadowCoord;
+layout(location = 13) in vec4 fragShadowCoord;
 
 layout(location = 0) out vec4 outColor;
 
@@ -138,8 +136,8 @@ void main()
 	vec3 V = normalize(fragViewPosition - fragPosition);
 	vec3 R = reflect(-V, N);
 
-	float metallic = 0.0;
-	float roughness = 1.0;
+	float metallic = fragMetallic;
+	float roughness = fragRoughness;
 
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, color, metallic);
@@ -168,5 +166,5 @@ void main()
 	vec3 finalColor = ambient + Lo;
 
     // output
-    outColor = vec4(finalColor * (shadow + 0.1), 1.0);
+    outColor = vec4(finalColor * shadow, 1.0);
 } 

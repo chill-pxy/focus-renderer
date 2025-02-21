@@ -2,11 +2,11 @@
 
 namespace FOCUS
 {
-	std::shared_ptr<BlinnPhongMaterial> MaterialManager::createMaterial(std::string name, std::shared_ptr<Texture> texture)
+	std::shared_ptr<PhysicalMaterial> MaterialManager::createMaterial(std::string name, std::shared_ptr<Texture> texture)
 	{
 		if (_globalMaterials.count(name) == 0)
 		{
-			std::shared_ptr<BlinnPhongMaterial> material = std::make_shared<BlinnPhongMaterial>(texture);
+			std::shared_ptr<PhysicalMaterial> material = std::make_shared<PhysicalMaterial>(texture);
 			_globalMaterials.insert({ name, material });
 			return material;
 		}
@@ -16,7 +16,7 @@ namespace FOCUS
 		}
 	}
 
-	std::shared_ptr<BlinnPhongMaterial> MaterialManager::getMaterialByName(std::string name)
+	std::shared_ptr<PhysicalMaterial> MaterialManager::getMaterialByName(std::string name)
 	{
 		return _globalMaterials[name];
 	}

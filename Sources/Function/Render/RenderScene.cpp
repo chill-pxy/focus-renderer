@@ -35,8 +35,8 @@ namespace FOCUS
         _camera->_rotation = Vector3(-14, -92, 0);
 
 		// prepare obj
-		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
-		//add(obj);
+		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
+		add(obj);
 
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
@@ -46,10 +46,10 @@ namespace FOCUS
         }
         add(obj2);
 
-        auto sphere = std::make_shared<Sphere>();
-        auto texture = loadTexture("../../../Asset/Images/blue.png");
-        sphere->_material = std::make_shared<PhysicalMaterial>(texture);
-        add(sphere);
+        //auto sphere = std::make_shared<Sphere>();
+        //auto texture = loadTexture("../../../Asset/Images/white.png");
+        //sphere->_material = std::make_shared<PhysicalMaterial>(texture);
+        //add(sphere);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
@@ -136,7 +136,7 @@ namespace FOCUS
         // handle material
         for (tinyobj::material_t& mat : materials)
         {
-            std::shared_ptr<BlinnPhongMaterial> material;
+            std::shared_ptr<PhysicalMaterial> material;
 
             if (mat.diffuse_texname.compare(""))
             {

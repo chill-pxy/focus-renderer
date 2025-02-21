@@ -10,11 +10,11 @@
 
 namespace FOCUS
 {
-	typedef struct PhongUniformBufferObject
-	{
-		alignas(16) Matrix4 model;
-		alignas(16) Matrix4 view;
-		alignas(16) Matrix4 proj;
+    typedef struct PhysicalUniformBufferObject
+    {
+        alignas(16) Matrix4 model;
+        alignas(16) Matrix4 view;
+        alignas(16) Matrix4 proj;
 
         alignas(16) Vector3 viewPosition;
 
@@ -32,27 +32,25 @@ namespace FOCUS
         alignas(4) float specular;
         alignas(4) float shinness;
 
-	} PhongUniformBufferObject;
+    } PhysicalUniformBufferObject;
 
-	class BlinnPhongMaterial : public Material
-	{
+    class PhysicalMaterial : public Material
+    {
     public:
         std::shared_ptr<Texture> _basicTexture;
 
-	private:
-        void* _vuniformBufferMapped{nullptr};
+    private:
+        void* _vuniformBufferMapped{ nullptr };
         DRHI::DynamicBuffer               _vuniformBuffer;
         DRHI::DynamicDeviceMemory        _vuniformBufferMemory;
         DRHI::DynamicDescriptorBufferInfo _vdescriptorBufferInfo;
 
-	public:
-        BlinnPhongMaterial() {};
-        BlinnPhongMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {
-            _type = "BlinnPhong Material";
-        }
-		
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
-		{
+    public:
+        PhysicalMaterial() {};
+        PhysicalMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
+
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
+        {
             if (_built) return;
             auto api = rhi->getCurrentAPI();
             auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
@@ -65,10 +63,10 @@ namespace FOCUS
             auto cullMode = DRHI::DynamicCullMode(api);
             auto sampleCount = DRHI::DynamicSampleCountFlags(api);
 
-            if(_cullMode == 0)
+            if (_cullMode == 0)
                 _cullMode = cullMode.CULL_MODE_BACK_BIT;
 
-            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(3);
+            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(6);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -87,29 +85,53 @@ namespace FOCUS
             dsbs[2].pImmutableSamplers = nullptr;
             dsbs[2].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
+            dsbs[3].binding = 3;
+            dsbs[3].descriptorCount = 1;
+            dsbs[3].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[3].pImmutableSamplers = nullptr;
+            dsbs[3].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
+            dsbs[4].binding = 4;
+            dsbs[4].descriptorCount = 1;
+            dsbs[4].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[4].pImmutableSamplers = nullptr;
+            dsbs[4].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
+            dsbs[5].binding = 5;
+            dsbs[5].descriptorCount = 1;
+            dsbs[5].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[5].pImmutableSamplers = nullptr;
+            dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
             //create uniform buffer
-            rhi->createUniformBuffer(&_vuniformBuffer, &_vuniformBufferMemory, &_vuniformBufferMapped, sizeof(PhongUniformBufferObject));
-            _vdescriptorBufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffer, sizeof(PhongUniformBufferObject));
+            rhi->createUniformBuffer(&_vuniformBuffer, &_vuniformBufferMemory, &_vuniformBufferMapped, sizeof(PhysicalUniformBufferObject));
+            _vdescriptorBufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffer, sizeof(PhysicalUniformBufferObject));
 
             //binding sampler and image view
             rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
-            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(6);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[0].descriptorCount = 3;
+            poolSizes[0].descriptorCount = 6;
             poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[1].descriptorCount = 3;
+            poolSizes[1].descriptorCount = 6;
             poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[2].descriptorCount = 3;
+            poolSizes[2].descriptorCount = 6;
+            poolSizes[3].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[3].descriptorCount = 6;
+            poolSizes[4].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[4].descriptorCount = 6;
+            poolSizes[5].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[5].descriptorCount = 6;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            DRHI::DynamicDescriptorImageInfo dii[2]{};
+            DRHI::DynamicDescriptorImageInfo dii[5]{};
             dii[0].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             dii[0].imageView = _textureImageView;
             dii[0].sampler = _textureSampler;
@@ -118,7 +140,19 @@ namespace FOCUS
             dii[1].imageView = shadowImageView;
             dii[1].sampler = shadowSampler;
 
-            std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);
+            dii[2].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[2].imageView = *_brdfImageView;
+            dii[2].sampler = *_brdfSampler;
+
+            dii[3].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[3].imageView = *_irradianceImageView;
+            dii[3].sampler = *_irradianceSampler;
+
+            dii[4].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[4].imageView = *_filteredImageView;
+            dii[4].sampler = *_filteredImageSampler;
+
+            std::vector<DRHI::DynamicWriteDescriptorSet> wds(6);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_vdescriptorBufferInfo;
@@ -134,12 +168,27 @@ namespace FOCUS
             wds[2].descriptorCount = 1;
             wds[2].pImageInfo = &dii[1];
 
-            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 2);
+            wds[3].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[3].dstBinding = 3;
+            wds[3].descriptorCount = 1;
+            wds[3].pImageInfo = &dii[2];
+
+            wds[4].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[4].dstBinding = 4;
+            wds[4].descriptorCount = 1;
+            wds[4].pImageInfo = &dii[3];
+
+            wds[5].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[5].dstBinding = 5;
+            wds[5].descriptorCount = 1;
+            wds[5].pImageInfo = &dii[4];
+
+            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 6);
 
             // create pipeline
             DRHI::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = "../../../Shaders/Materials/blinnPhongVertex.spv";
-            pci.fragmentShader = "../../../Shaders/Materials/blinnPhongFragment.spv";
+            pci.vertexShader = "../../../Shaders/Materials/physicalMaterialVertex.spv";
+            pci.fragmentShader = "../../../Shaders/Materials/physicalMaterialFragment.spv";
             pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
@@ -166,11 +215,11 @@ namespace FOCUS
             rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
 
             _built = true;
-		};
+        };
 
-		virtual void updateUniformBuffer(UniformUpdateData uud)
+        virtual void updateUniformBuffer(UniformUpdateData uud)
         {
-            PhongUniformBufferObject ubo{};
+            PhysicalUniformBufferObject ubo{};
             ubo.model = uud.model;
             ubo.view = uud.view;
             ubo.proj = uud.proj;
@@ -210,5 +259,5 @@ namespace FOCUS
 
             _cleared = true;
         }
-	};
+    };
 }

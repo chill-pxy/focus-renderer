@@ -5,6 +5,9 @@
 
 layout(set = 0, binding = 1) uniform sampler2D texSampler;
 layout(set = 0, binding = 2) uniform sampler2D shadowMap;
+layout(set = 0, binding = 3) uniform sampler2D brdflut;
+layout(set = 0, binding = 4) uniform samplerCube irradiance;
+layout(set = 0, binding = 5) uniform samplerCube filteredEnv;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -73,13 +76,15 @@ vec3 calPointLight(vec3 color)
 
 void main()
 {
-    vec3 color = texture(texSampler, fragTexCoord).rgb;
-    
+    vec3 color = texture(brdflut, fragTexCoord).rgb;//texture(texSampler, fragTexCoord).rgb;
+    vec3 color2 = texture(irradiance, vec3(0,1,0)).rgb;
+    vec3 color3 = texture(filteredEnv, vec3(0,1,0)).rgb;
+
     vec3 pointLight = calPointLight(color);
     vec3 dirLight = calDirLight(color);
     
-    float shadow = PCF(shadowMap, fragShadowCoord / fragShadowCoord.w, 1.0);
+    float shadow = PCFrandomSamples(shadowMap, fragShadowCoord / fragShadowCoord.w, 1.0);
 
     // output
-    outColor = vec4((pointLight + dirLight) * shadow, 1.0);
+    outColor = vec4(color, 1.0);//vec4(color * shadow, 1.0);
 } 

@@ -85,6 +85,12 @@ namespace FOCUS
 
 		for (auto p : _submitRenderlist)
 		{
+			p->_material->_brdfImageView = &_brdflutImageView;
+			p->_material->_brdfSampler = &_brdflutSampler;
+			p->_material->_irradianceImageView = &_irradianceImageView;
+			p->_material->_irradianceSampler = &_irradianceSampler;
+			p->_material->_filteredImageView = &_filteredImageView;
+			p->_material->_filteredImageSampler = &_filteredImageSampler;
 			p->build(_rhiContext, &_commandPool, _shadowImage, _shadowImageView, _shadowSampler);
 		}
 
@@ -369,7 +375,7 @@ namespace FOCUS
 		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
 		pipelineci.includeStencil = false;
 		pipelineci.dynamicDepthBias = false;
-		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
+		pipelineci.cullMode = cullmode.CULL_MODE_NONE;
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
 		pipelineci.renderPass = &renderPass;
 
@@ -675,7 +681,7 @@ namespace FOCUS
 		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
 		pipelineci.includeStencil = false;
 		pipelineci.dynamicDepthBias = false;
-		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
+		pipelineci.cullMode = cullmode.CULL_MODE_NONE;
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
 		pipelineci.renderPass = &renderPass;
 
@@ -1033,7 +1039,7 @@ namespace FOCUS
 		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
 		pipelineci.includeStencil = false;
 		pipelineci.dynamicDepthBias = false;
-		pipelineci.cullMode = cullmode.CULL_MODE_BACK_BIT;
+		pipelineci.cullMode = cullmode.CULL_MODE_NONE;
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
 		pipelineci.renderPass = &renderPass;
 

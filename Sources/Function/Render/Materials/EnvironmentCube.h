@@ -37,7 +37,9 @@ namespace FOCUS
 
     public:
         EnvironmentCube() = delete;
-        EnvironmentCube(std::shared_ptr<Texture> texture, bool isCube = false) : _basicTexture{ texture } {};
+        EnvironmentCube(std::shared_ptr<Texture> texture, bool isCube = false) : _basicTexture{ texture } {
+            _type = "EnvironmentMap Material";
+        };
 
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
         {

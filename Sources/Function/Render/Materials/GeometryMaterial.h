@@ -27,7 +27,10 @@ namespace FOCUS
         DRHI::DynamicDescriptorBufferInfo _vdescriptorBufferInfo;
 
     public:
-        GeometryMaterial() = default;
+        GeometryMaterial()
+        {
+            _type = "Geometry Material";
+        }
 
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
         {

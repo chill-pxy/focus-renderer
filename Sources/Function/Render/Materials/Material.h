@@ -42,12 +42,23 @@ namespace FOCUS
         DRHI::DynamicSampler      _textureSampler{};
         DRHI::DynamicDeviceMemory _textureMemory{};
 
+        DRHI::DynamicImageView* _brdfImageView{ nullptr };
+        DRHI::DynamicSampler* _brdfSampler{ nullptr };
+
+        DRHI::DynamicImageView*  _irradianceImageView{nullptr};
+        DRHI::DynamicSampler*    _irradianceSampler{nullptr};
+
+        DRHI::DynamicImageView*    _filteredImageView{nullptr};
+        DRHI::DynamicSampler*      _filteredImageSampler{nullptr};
+
         DRHI::DynamicDescriptorPool      _descriptorPool{};
         DRHI::DynamicDescriptorSet       _descriptorSet{};
         DRHI::DynamicDescriptorSetLayout _descriptorSetLayout{};
 
         DRHI::DynamicPipeline       _pipeline{};
         DRHI::DynamicPipelineLayout _pipelineLayout{};
+
+        std::string _type = "Material Base";
 
         // property
         std::string _name{ "unknown" };

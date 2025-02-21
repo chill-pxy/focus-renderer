@@ -27,7 +27,9 @@ namespace FOCUS
 
     public:
         EnvironmentMap() = delete;
-        EnvironmentMap(std::shared_ptr<Texture> texture) : _basicTexture{ texture } {};
+        EnvironmentMap(std::shared_ptr<Texture> texture) : _basicTexture{ texture } {
+            _type = "EnvironmentMap Material";
+        };
 
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
         {

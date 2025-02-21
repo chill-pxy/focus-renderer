@@ -26,7 +26,9 @@ namespace FOCUS
 
 	void Renderer::initialize()
 	{
-		_rhiContext->initialize();
+		// if ray tracing mode is on, renderdoc would throw abort() error
+		bool rayTracingMode = false;
+		_rhiContext->initialize(rayTracingMode);
 
 		_rhiContext->createCommandPool(&_shadowCommandPool);
 		_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);

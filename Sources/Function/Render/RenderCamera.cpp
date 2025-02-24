@@ -49,6 +49,8 @@ namespace FOCUS
 	void RenderCamera::makeRotate(Vector3 delta)
 	{
 		_rotation += delta;
+		if (_rotation.x >= 90) _rotation.x = 90.0;
+		if (_rotation.x <= -90) _rotation.x = -90.0;
 		updateViewMatrix();		
 	}
 }

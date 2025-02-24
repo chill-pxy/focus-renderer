@@ -58,6 +58,8 @@ namespace FOCUS
 		DRHI::DynamicSampler      _irradianceSampler{};
 
 		// members of prefilteredImage
+		uint32_t _filteredImageWidth{};
+		uint32_t _filteredImageHeight{};
 		DRHI::DynamicImage        _filteredImage{};
 		DRHI::DynamicDeviceMemory _filteredImageMemory{};
 		DRHI::DynamicImageView    _filteredImageView{};
@@ -81,6 +83,8 @@ namespace FOCUS
 	
 		void precomputeBRDFLUT();
 		void precomputeIrradianceMap();
+		void precomputeIrradianceCube();
 		void prefilterEnvironmentMap();
+		void prefilterEnvironmentCube();
 	};
 }

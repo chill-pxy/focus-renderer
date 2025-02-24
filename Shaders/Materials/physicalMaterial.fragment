@@ -7,7 +7,7 @@ layout(set = 0, binding = 1) uniform sampler2D texSampler;
 layout(set = 0, binding = 2) uniform sampler2D shadowMap;
 layout(set = 0, binding = 3) uniform sampler2D brdflutSampler;
 layout(set = 0, binding = 4) uniform samplerCube irradianceSampler;
-layout(set = 0, binding = 5) uniform samplerCube filteredEnvSampler;
+layout(set = 0, binding = 5) uniform sampler2D filteredEnvSampler;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -86,13 +86,14 @@ vec3 F_SchlickR(float cosTheta, vec3 F0, float roughness)
 
 vec3 prefilteredReflection(vec3 R, float roughness)
 {
-	const float MAX_REFLECTION_LOD = 9.0; // todo: param/const
-	float lod = roughness * MAX_REFLECTION_LOD;
-	float lodf = floor(lod);
-	float lodc = ceil(lod);
-	vec3 a = textureLod(filteredEnvSampler, R, lodf).rgb;
-	vec3 b = textureLod(filteredEnvSampler, R, lodc).rgb;
-	return mix(a, b, lod - lodf);
+//	const float MAX_REFLECTION_LOD = 9.0; // todo: param/const
+//	float lod = roughness * MAX_REFLECTION_LOD;
+//	float lodf = floor(lod);
+//	float lodc = ceil(lod);
+//	vec3 a = textureLod(filteredEnvSampler, R, lodf).rgb;
+//	vec3 b = textureLod(filteredEnvSampler, R, lodc).rgb;
+//	return mix(a, b, lod - lodf);
+	return texture(filteredEnvSampler,fragTexCoord).rgb;
 }
 
 vec3 specularContribution(vec3 L, vec3 V, vec3 N, vec3 F0, float metallic, float roughness, vec3 albedo)
@@ -166,5 +167,5 @@ void main()
 	vec3 finalColor = ambient + Lo;
 
     // output
-    outColor = vec4(finalColor * shadow, 1.0);
+    outColor = vec4(finalColor, 1.0);
 } 

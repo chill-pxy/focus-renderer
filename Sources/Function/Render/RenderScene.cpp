@@ -54,7 +54,7 @@ namespace FOCUS
             auto texture = loadTexture("../../../Asset/Images/white.png");
             sphere->_material = std::make_shared<PhysicalMaterial>(texture);
             sphere->_material->_metallic = 0.0;//1.0 - (float(i) / 10);
-            sphere->_material->_roughness = (float)i / 10;
+            sphere->_material->_roughness = ((float)(i) / 10);
             sphere->_scale = Vector3(5.0, 5.0, 5.0);
             sphere->_position = Vector3( i * 15, 20.0, 0.0);
             sphere->_name = "obj" + std::to_string(i);

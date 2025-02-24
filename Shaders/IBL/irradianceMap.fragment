@@ -4,7 +4,7 @@
 
 layout (location = 0) in vec3 inPos;
 layout (location = 0) out vec4 outColor;
-layout (binding = 0) uniform sampler2D samplerEnv; // 改为2D纹理采样器
+layout (binding = 0) uniform sampler2D samplerEnv;
 
 layout(push_constant) uniform PushConsts
 {
@@ -34,10 +34,9 @@ void main()
             vec3 tempVec = cos(phi) * right + sin(phi) * up;
             vec3 sampleVector = cos(theta) * N + sin(theta) * tempVec;
             
-            // 将方向向量转换为equirectangular UV坐标
             vec3 dir = normalize(sampleVector);
-            float phi_uv = atan(dir.z, dir.x); // 方位角
-            float theta_uv = acos(dir.y);      // 天顶角
+            float phi_uv = atan(dir.z, dir.x); 
+            float theta_uv = acos(dir.y);      
             
             float u = (phi_uv + PI) / (2.0 * PI);
             float v = theta_uv / PI;
@@ -48,4 +47,5 @@ void main()
         }
     }
     outColor = vec4(PI * color / float(sampleCount), 1.0);
+    //outColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

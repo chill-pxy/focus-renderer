@@ -11,8 +11,19 @@ file(GLOB_RECURSE HEADER_FILES "*.h")
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
 
+include_directories(${THIRD_PARTY_DIR}/ktx/include)
+include_directories(${THIRD_PARTY_DIR}/ktx/other_include)
+set(KTX_DIR ${THIRD_PARTY_DIR}/ktx)
+set(KTX_SOURCES
+    ${KTX_DIR}/lib/texture.c
+    ${KTX_DIR}/lib/hashlist.c
+    ${KTX_DIR}/lib/checkheader.c
+    ${KTX_DIR}/lib/swap.c
+    ${KTX_DIR}/lib/memstream.c
+    ${KTX_DIR}/lib/filestream.c)
+
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
+add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES} ${KTX_SOURCES})
 
 set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "engine")
 
@@ -45,3 +56,4 @@ target_link_libraries(${TARGET_NAME} PRIVATE
 
 include_directories(${THIRD_PARTY_DIR}/drhi/Include)
 include_directories(${THIRD_PARTY_DIR}/imgui/backends)
+

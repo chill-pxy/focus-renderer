@@ -38,6 +38,8 @@ namespace FOCUS
 		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
 		//add(obj);
 
+        auto texCube = loadCubeTexture("../../../Asset/Images/pisa_cube.ktx");
+
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
@@ -53,8 +55,8 @@ namespace FOCUS
             auto sphere = std::make_shared<Sphere>();
             auto texture = loadTexture("../../../Asset/Images/white.png");
             sphere->_material = std::make_shared<PhysicalMaterial>(texture);
-            sphere->_material->_metallic = 0.0;//1.0 - (float(i) / 10);
-            sphere->_material->_roughness = (float)i / 10;
+            sphere->_material->_metallic = clamp((float)i / (float)10, 0.005f, 1.0f);
+            sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
             sphere->_scale = Vector3(5.0, 5.0, 5.0);
             sphere->_position = Vector3( i * 15, 20.0, 0.0);
             sphere->_name = "obj" + std::to_string(i);

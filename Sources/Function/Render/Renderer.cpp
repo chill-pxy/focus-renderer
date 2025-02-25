@@ -58,6 +58,8 @@ namespace FOCUS
 		_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
 		auto texture = loadTexture("../../../Asset/Images/indoor.hdr");
+		_filteredImageWidth = texture->_width;
+		_filteredImageHeight = texture->_height;
 		_environmentMap = std::make_shared<SkySphere>();
 		_environmentMap->initialize(_rhiContext, texture);
 		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
@@ -68,9 +70,9 @@ namespace FOCUS
 		std::cout << "####################################################" << std::endl;
 		precomputeBRDFLUT();
 		std::cout << "####################################################" << std::endl;
-		precomputeIrradianceMap();
+		precomputeIrradianceCube();
 		std::cout << "####################################################" << std::endl;
-		prefilterEnvironmentMap();
+		prefilterEnvironmentCube();
 		std::cout << "####################################################" << std::endl;
 
 		// init ray tracing
@@ -435,7 +437,7 @@ namespace FOCUS
 		std::cout << "                                                    " << std::endl;
 	}
 
-	void Renderer::precomputeIrradianceMap()
+	void Renderer::precomputeIrradianceCube()
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
 
@@ -797,7 +799,7 @@ namespace FOCUS
 		std::cout << "                                                    " << std::endl;
 	}
 
-	void Renderer::prefilterEnvironmentMap()
+	void Renderer::prefilterEnvironmentCube()
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
 

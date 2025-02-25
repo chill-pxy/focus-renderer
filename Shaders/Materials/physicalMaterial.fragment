@@ -93,6 +93,7 @@ vec3 prefilteredReflection(vec3 R, float roughness)
 	vec3 a = textureLod(filteredEnvSampler, R, lodf).rgb;
 	vec3 b = textureLod(filteredEnvSampler, R, lodc).rgb;
 	return mix(a, b, lod - lodf);
+	//return texture(filteredEnvSampler,fragTexCoord).rgb;
 }
 
 vec3 specularContribution(vec3 L, vec3 V, vec3 N, vec3 F0, float metallic, float roughness, vec3 albedo)
@@ -166,5 +167,5 @@ void main()
 	vec3 finalColor = ambient + Lo;
 
     // output
-    outColor = vec4(finalColor * shadow, 1.0);
+    outColor = vec4(finalColor, 1.0);
 } 

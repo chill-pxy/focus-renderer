@@ -38,8 +38,6 @@ namespace FOCUS
 		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
 		//add(obj);
 
-        auto texCube = loadCubeTexture("../../../Asset/Images/pisa_cube.ktx");
-
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
@@ -62,6 +60,11 @@ namespace FOCUS
             sphere->_name = "obj" + std::to_string(i);
             add(sphere);
         }
+
+        //auto cube = std::make_shared<Box>();
+        //auto texture = loadTexture("../../../Asset/Images/white.png");
+        //cube->_material = std::make_shared<BasicMaterial>(texture);
+        //add(cube);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

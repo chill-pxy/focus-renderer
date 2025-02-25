@@ -57,10 +57,10 @@ namespace FOCUS
 		// prepare environment map
 		_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-		auto texture = loadTexture("../../../Asset/Images/indoor.hdr");
+		auto texture = loadCubeTexture("../../../Asset/Images/pisa_cube.ktx");
 		_filteredImageWidth = texture->_width;
 		_filteredImageHeight = texture->_height;
-		_environmentMap = std::make_shared<SkySphere>();
+		_environmentMap = std::make_shared<SkyCube>();
 		_environmentMap->initialize(_rhiContext, texture);
 		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
 
@@ -673,7 +673,7 @@ namespace FOCUS
 		auto cullmode = DRHI::DynamicCullMode(api);
 		DRHI::DynamicPipelineCreateInfo pipelineci{};
 		pipelineci.vertexShader = "../../../Shaders/IBL/prefilterCubeVertex.spv";
-		pipelineci.fragmentShader = "../../../Shaders/IBL/irradianceMapFragment.spv";
+		pipelineci.fragmentShader = "../../../Shaders/IBL/irradianceCubeFragment.spv";
 		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();

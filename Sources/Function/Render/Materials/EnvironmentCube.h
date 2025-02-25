@@ -86,29 +86,32 @@ namespace FOCUS
             _fdescriptorBufferInfo.set(rhi->getCurrentAPI(), _funiformBuffer, sizeof(FCUBEUniformBufferObject));
 
             //binding sampler and image view
-            auto imageFlag = DRHI::DynamicImageCreateFlags(api);
-            DRHI::DynamicImageCreateInfo ici{};
-            ici.arrayLayers = 6;
-            ici.extent.width = _basicTexture->_width;
-            ici.extent.height = _basicTexture->_height;
-            ici.extent.depth = 1;
-            ici.flags = imageFlag.IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-            ici.mipLevels = 6;
-            rhi->createTextureImage(&_textureImage, &_textureMemory, ici, commandPool, _basicTexture->_pixels);
+            rhi->createCubeTexture(&_textureImage, &_textureMemory, *commandPool, 
+                _basicTexture->_ktxData, _basicTexture->_ktxSize, _basicTexture->_width, _basicTexture->_height,
+                _basicTexture->_mipLevels, _basicTexture->_offsets, _basicTexture->_texSizes);
 
             auto type = DRHI::DynamicImageViewType(api);
             DRHI::DynamicImageViewCreateInfo viewInfo{};
-            viewInfo.format = format.FORMAT_B8G8R8A8_SRGB;
+            viewInfo.format = format.FORMAT_R16G16B16A16_SFLOAT;
             viewInfo.image = _textureImage;
             viewInfo.type = type.IMAGE_VIEW_TYPE_CUBE;
             viewInfo.subresourceRange.aspectMask = imageAspect.IMAGE_ASPECT_COLOR_BIT;
             viewInfo.subresourceRange.layerCount = 6;
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.baseMipLevel = 0;
-            viewInfo.subresourceRange.levelCount = 1;
+            viewInfo.subresourceRange.levelCount = _basicTexture->_mipLevels;
             rhi->createImageView(&_textureImageView, &_textureImage, viewInfo);
 
-            rhi->createTextureSampler(&_textureSampler);
+            auto borderColor = DRHI::DynamicBorderColor(api);
+            auto mipMode = DRHI::DynamicSamplerMipmapMode(api);
+            auto addressMode = DRHI::DynamicSamplerAddressMode(api);
+            DRHI::DynamicSamplerCreateInfo samplerInfo{};
+            samplerInfo.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+            samplerInfo.maxLod = _basicTexture->_mipLevels;
+            samplerInfo.minLod = 0.0f;
+            samplerInfo.mipmapMode = mipMode.SAMPLER_MIPMAP_MODE_LINEAR;
+            samplerInfo.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            rhi->createSampler(&_textureSampler, samplerInfo);
 
             std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -176,13 +179,10 @@ namespace FOCUS
 
         virtual void updateUniformBuffer(UniformUpdateData uud)
         {
-            // if (_isCube)
-            // {
             FCUBEUniformBufferObject fe{};
-            fe.exposure = 1.0;
-            fe.gamma = 1.0;
+            fe.exposure = 4.0;
+            fe.gamma = 2.4;
             memcpy(_funiformBufferMapped, &fe, sizeof(FCUBEUniformBufferObject));
-            // }
 
             EUniformBufferObject ubo{};
             ubo.model = uud.model;

@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 inPos;
 layout (location = 0) out vec4 outColor;
 
-layout (binding = 0) uniform sampler2D samplerEnv;
+layout (binding = 0) uniform samplerCube samplerEnv;
 
 layout(push_constant) uniform PushConsts {
 	layout (offset = 64) float roughness;
@@ -89,8 +89,7 @@ vec3 prefilterEnvMap(vec3 R, float roughness)
 			float omegaP = 4.0 * PI / (6.0 * envMapDim * envMapDim);
 			// Biased (+1.0) mip level for better result
 			float mipLevel = roughness == 0.0 ? 0.0 : max(0.5 * log2(omegaS / omegaP) + 1.0, 0.0f);
-			vec4 texel = textureLod(samplerEnv, L.xy, mipLevel);
-			color += texel.rgb * dotNL;
+			color += textureLod(samplerEnv, L, mipLevel).rgb * dotNL;
 			totalWeight += dotNL;
 
 		}

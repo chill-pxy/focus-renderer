@@ -30,7 +30,7 @@ namespace FOCUS
 		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
 
 		// environment map
-		std::shared_ptr<SkySphere> _environmentMap{};
+		std::shared_ptr<SkyCube> _environmentMap{};
 		DRHI::DynamicCommandPool _environmentMapCommandPool{};
 
 		bool _prepared = false;

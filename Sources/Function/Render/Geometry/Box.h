@@ -123,5 +123,11 @@ namespace FOCUS
 			_shadow->updateUniform(uud);
 			_material->updateUniformBuffer(uud);
 		}
+
+		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		{
+			rhi->clearBuffer(&_vertexBuffer, &_vertexDeviceMemory);
+			rhi->clearBuffer(&_indexBuffer, &_indexDeviceMemory);
+		}
 	};
 }

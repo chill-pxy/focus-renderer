@@ -5,6 +5,7 @@
 #include"Materials/EnvironmentMap.h"
 #include"Geometry/Model.h"
 #include"Geometry/Box.h"
+#include"SkyCube.h"
 
 namespace FOCUS
 {
@@ -31,8 +32,8 @@ namespace FOCUS
 		add(_pointLight);
 
 		// prepare camera
-        _camera->_position = Vector3(0, 50, 0);
-        _camera->_rotation = Vector3(-14, -92, 0);
+        _camera->_position = Vector3(168, 168, 19);
+        _camera->_rotation = Vector3(-40, -263, 0);
 
 		// prepare obj
 		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
@@ -41,8 +42,8 @@ namespace FOCUS
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
-            m->_material->_metallic = 0.0;
-            m->_material->_roughness = 1.0;
+            m->_material->_metallic = 1.0;
+            m->_material->_roughness = 0.001;
             m->_castShadow = false;
             m->_scale = Vector3(0.1, 0.1, 0.1);
         }
@@ -64,6 +65,7 @@ namespace FOCUS
         //auto cube = std::make_shared<Box>();
         //auto texture = loadTexture("../../../Asset/Images/white.png");
         //cube->_material = std::make_shared<BasicMaterial>(texture);
+        //cube->_scale = Vector3(100, 100, 100);
         //add(cube);
 	}
 

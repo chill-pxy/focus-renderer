@@ -6,18 +6,12 @@
 
 namespace FOCUS
 {
-    typedef struct ECUBEUniformBufferObject
+    typedef struct ECubeUniformBufferObject
     {
         alignas(16) Matrix4 proj;
         alignas(16) Matrix4 model;
         alignas(16) Matrix4 view;
-    } ECUBEUniformBufferObject;
-
-    typedef struct FCUBEEUniformBufferObject
-    {
-        float exposure;
-        float gamma;
-    } FCUBEUniformBufferObject;
+    } ECubeUniformBufferObject;
 
     class EnvironmentCube : public Material
     {
@@ -33,7 +27,7 @@ namespace FOCUS
         DRHI::DynamicDescriptorBufferInfo _fdescriptorBufferInfo{};
 
         std::shared_ptr<Texture> _basicTexture{ nullptr };
-        EUniformBufferObject      _uniformObject{};
+        ECubeUniformBufferObject      _uniformObject{};
 
     public:
         EnvironmentCube() = delete;
@@ -58,32 +52,30 @@ namespace FOCUS
             if (_cullMode == 0)
                 _cullMode = cullMode.CULL_MODE_BACK_BIT;
 
-            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(3);
+            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(2);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             dsbs[0].pImmutableSamplers = nullptr;
             dsbs[0].stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
 
-            dsbs[1].binding = 1;
+            //dsbs[1].binding = 1;
+            //dsbs[1].descriptorCount = 1;
+            //dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            //dsbs[1].pImmutableSamplers = nullptr;
+            //dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
+            dsbs[1].binding = 2;
             dsbs[1].descriptorCount = 1;
-            dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             dsbs[1].pImmutableSamplers = nullptr;
             dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
-
-            dsbs[2].binding = 2;
-            dsbs[2].descriptorCount = 1;
-            dsbs[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            dsbs[2].pImmutableSamplers = nullptr;
-            dsbs[2].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
             //create uniform buffer
-            rhi->createUniformBuffer(&_vuniformBuffer, &_vuniformBufferMemory, &_vuniformBufferMapped, sizeof(ECUBEUniformBufferObject));
-            _vdescriptorBufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffer, sizeof(ECUBEUniformBufferObject));
-            rhi->createUniformBuffer(&_funiformBuffer, &_funiformBufferMemory, &_funiformBufferMapped, sizeof(FCUBEUniformBufferObject));
-            _fdescriptorBufferInfo.set(rhi->getCurrentAPI(), _funiformBuffer, sizeof(FCUBEUniformBufferObject));
+            rhi->createUniformBuffer(&_vuniformBuffer, &_vuniformBufferMemory, &_vuniformBufferMapped, sizeof(ECubeUniformBufferObject));
+            _vdescriptorBufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffer, sizeof(ECubeUniformBufferObject));
 
             //binding sampler and image view
             rhi->createCubeTexture(&_textureImage, &_textureMemory, *commandPool, 
@@ -113,37 +105,30 @@ namespace FOCUS
             samplerInfo.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
             rhi->createSampler(&_textureSampler, samplerInfo);
 
-            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(3);
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             poolSizes[0].descriptorCount = 3;
-            poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             poolSizes[1].descriptorCount = 3;
-            poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[2].descriptorCount = 3;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            std::vector<DRHI::DynamicWriteDescriptorSet> wds(3);
+            std::vector<DRHI::DynamicWriteDescriptorSet> wds(2);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_vdescriptorBufferInfo;
             wds[0].descriptorCount = 1;
-
-            wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            wds[1].dstBinding = 1;
-            wds[1].pBufferInfo = &_fdescriptorBufferInfo;
-            wds[1].descriptorCount = 1;
 
             DRHI::DynamicDescriptorImageInfo dii{};
             dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             dii.imageView = _textureImageView;
             dii.sampler = _textureSampler;
 
-            wds[2].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            wds[2].dstBinding = 2;
-            wds[2].descriptorCount = 1;
-            wds[2].pImageInfo = &dii;
+            wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[1].dstBinding = 2;
+            wds[1].descriptorCount = 1;
+            wds[1].pImageInfo = &dii;
 
             rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 1);
 
@@ -179,17 +164,17 @@ namespace FOCUS
 
         virtual void updateUniformBuffer(UniformUpdateData uud)
         {
-            FCUBEUniformBufferObject fe{};
-            fe.exposure = 4.0;
-            fe.gamma = 2.4;
-            memcpy(_funiformBufferMapped, &fe, sizeof(FCUBEUniformBufferObject));
+            //FCUBEUniformBufferObject fe{};
+            //fe.exposure = 4.0;
+            //fe.gamma = 2.4;
+            //memcpy(_funiformBufferMapped, &fe, sizeof(FCUBEUniformBufferObject));
 
-            EUniformBufferObject ubo{};
-            ubo.model = uud.model;
+            ECubeUniformBufferObject ubo{};
+            ubo.model = rotate(uud.model, radians(180.0f), Vector3(1.0f, 0.0f, 0.0f));
             ubo.proj = uud.proj;
             ubo.view = uud.view;
 
-            memcpy(_vuniformBufferMapped, &ubo, sizeof(ECUBEUniformBufferObject));
+            memcpy(_vuniformBufferMapped, &ubo, sizeof(ECubeUniformBufferObject));
 
         }
 

@@ -18,7 +18,7 @@ namespace FOCUS
 		{
 			_material = std::make_shared<EnvironmentCube>(texture);
 			_material->_cullMode = DRHI::DynamicCullMode(rhi->getCurrentAPI()).CULL_MODE_FRONT_BIT;
-			_scale = Vector3(10, 10, 10);
+			_scale = Vector3(5000, 5000, 5000);
 			_castShadow = false;
 		}
 

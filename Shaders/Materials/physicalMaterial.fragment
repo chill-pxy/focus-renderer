@@ -172,5 +172,5 @@ void main()
 	finalColor = pow(finalColor, vec3(1.0f / 2.2));
 
     // output
-    outColor = vec4(finalColor, 1.0);
+    outColor = vec4(finalColor * (shadow + 0.1), 1.0);
 } 

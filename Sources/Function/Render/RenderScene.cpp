@@ -42,7 +42,7 @@ namespace FOCUS
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
-            m->_material->_metallic = 0.0;
+            m->_material->_metallic = 1.0;
             m->_material->_roughness = 1.0;
             m->_castShadow = false;
             m->_scale = Vector3(0.1, 0.1, 0.1);
@@ -52,7 +52,7 @@ namespace FOCUS
         for (int i = 0; i < 10; ++i)
         {
             auto sphere = std::make_shared<Sphere>();
-            auto texture = loadTexture("../../../Asset/Images/black.png");
+            auto texture = loadTexture("../../../Asset/Images/white.png");
             sphere->_material = std::make_shared<PhysicalMaterial>(texture);
             sphere->_material->_metallic = clamp((float)i / (float)10, 0.005f, 1.0f);
             sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);

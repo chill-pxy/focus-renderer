@@ -252,10 +252,10 @@ namespace FOCUS
 
 		// create brdf lut image
 		{
-			_rhiContext->createImage(&_brdflutImage, texSize, texSize, format.FORMAT_B8G8R8A8_SRGB, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT,&_brdflutImageMemory);
+			_rhiContext->createImage(&_brdflutImage, texSize, texSize, format.FORMAT_R16G16_SFLOAT, tilling.IMAGE_TILING_OPTIMAL, usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_SAMPLED_BIT, samples.SAMPLE_COUNT_1_BIT, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT,&_brdflutImageMemory);
 
 			// create brdf lut image view
-			_rhiContext->createImageView(&_brdflutImageView, &_brdflutImage, format.FORMAT_B8G8R8A8_SRGB, aspect.IMAGE_ASPECT_COLOR_BIT);
+			_rhiContext->createImageView(&_brdflutImageView, &_brdflutImage, format.FORMAT_R16G16_SFLOAT, aspect.IMAGE_ASPECT_COLOR_BIT);
 
 			// create brdf lut image sampler
 			DRHI::DynamicSamplerCreateInfo sci{};
@@ -271,7 +271,7 @@ namespace FOCUS
 
 		// prepare for attachment
 		DRHI::DynamicAttachmentDescription ad{};
-		ad.format = format.FORMAT_B8G8R8A8_SRGB;
+		ad.format = format.FORMAT_R16G16_SFLOAT;
 		ad.samples = samples.SAMPLE_COUNT_1_BIT;
 		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
 		ad.storeOp = storeOp.ATTACHMENT_STORE_OP_STORE;
@@ -373,7 +373,7 @@ namespace FOCUS
 		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
-		pipelineci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
+		pipelineci.colorImageFormat = format.FORMAT_R16G16_SFLOAT;
 		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
 		pipelineci.includeStencil = false;
 		pipelineci.dynamicDepthBias = false;
@@ -442,6 +442,7 @@ namespace FOCUS
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		uint32_t texSize = 64;
+		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
 
 		auto api = _rhiContext->getCurrentAPI();
 		auto format = DRHI::DynamicFormat(api);
@@ -459,11 +460,11 @@ namespace FOCUS
 		{
 			DRHI::DynamicImageCreateInfo imageci{};
 			imageci.flags = imageflags.IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-			imageci.format = format.FORMAT_B8G8R8A8_SRGB;
+			imageci.format = format.FORMAT_R32G32B32A32_SFLOAT;
 			imageci.extent.width = texSize;
 			imageci.extent.height = texSize;
 			imageci.extent.depth = 1;
-			imageci.mipLevels = 1;
+			imageci.mipLevels = numMips;
 			imageci.arrayLayers = 6;
 			imageci.samples = samples.SAMPLE_COUNT_1_BIT;
 			imageci.tiling = tilling.IMAGE_TILING_OPTIMAL;
@@ -473,11 +474,11 @@ namespace FOCUS
 			// create irradiance image view
 			DRHI::DynamicImageViewCreateInfo vci{};
 			vci.type = viewType.IMAGE_VIEW_TYPE_CUBE;
-			vci.format = format.FORMAT_B8G8R8A8_SRGB;
+			vci.format = format.FORMAT_R32G32B32A32_SFLOAT;
 			vci.image = _irradianceImage;
 			vci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 			vci.subresourceRange.layerCount = 6;
-			vci.subresourceRange.levelCount = 1;
+			vci.subresourceRange.levelCount = numMips;
 			_rhiContext->createImageView(&_irradianceImageView, &_irradianceImage, vci);
 
 			// create irradiance image sampler
@@ -496,7 +497,7 @@ namespace FOCUS
 		auto storeOp = DRHI::DynamicAttachmentStoreOp(api);
 		auto layout = DRHI::DynamicImageLayout(api);
 		DRHI::DynamicAttachmentDescription ad{};
-		ad.format = format.FORMAT_B8G8R8A8_SRGB;
+		ad.format = format.FORMAT_R32G32B32A32_SFLOAT;
 		ad.samples = samples.SAMPLE_COUNT_1_BIT;
 		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
 		ad.storeOp = storeOp.ATTACHMENT_STORE_OP_STORE;
@@ -556,7 +557,7 @@ namespace FOCUS
 		DRHI::DynamicSampler      irradianceOffscreenSampler{};
 
 		DRHI::DynamicImageCreateInfo ici{};
-		ici.format = format.FORMAT_B8G8R8A8_SRGB;
+		ici.format = format.FORMAT_R32G32B32A32_SFLOAT;
 		ici.extent.width = texSize;
 		ici.extent.height = texSize;
 		ici.extent.depth = 1;
@@ -569,7 +570,7 @@ namespace FOCUS
 		_rhiContext->createImage(&irradianceOffscreenImage, &irradianceOffscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		DRHI::DynamicImageViewCreateInfo ivci{};
-		ivci.format = format.FORMAT_B8G8R8A8_SRGB;
+		ivci.format = format.FORMAT_R32G32B32A32_SFLOAT;
 		ivci.image = irradianceOffscreenImage;
 		ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
 		ivci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
@@ -679,7 +680,7 @@ namespace FOCUS
 		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
 		pipelineci.vertexInputAttributes.resize(1);
 		pipelineci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
-		pipelineci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
+		pipelineci.colorImageFormat = format.FORMAT_R32G32B32A32_SFLOAT;
 		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
 		pipelineci.includeStencil = false;
 		pipelineci.dynamicDepthBias = false;
@@ -735,47 +736,50 @@ namespace FOCUS
 		DRHI::DynamicImageSubresourceRange range{};
 		range.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 		range.baseMipLevel = 0;
-		range.levelCount = 1;
+		range.levelCount = numMips;
 		range.layerCount = 6;
 		_rhiContext->setImageLayout(&commandBuffer, &_irradianceImage, layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, range);
 
 		// start render pass
-		for (uint32_t f = 0; f < 6; ++f)
+		for (uint32_t level = 0; level < numMips; ++level)
 		{
-			viewport.width = static_cast<float>(texSize);
-			viewport.height = static_cast<float>(texSize);
-			_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
+			for (uint32_t f = 0; f < 6; ++f)
+			{
+				viewport.width = static_cast<float>(texSize * std::pow(0.5f, level));
+				viewport.height = static_cast<float>(texSize * std::pow(0.5f, level));
+				_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
 
-			_rhiContext->beginRenderPass(&commandBuffer, &binfo, content.SUBPASS_CONTENTS_INLINE);
+				_rhiContext->beginRenderPass(&commandBuffer, &binfo, content.SUBPASS_CONTENTS_INLINE);
 
-			pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.0f) * matrices[f];
+				pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.0f) * matrices[f];
 
-			_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
+				_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
 
-			_environmentMap->draw(_rhiContext, &commandBuffer, pipeline, pipelineLayout, desciptorSet);
+				_environmentMap->draw(_rhiContext, &commandBuffer, pipeline, pipelineLayout, desciptorSet);
 
-			_rhiContext->endRenderPass(&commandBuffer);
+				_rhiContext->endRenderPass(&commandBuffer);
 
-			_rhiContext->setImageLayout(&commandBuffer, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-		
-			DRHI::DynamicImageCopy copy{};
-			copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
-			copy.srcSubresource.baseArrayLayer = 0;
-			copy.srcSubresource.mipLevel = 0;
-			copy.srcSubresource.layerCount = 1;
-			copy.srcOffset = { 0,0,0 };
+				_rhiContext->setImageLayout(&commandBuffer, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-			copy.dstSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
-			copy.dstSubresource.baseArrayLayer = f;
-			copy.dstSubresource.mipLevel = 0;
-			copy.dstSubresource.layerCount = 1;
-			copy.dstOffset = { 0,0,0 };
+				DRHI::DynamicImageCopy copy{};
+				copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+				copy.srcSubresource.baseArrayLayer = 0;
+				copy.srcSubresource.mipLevel = 0;
+				copy.srcSubresource.layerCount = 1;
+				copy.srcOffset = { 0,0,0 };
 
-			copy.extent = { texSize, texSize, 1 };
-			
-			_rhiContext->cmdCopyImage(commandBuffer, &irradianceOffscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
-		
-			_rhiContext->setImageLayout(&commandBuffer, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+				copy.dstSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+				copy.dstSubresource.baseArrayLayer = f;
+				copy.dstSubresource.mipLevel = level;
+				copy.dstSubresource.layerCount = 1;
+				copy.dstOffset = { 0,0,0 };
+
+				copy.extent = { (uint32_t)viewport.width, (uint32_t)viewport.height, 1 };
+
+				_rhiContext->cmdCopyImage(commandBuffer, &irradianceOffscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
+
+				_rhiContext->setImageLayout(&commandBuffer, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			}
 		}
 
 		_rhiContext->setImageLayout(&commandBuffer, &_irradianceImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, range);
@@ -804,6 +808,7 @@ namespace FOCUS
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		uint32_t texSize = 512;
+		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
 
 		auto api = _rhiContext->getCurrentAPI();
 		auto format = DRHI::DynamicFormat(api);
@@ -820,11 +825,11 @@ namespace FOCUS
 		// create image
 		{
 			DRHI::DynamicImageCreateInfo imageCI{};
-			imageCI.format = format.FORMAT_B8G8R8A8_SRGB;
+			imageCI.format = format.FORMAT_R16G16B16A16_SFLOAT;
 			imageCI.extent.width = texSize;
 			imageCI.extent.height = texSize;
 			imageCI.extent.depth = 1;
-			imageCI.mipLevels = 1;
+			imageCI.mipLevels = numMips;
 			imageCI.arrayLayers = 6;
 			imageCI.samples = samples.SAMPLE_COUNT_1_BIT;
 			imageCI.tiling = tilling.IMAGE_TILING_OPTIMAL;
@@ -834,14 +839,14 @@ namespace FOCUS
 			_rhiContext->createImage(&_filteredImage, &_filteredImageMemory, imageCI, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		
 			DRHI::DynamicImageViewCreateInfo viewInfo{};
-			viewInfo.format = format.FORMAT_B8G8R8A8_SRGB;
+			viewInfo.format = format.FORMAT_R16G16B16A16_SFLOAT;
 			viewInfo.image = _filteredImage;
 			viewInfo.type = viewType.IMAGE_VIEW_TYPE_CUBE;
 			viewInfo.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 			viewInfo.subresourceRange.baseArrayLayer = 0;
 			viewInfo.subresourceRange.baseMipLevel = 0;
 			viewInfo.subresourceRange.layerCount = 6;
-			viewInfo.subresourceRange.levelCount = 1;
+			viewInfo.subresourceRange.levelCount = numMips;
 
 			_rhiContext->createImageView(&_filteredImageView, &_filteredImage, viewInfo);
 
@@ -861,7 +866,7 @@ namespace FOCUS
 		auto storeOp = DRHI::DynamicAttachmentStoreOp(api);
 		auto layout = DRHI::DynamicImageLayout(api);
 		DRHI::DynamicAttachmentDescription ad{};
-		ad.format = format.FORMAT_B8G8R8A8_SRGB;
+		ad.format = format.FORMAT_R16G16B16A16_SFLOAT;
 		ad.samples = samples.SAMPLE_COUNT_1_BIT;
 		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
 		ad.storeOp = storeOp.ATTACHMENT_STORE_OP_STORE;
@@ -921,7 +926,7 @@ namespace FOCUS
 		DRHI::DynamicSampler      offscreenSampler{};
 
 		DRHI::DynamicImageCreateInfo ici{};
-		ici.format = format.FORMAT_B8G8R8A8_SRGB;
+		ici.format = format.FORMAT_R16G16B16A16_SFLOAT;
 		ici.extent.width = texSize;
 		ici.extent.height = texSize;
 		ici.extent.depth = 1;
@@ -934,7 +939,7 @@ namespace FOCUS
 		_rhiContext->createImage(&offscreenImage, &offscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 		DRHI::DynamicImageViewCreateInfo ivci{};
-		ivci.format = format.FORMAT_B8G8R8A8_SRGB;
+		ivci.format = format.FORMAT_R16G16B16A16_SFLOAT;
 		ivci.image = offscreenImage;
 		ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
 		ivci.subresourceRange.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
@@ -1037,7 +1042,7 @@ namespace FOCUS
 		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
 		pipelineci.vertexInputAttributes.resize(1);
 		pipelineci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
-		pipelineci.colorImageFormat = format.FORMAT_B8G8R8A8_SRGB;
+		pipelineci.colorImageFormat = format.FORMAT_R16G16B16A16_SFLOAT;
 		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
 		pipelineci.includeStencil = false;
 		pipelineci.dynamicDepthBias = false;
@@ -1094,48 +1099,56 @@ namespace FOCUS
 		DRHI::DynamicImageSubresourceRange range{};
 		range.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 		range.baseMipLevel = 0;
-		range.levelCount = 1;
+		range.levelCount = numMips;
 		range.layerCount = 6;
 		_rhiContext->setImageLayout(&commandBuffer, &_filteredImage, layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, range);
 
 		auto content = DRHI::DynamicSubpassContents(api);
 		auto shaderStage = DRHI::DynamicShaderStageFlags(api);
 		// rendering
-		for (uint32_t f = 0; f < 6; ++f)
-		{
-			_rhiContext->beginRenderPass(&commandBuffer, &rbinfo, content.SUBPASS_CONTENTS_INLINE);
+		for (uint32_t m = 0; m < numMips; m++) {
+			pushBlock.roughness = (float)m / (float)(numMips - 1);
+			for (uint32_t f = 0; f < 6; ++f)
+			{
+				viewPort.width = static_cast<float>(texSize * std::pow(0.5f, m));
+				viewPort.height = static_cast<float>(texSize * std::pow(0.5f, m));
 
-			pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.f) * matrices[f];
+				_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewPort);
 
-			_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, shaderStage.SHADER_STAGE_VERTEX_BIT | shaderStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
+				_rhiContext->beginRenderPass(&commandBuffer, &rbinfo, content.SUBPASS_CONTENTS_INLINE);
 
-			_rhiContext->bindPipeline(pipeline, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-			_rhiContext->bindDescriptorSets(&desciptorSet, pipelineLayout, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				pushBlock.mvp = perspective((float)(PI / 2.0), 1.0f, 0.1f, 512.f) * matrices[f];
 
-			_environmentMap->draw(_rhiContext, &commandBuffer, pipeline, pipelineLayout, desciptorSet);
+				_rhiContext->cmdPushConstants(&pipelineLayout, &commandBuffer, shaderStage.SHADER_STAGE_VERTEX_BIT | shaderStage.SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushBlock), &pushBlock);
 
-			_rhiContext->endRenderPass(&commandBuffer);
+				_rhiContext->bindPipeline(pipeline, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+				_rhiContext->bindDescriptorSets(&desciptorSet, pipelineLayout, &commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 
-			_rhiContext->setImageLayout(&commandBuffer, &offscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-	
-			DRHI::DynamicImageCopy copy{};
-			copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
-			copy.srcSubresource.baseArrayLayer = 0;
-			copy.srcSubresource.mipLevel = 0;
-			copy.srcSubresource.layerCount = 1;
-			copy.srcOffset = { 0,0,0 };
+				_environmentMap->draw(_rhiContext, &commandBuffer, pipeline, pipelineLayout, desciptorSet);
 
-			copy.dstSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
-			copy.dstSubresource.baseArrayLayer = f;
-			copy.dstSubresource.mipLevel = 0;
-			copy.dstSubresource.layerCount = 1;
-			copy.dstOffset = { 0,0,0 };
+				_rhiContext->endRenderPass(&commandBuffer);
 
-			copy.extent = { texSize, texSize, 1 };
+				_rhiContext->setImageLayout(&commandBuffer, &offscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-			_rhiContext->cmdCopyImage(commandBuffer, &offscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_filteredImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
+				DRHI::DynamicImageCopy copy{};
+				copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+				copy.srcSubresource.baseArrayLayer = 0;
+				copy.srcSubresource.mipLevel = 0;
+				copy.srcSubresource.layerCount = 1;
+				copy.srcOffset = { 0,0,0 };
 
-			_rhiContext->setImageLayout(&commandBuffer, &offscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);	
+				copy.dstSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
+				copy.dstSubresource.baseArrayLayer = f;
+				copy.dstSubresource.mipLevel = m;
+				copy.dstSubresource.layerCount = 1;
+				copy.dstOffset = { 0,0,0 };
+
+				copy.extent = { (uint32_t)viewPort.width, (uint32_t)viewPort.height, 1};
+
+				_rhiContext->cmdCopyImage(commandBuffer, &offscreenImage, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, &_filteredImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, copy);
+
+				_rhiContext->setImageLayout(&commandBuffer, &offscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			}
 		}
 
 		_rhiContext->setImageLayout(&commandBuffer, &_filteredImage, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, range);

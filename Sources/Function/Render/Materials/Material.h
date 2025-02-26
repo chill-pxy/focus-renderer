@@ -77,6 +77,8 @@ namespace FOCUS
         float _ior{ 0.0 };
         float _metallic{ 0.0 };
 
+        uint32_t _mipLevel{ 0 };
+
         bool _built{ false };
         bool _cleared{ false };
 

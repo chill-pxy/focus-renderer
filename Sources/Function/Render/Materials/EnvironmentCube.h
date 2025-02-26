@@ -33,6 +33,7 @@ namespace FOCUS
         EnvironmentCube() = delete;
         EnvironmentCube(std::shared_ptr<Texture> texture, bool isCube = false) : _basicTexture{ texture } {
             _type = "EnvironmentMap Material";
+            _mipLevel = _basicTexture->_mipLevels;
         };
 
         virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
@@ -170,7 +171,7 @@ namespace FOCUS
             //memcpy(_funiformBufferMapped, &fe, sizeof(FCUBEUniformBufferObject));
 
             ECubeUniformBufferObject ubo{};
-            ubo.model = rotate(uud.model, radians(180.0f), Vector3(1.0f, 0.0f, 0.0f));
+            ubo.model = uud.model;
             ubo.proj = uud.proj;
             ubo.view = uud.view;
 

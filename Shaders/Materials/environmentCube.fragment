@@ -23,11 +23,11 @@ void main()
 {
 	vec3 color = texture(samplerEnv, inUVW).rgb;
 
-//	// Tone mapping
-	color = Uncharted2Tonemap(color * 4.0);
+	// Tone mapping
+	color = Uncharted2Tonemap(color * 4.5);
 	color = color * (1.0f / Uncharted2Tonemap(vec3(11.2f)));	
-//	// Gamma correction
-	color = pow(color, vec3(1.0f / 2.5));
-
+	// Gamma correction
+	color = pow(color, vec3(1.0f / 2.2));
+	
 	outColor = vec4(color, 1.0);
 }

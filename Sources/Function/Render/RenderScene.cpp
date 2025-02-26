@@ -42,8 +42,8 @@ namespace FOCUS
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
-            m->_material->_metallic = 1.0;
-            m->_material->_roughness = 0.001;
+            m->_material->_metallic = 0.0;
+            m->_material->_roughness = 1.0;
             m->_castShadow = false;
             m->_scale = Vector3(0.1, 0.1, 0.1);
         }

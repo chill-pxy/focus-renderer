@@ -1,30 +1,46 @@
-[Brief]  
-This project is an example usage of DynamicRHI(https://github.com/chill-pxy/DynamicRHI)  
-A realtime rendering engine run on Windows(will be support more platforms in future)  
-This is an early develop version!  
+# Realtime Rendering Engine Example
 
-[Feature]  
-[Resources]  
-1.obj and mlt type file support  
-2.ktx cube map support  
-3.stb image support  
-[Shadow]  
-1.Shadow Mapping  
-2.PCF Shadow Map  
-[Material]  
-1.Basic Color Material  
-2.Bliin Phong Material  
-3.Physicaly Based Material  
-[Scene]  
-1.Skybox and SkySphere  
-2.Basic Geometry  
-3.Model loader  
-4.Point Light  
-5.Directional Light  
-[System]  
-1.RenderSystem  
-2.WindowSystem  
-3.RHI api  
-4.Material System  
-![alt text](pbr.png)  
-![alt text](shadow.png)  
+![PBR Example](pbr.png)
+![Shadow Example](shadow.png)
+
+## ? Brief
+A real-time rendering engine built with [DynamicRHI](https://github.com/chill-pxy/DynamicRHI).  
+? Currently supports **Windows** (multi-platform support planned for future releases).  
+?? **Note:** This is an early development version!
+
+---
+
+## ? Features
+
+### ? Resources
+- Support for `.obj` and `.mlt` model files  
+- KTX cubemap textures  
+- Image loading via `stb_image`  
+
+### ?? Shadows
+- Shadow Mapping implementation  
+- Percentage-Closer Filtering (PCF) for soft shadows  
+
+### ? Materials
+- Basic Color Material  
+- Blinn-Phong Lighting Model  
+- Physically Based Rendering (PBR) Material  
+
+### ? Scene
+- Skybox & Skysphere rendering  
+- Basic geometric primitives (cubes, spheres, etc.)  
+- Model loader for external assets  
+- Dynamic lighting:  
+  - Point Lights  
+  - Directional Lights  
+
+### ?? Systems
+- Modular Render System  
+- Cross-platform Window System  
+- Custom RHI (Rendering Hardware Interface) API  
+- Material Management System  
+
+---
+
+## ? License  
+This project is under active development. License details TBD.  

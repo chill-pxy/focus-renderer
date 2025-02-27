@@ -42,28 +42,48 @@ namespace FOCUS
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
-            m->_material->_metallic = 1.0;
-            m->_material->_roughness = 1.0;
+            m->_material->_metallic = 0.98;
+            m->_material->_roughness = 0.98;
             m->_castShadow = false;
             m->_scale = Vector3(0.1, 0.1, 0.1);
         }
         add(obj2);
 
-        for (int i = 0; i < 10; ++i)
-        {
-            for (int j = 0; j < 10; ++j)
-            {
-                auto sphere = std::make_shared<Sphere>();
-                auto texture = loadTexture("../../../Asset/Images/white.png");
-                sphere->_material = std::make_shared<PhysicalMaterial>(texture);
-                sphere->_material->_metallic = (float)i/10; //(clamp((float)i / (float)10, 0.005f, 1.0f));
-                sphere->_material->_roughness = (float)j/10;//1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
-                sphere->_scale = Vector3(10.0, 10.0, 10.0);
-                sphere->_position = Vector3(i * 25, 10.0, j * 25);
-                sphere->_name = "obj" + std::to_string(i);
-                add(sphere);
-            }
-        }
+        //for (int i = 0; i < 10; ++i)
+        //{
+        //    //for (int j = 0; j < 10; ++j)
+        //    {
+        //        auto sphere = std::make_shared<Sphere>();
+        //        auto texture = loadTexture("../../../Asset/Images/white.png");
+        //        sphere->_material = std::make_shared<PhysicalMaterial>(texture);
+        //        sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
+        //        sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
+        //        sphere->_scale = Vector3(10.0, 10.0, 10.0);
+        //        sphere->_position = Vector3(i * 25, 10.0, 0);
+        //        sphere->_name = "obj" + std::to_string(i);
+        //        add(sphere);
+        //    }
+        //}
+
+        //auto cube = loadModel("../../../Asset/Models/box.obj");
+        //add(cube);
+
+        //for (int i = 0; i < 10; ++i)
+        //{
+            auto teapot = loadModel("../../../Asset/Models/teapot.obj");
+            teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+            teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+            teapot->setPosition(Vector3(0.0, 20.0, 0.0));// (Vector3(30 * i, 10, 0));
+            teapot->setScale(Vector3(10.0, 10.0, 10.0));
+            add(teapot);
+
+            auto sphere = loadModel("../../../Asset/Models/dragon.obj");
+            sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+            sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+            sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
+            sphere->setScale(Vector3(10.0, 10.0, 10.0));
+            add(sphere);
+        //}
 
         //auto cube = std::make_shared<Box>();
         //auto texture = loadTexture("../../../Asset/Images/white.png");
@@ -91,10 +111,10 @@ namespace FOCUS
 		_camera->handleMovement(frameTimer);
 
 		_uud.view = _camera->getViewMatrix();
-		_uud.proj = perspective(radians(45.0f), _canvasWidth / (float)_canvasHeight, 1.0f, 10000.0f);
+		_uud.proj = perspective(radians(60.0f), _canvasWidth / (float)_canvasHeight, 1.0f, 10000.0f);
 		_uud.proj[1][1] *= -1;
 
-		_uud.viewPosition = _camera->_position;
+		_uud.viewPosition = _camera->_position * Vector3(-1.0f, -1.0f, -1.0f);
 
 		_uud.pointLightPosition = _pointLight->_position;
 		_uud.pointLightColor = _pointLight->_color;

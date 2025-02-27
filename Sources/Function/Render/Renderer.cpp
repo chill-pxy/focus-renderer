@@ -57,7 +57,7 @@ namespace FOCUS
 		// prepare environment map
 		_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-		auto texture = loadCubeTexture("../../../Asset/Images/pisa_cube.ktx");
+		auto texture = loadCubeTexture("../../../Asset/Images/vsunset.ktx");
 		_filteredImageWidth = texture->_width;
 		_filteredImageHeight = texture->_height;
 		_environmentMap = std::make_shared<SkyCube>();

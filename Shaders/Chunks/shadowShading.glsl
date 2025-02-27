@@ -49,11 +49,11 @@ float PCF(sampler2D shadowMap, vec4 shadowCoord, float scale)
 	return shadowFactor / count;
 }
 
-highp float rand_2to1(vec2 uv) 
+float rand_2to1(vec2 uv) 
 {
 	// 0 - 1
-	const highp float a = 12.9898, b = 78.233, c = 43758.5453;
-	highp float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);
+	const float a = 12.9898, b = 78.233, c = 43758.5453;
+	float dt = dot(uv.xy, vec2(a, b)), sn = mod(dt, PI);
 	return fract(sin(sn) * c);
 }
 

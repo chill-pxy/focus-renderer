@@ -59,8 +59,9 @@ void main()
     
     fragColor    = inColor;
     fragTexCoord = inTexCoord;
+    fragTexCoord.t = 1.0 - inTexCoord.t;
     fragPosition = (vubo.model * vec4(inPosition, 1.0)).xyz ;
-    fragNormal   = inNormal;
+    fragNormal   = mat3(vubo.model) * inNormal;
 
     fragViewPosition = vubo.viewPosition;
 
@@ -75,5 +76,5 @@ void main()
     fragMetallic = vubo.metallic;
     fragRoughness = vubo.roughness;
 
-    fragShadowCoord = ( biasMat * vubo.dirLightSpace ) * vec4(inPosition, 1.0);
+    fragShadowCoord = ( biasMat * vubo.dirLightSpace ) * vec4(inPosition, 1.0); 
 }

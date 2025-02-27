@@ -39,8 +39,8 @@ namespace FOCUS
 
 					Vertex vertex{};
 					vertex.pos = Vector3(x, y, z);
-					vertex.normal = Vector3(x, y, z);
-					vertex.texCoord = Vector2(j / (float)_lonBands, i / (float)_latBands);
+					vertex.normal = normalize(Vector3(x, y, z));
+					vertex.texCoord = Vector2(j / (float)_lonBands, 1.0 - i / (float)_latBands);
 					vertex.color = _color;
 					_vertices.push_back(vertex);
 

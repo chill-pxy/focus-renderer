@@ -1,6 +1,7 @@
 # Realtime Rendering Engine Example
 
 ![PBR Example](pbr.png)
+![IBL Example](ibl.png)
 ![Shadow Example](shadow.png)
 
 ## :fish: Brief

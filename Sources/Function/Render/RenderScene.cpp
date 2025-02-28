@@ -49,47 +49,38 @@ namespace FOCUS
         }
         add(obj2);
 
-        //for (int i = 0; i < 10; ++i)
-        //{
-        //    //for (int j = 0; j < 10; ++j)
-        //    {
-        //        auto sphere = std::make_shared<Sphere>();
-        //        auto texture = loadTexture("../../../Asset/Images/white.png");
-        //        sphere->_material = std::make_shared<PhysicalMaterial>(texture);
-        //        sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
-        //        sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
-        //        sphere->_scale = Vector3(10.0, 10.0, 10.0);
-        //        sphere->_position = Vector3(i * 25, 10.0, 0);
-        //        sphere->_name = "obj" + std::to_string(i);
-        //        add(sphere);
-        //    }
-        //}
+        for (int i = 0; i < 10; ++i)
+        {
+            //for (int j = 0; j < 10; ++j)
+            {
+                auto sphere = std::make_shared<Sphere>();
+                auto texture = loadTexture("../../../Asset/Images/white.png");
+                sphere->_material = std::make_shared<PhysicalMaterial>(texture);
+                sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
+                sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
+                sphere->_scale = Vector3(10.0, 10.0, 10.0);
+                sphere->_position = Vector3(i * 25, 10.0, 0);
+                sphere->_name = "obj" + std::to_string(i);
+                add(sphere);
+            }
+        }
 
-        //auto cube = loadModel("../../../Asset/Models/box.obj");
-        //add(cube);
+       // auto cube = loadModel("../../../Asset/Models/box.obj");
+       //add(cube);
 
-        //for (int i = 0; i < 10; ++i)
-        //{
-            auto teapot = loadModel("../../../Asset/Models/sphere.obj");
-            teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-            teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-            teapot->setPosition(Vector3(0.0, 20.0, 0.0));// (Vector3(30 * i, 10, 0));
-            teapot->setScale(Vector3(10.0, 10.0, 10.0));
-            add(teapot);
+        auto teapot = loadModel("../../../Asset/Models/teapot.obj");
+        teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+        teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+        teapot->setPosition(Vector3(0.0, 20.0, 0.0));// (Vector3(30 * i, 10, 0));
+        teapot->setScale(Vector3(10.0, 10.0, 10.0));
+        add(teapot);
 
-            auto sphere = loadModel("../../../Asset/Models/dragon.obj");
-            sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-            sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-            sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
-            sphere->setScale(Vector3(10.0, 10.0, 10.0));
-            add(sphere);
-        //}
-
-        //auto cube = std::make_shared<Box>();
-        //auto texture = loadTexture("../../../Asset/Images/white.png");
-        //cube->_material = std::make_shared<BasicMaterial>(texture);
-        //cube->_scale = Vector3(100, 100, 100);
-        //add(cube);
+        auto sphere = loadModel("../../../Asset/Models/dragon.obj");
+        sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+        sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+        sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
+        sphere->setScale(Vector3(10.0, 10.0, 10.0));
+        add(sphere);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
@@ -116,7 +107,7 @@ namespace FOCUS
 
 		_uud.viewPosition = _camera->_position * Vector3(-1.0f, -1.0f, -1.0f);
 
-		_uud.pointLightPosition = _pointLight->_position;
+		_uud.pointLightPosition = _pointLight->_position * -1.0f;
 		_uud.pointLightColor = _pointLight->_color;
 		_uud.pointLightIntensity = _pointLight->_intensity;
 

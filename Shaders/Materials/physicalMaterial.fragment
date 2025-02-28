@@ -171,6 +171,9 @@ void main()
 	// Gamma correction
 	finalColor = pow(finalColor, vec3(1.0f / 2.2));
 
+	// apply shadow
+	finalColor = finalColor * (shadow);
+
     // output
     outColor = vec4(finalColor, 1.0);
 } 

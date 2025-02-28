@@ -32,8 +32,8 @@ namespace FOCUS
 		add(_pointLight);
 
 		// prepare camera
-        _camera->_position = Vector3(168, 168, 19);
-        _camera->_rotation = Vector3(-40, -263, 0);
+        _camera->_position = Vector3(9, 41, -202);
+        _camera->_rotation = Vector3(-9, -361, 0);
 
 		// prepare obj
 		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
@@ -70,7 +70,7 @@ namespace FOCUS
 
         //for (int i = 0; i < 10; ++i)
         //{
-            auto teapot = loadModel("../../../Asset/Models/teapot.obj");
+            auto teapot = loadModel("../../../Asset/Models/sphere.obj");
             teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
             teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
             teapot->setPosition(Vector3(0.0, 20.0, 0.0));// (Vector3(30 * i, 10, 0));

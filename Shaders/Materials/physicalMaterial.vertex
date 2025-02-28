@@ -62,6 +62,7 @@ void main()
     fragTexCoord.t = 1.0 - inTexCoord.t;
     fragPosition = (vubo.model * vec4(inPosition, 1.0)).xyz ;
     fragNormal   = mat3(vubo.model) * inNormal;
+    fragNormal.y = -fragNormal.y;
 
     fragViewPosition = vubo.viewPosition;
 

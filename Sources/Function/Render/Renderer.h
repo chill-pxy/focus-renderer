@@ -24,10 +24,17 @@ namespace FOCUS
 		std::vector<DRHI::DynamicCommandBuffer> _shadowCommandBuffers;
 		DRHI::DynamicCommandPool _shadowCommandPool;
 
+		// scene image
 		std::vector<DRHI::DynamicImage>* _viewportImages{nullptr};
 		std::vector<DRHI::DynamicImageView>* _viewportImageViews{nullptr};
+		
+		// scene depth image
 		DRHI::DynamicImage* _viewportDepthImage{nullptr};
 		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
+		
+		// scene normal image
+		DRHI::DynamicImage* _viewportNormalImage{ nullptr };
+		DRHI::DynamicImageView* _viewportNormalImageView{ nullptr };
 
 		// environment map
 		std::shared_ptr<SkyCube> _environmentMap{};

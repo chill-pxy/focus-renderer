@@ -71,7 +71,7 @@ namespace FOCUS
         auto teapot = loadModel("../../../Asset/Models/teapot.obj");
         teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
         teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-        teapot->setPosition(Vector3(0.0, 20.0, 0.0));// (Vector3(30 * i, 10, 0));
+        teapot->setPosition(Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
         teapot->setScale(Vector3(10.0, 10.0, 10.0));
         add(teapot);
 
@@ -81,6 +81,16 @@ namespace FOCUS
         sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
         sphere->setScale(Vector3(10.0, 10.0, 10.0));
         add(sphere);
+
+        //auto box = std::make_shared<Box>();
+        //auto texture2 = loadTexture("../../../Asset/Images/white.png");
+        //box->_material = std::make_shared<PhysicalMaterial>(texture2);
+        //box->_material->_metallic = 0.98;
+        //box->_material->_roughness = 0.11;
+        //box->_scale = Vector3(50.0, 50.0, 50.0);
+        //box->_position = Vector3(0, 25.0, 40);
+        //box->_name = "box";
+        //add(box);
 	}
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)

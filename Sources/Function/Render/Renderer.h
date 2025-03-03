@@ -87,7 +87,10 @@ namespace FOCUS
 	private:
 		void shadowPass();
 		void scenePass();
-	
+		
+		void deferredPass();
+		void prepareNormalResources();
+
 		void precomputeBRDFLUT();
 		void precomputeIrradianceCube();
 		void prefilterEnvironmentCube();

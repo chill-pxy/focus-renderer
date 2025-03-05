@@ -27,10 +27,14 @@ namespace FOCUS
         DRHI::DynamicImage _normal{};
         DRHI::DynamicImageView _normalView{};
         DRHI::DynamicSampler _normalSampler{};
+        DRHI::DynamicDeviceMemory _normalMemory{};
 
         DRHI::DynamicImage _position{};
         DRHI::DynamicImageView _positionView{};
         DRHI::DynamicSampler _positionSampler{};
+
+        DRHI::DynamicCommandBuffer _commandBuffer{};
+        DRHI::DynamicCommandPool _commandPool{};
 
     private:
         void* _uniformBufferMapped{ nullptr };
@@ -41,6 +45,10 @@ namespace FOCUS
     public:
         void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
         {
+
+            rhi->createCommandPool(&_commandPool);
+            rhi->createCommandBuffer(&_commandBuffer, &_commandPool);
+
             auto api = rhi->getCurrentAPI();
             auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
             auto format = DRHI::DynamicFormat(api);
@@ -49,6 +57,25 @@ namespace FOCUS
             auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
             auto cullMode = DRHI::DynamicCullMode(api);
             auto sampleCount = DRHI::DynamicSampleCountFlags(api);
+            auto tilling = DRHI::DynamicImageTiling(api);
+            auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
+            auto aspect = DRHI::DynamicImageAspectFlagBits(api);
+            auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+
+            rhi->createImage(&_normal, rhi->getSwapChainExtentWidth(), rhi->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
+            rhi->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+            
+            auto bordercolor = DRHI::DynamicBorderColor(api);
+            auto addressmode = DRHI::DynamicSamplerAddressMode(api);
+            auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
+            DRHI::DynamicSamplerCreateInfo samplerInfo{};
+            samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+            samplerInfo.maxLod = 1;
+            samplerInfo.minLod = 0.0f;
+            samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+            samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+            rhi->createSampler(&_normalSampler, samplerInfo);
 
             std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
             dsbs[0].binding = 0;
@@ -80,17 +107,18 @@ namespace FOCUS
 
             // create pipeline
             DRHI::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = "../../../Shaders/Materials/DefferedVertex.spv";
-            pci.fragmentShader = "../../../Shaders/Materials/DefferedFragment.spv";
+            pci.vertexShader = "../../../Shaders/Deffered/normalVertex.spv";
+            pci.fragmentShader = "../../../Shaders/Deffered/normalFragment.spv";
             pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
-            pci.vertexInputAttributes.resize(2);
+            pci.vertexInputAttributes.resize(3);
             pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
-            pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
+            pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::normal));
+            pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
             pci.colorImageFormat = format.FORMAT_B8G8R8A8_UNORM;
-            pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
-            pci.includeStencil = true;
+            pci.depthImageFormat = format.FORMAT_UNDEFINED;
+            pci.includeStencil = false;
             pci.dynamicDepthBias = false;
             pci.cullMode = cullMode.CULL_MODE_BACK_BIT;
             pci.sampleCounts = sampleCount.SAMPLE_COUNT_1_BIT;

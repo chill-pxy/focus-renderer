@@ -64,7 +64,7 @@ namespace FOCUS
             if (_cullMode == 0)
                 _cullMode = cullMode.CULL_MODE_BACK_BIT;
 
-            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(6);
+            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(7);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -101,6 +101,12 @@ namespace FOCUS
             dsbs[5].pImmutableSamplers = nullptr;
             dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
+            dsbs[6].binding = 6;
+            dsbs[6].descriptorCount = 1;
+            dsbs[6].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[6].pImmutableSamplers = nullptr;
+            dsbs[6].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
             //create uniform buffer
@@ -112,24 +118,26 @@ namespace FOCUS
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
-            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(6);
+            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(7);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[0].descriptorCount = 6;
+            poolSizes[0].descriptorCount = 7;
             poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[1].descriptorCount = 6;
+            poolSizes[1].descriptorCount = 7;
             poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[2].descriptorCount = 6;
+            poolSizes[2].descriptorCount = 7;
             poolSizes[3].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[3].descriptorCount = 6;
+            poolSizes[3].descriptorCount = 7;
             poolSizes[4].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[4].descriptorCount = 6;
+            poolSizes[4].descriptorCount = 7;
             poolSizes[5].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[5].descriptorCount = 6;
+            poolSizes[5].descriptorCount = 7;
+            poolSizes[6].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[6].descriptorCount = 7;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            DRHI::DynamicDescriptorImageInfo dii[5]{};
+            DRHI::DynamicDescriptorImageInfo dii[6]{};
             dii[0].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             dii[0].imageView = _textureImageView;
             dii[0].sampler = _textureSampler;
@@ -150,7 +158,11 @@ namespace FOCUS
             dii[4].imageView = *_filteredImageView;
             dii[4].sampler = *_filteredImageSampler;
 
-            std::vector<DRHI::DynamicWriteDescriptorSet> wds(6);
+            dii[5].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[5].imageView = *_normalImageView;
+            dii[5].sampler = *_normalSampler;
+
+            std::vector<DRHI::DynamicWriteDescriptorSet> wds(7);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_vdescriptorBufferInfo;
@@ -181,7 +193,12 @@ namespace FOCUS
             wds[5].descriptorCount = 1;
             wds[5].pImageInfo = &dii[4];
 
-            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 6);
+            wds[6].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[6].dstBinding = 6;
+            wds[6].descriptorCount = 1;
+            wds[6].pImageInfo = &dii[5];
+
+            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 7);
 
             // create pipeline
             DRHI::DynamicPipelineCreateInfo pci = {};

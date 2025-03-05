@@ -97,6 +97,8 @@ namespace FOCUS
 			p->_material->_irradianceSampler = &_irradianceSampler;
 			p->_material->_filteredImageView = &_filteredImageView;
 			p->_material->_filteredImageSampler = &_filteredImageSampler;
+			p->_material->_normalImageView = &_deffered->_normalView;
+			p->_material->_normalSampler = &_deffered->_normalSampler;
 			p->build(_rhiContext, &_commandPool, _shadowImage, _shadowImageView, _shadowSampler);
 		}
 
@@ -115,6 +117,7 @@ namespace FOCUS
 	{
 		if (_prepared)
 		{
+			defferedPass();
 			shadowPass();
 			scenePass();
 		}
@@ -236,6 +239,39 @@ namespace FOCUS
 			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
 			_rhiContext->endCommandBuffer(_commandBuffers[index]);
 		}
+	}
+
+	void Renderer::defferedPass()
+	{
+		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+		auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
+
+		DRHI::DynamicRenderingInfo renderInfo{};
+		renderInfo.isRenderOnSwapChain = false;
+		renderInfo.isClearEveryFrame = true;
+		renderInfo.includeStencil = false;
+
+		renderInfo.targetImage = &_deffered->_normal;
+		renderInfo.targetImageView = &_deffered->_normalView;
+		renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+		//renderInfo.targetDepthImage = _viewportDepthImage;
+		//renderInfo.targetDepthImageView = _viewportDepthImageView;
+		//renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+		//renderInfo.includeStencil = false;
+		//renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
+		renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
+
+		_rhiContext->beginCommandBuffer(_deffered->_commandBuffer);
+		_rhiContext->beginRendering(_deffered->_commandBuffer, renderInfo);
+
+		for (auto p : _submitRenderlist)
+		{
+			p->draw(_rhiContext, &_deffered->_commandBuffer, _deffered->_pipeline, _deffered->_pipelineLayout, _deffered->_descriptorSet);
+		}
+
+		_rhiContext->endRendering(_deffered->_commandBuffer, renderInfo);
+		_rhiContext->endCommandBuffer(_deffered->_commandBuffer);
 	}
 
 	void Renderer::precomputeBRDFLUT()

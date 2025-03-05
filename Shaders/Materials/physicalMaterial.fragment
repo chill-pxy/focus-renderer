@@ -8,6 +8,7 @@ layout(set = 0, binding = 2) uniform sampler2D shadowMap;
 layout(set = 0, binding = 3) uniform sampler2D brdflutSampler;
 layout(set = 0, binding = 4) uniform samplerCube irradianceSampler;
 layout(set = 0, binding = 5) uniform samplerCube filteredEnvSampler;
+layout(set = 0, binding = 6) uniform sampler2D normalSampler;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -174,6 +175,8 @@ void main()
 	// apply shadow
 	finalColor = finalColor * (shadow);
 
+	color = texture(normalSampler, fragTexCoord).rgb;
+
     // output
-    outColor = vec4(finalColor, 1.0);
+    outColor = vec4(color, 1.0);
 } 

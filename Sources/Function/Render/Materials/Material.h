@@ -43,6 +43,9 @@ namespace FOCUS
         DRHI::DynamicSampler      _textureSampler{};
         DRHI::DynamicDeviceMemory _textureMemory{};
 
+        DRHI::DynamicImageView* _normalImageView{ nullptr };
+        DRHI::DynamicSampler* _normalSampler{ nullptr };
+
         DRHI::DynamicImageView* _brdfImageView{ nullptr };
         DRHI::DynamicSampler* _brdfSampler{ nullptr };
 

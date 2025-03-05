@@ -90,6 +90,7 @@ namespace FOCUS
 	private:
 		void shadowPass();
 		void scenePass();
+		void defferedPass();
 
 		void precomputeBRDFLUT();
 		void precomputeIrradianceCube();

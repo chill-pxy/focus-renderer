@@ -9,6 +9,7 @@
 #include"RenderResource.h"
 #include"SkySphere.h"
 #include"SkyCube.h"
+#include"DefferedPipeline.h"
 
 namespace FOCUS
 {
@@ -42,7 +43,9 @@ namespace FOCUS
 
 		bool _prepared = false;
 
-	private:
+	private:	
+		std::shared_ptr<DefferedPipeline> _deffered{};
+
 		// members of shadow
 		DRHI::DynamicImage        _shadowImage{};
 		DRHI::DynamicDeviceMemory _shadowImageMemory{};
@@ -87,9 +90,6 @@ namespace FOCUS
 	private:
 		void shadowPass();
 		void scenePass();
-		
-		void deferredPass();
-		void prepareNormalResources();
 
 		void precomputeBRDFLUT();
 		void precomputeIrradianceCube();

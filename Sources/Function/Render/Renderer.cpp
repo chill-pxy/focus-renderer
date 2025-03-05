@@ -64,6 +64,10 @@ namespace FOCUS
 		_environmentMap->initialize(_rhiContext, texture);
 		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
 
+		// initialize deffered pipeline
+		_deffered = std::make_shared<DefferedPipeline>();
+		_deffered->initialize(_rhiContext);
+			
 		_prepared = true;
 
 		// precomputing
@@ -232,49 +236,6 @@ namespace FOCUS
 			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
 			_rhiContext->endCommandBuffer(_commandBuffers[index]);
 		}
-	}
-
-	void Renderer::deferredPass()
-	{  
-		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
-		auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
-
-		DRHI::DynamicRenderingInfo renderInfo{};
-		renderInfo.isRenderOnSwapChain = false;
-		renderInfo.isClearEveryFrame = true;
-		renderInfo.includeStencil = false;
-
-		for (int index = 0; index < _commandBuffers.size(); ++index)
-		{
-			renderInfo.targetImage = &(*_viewportImages)[index];
-			renderInfo.targetImageView = &(*_viewportImageViews)[index];
-			renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
-			renderInfo.targetDepthImage = nullptr;
-			renderInfo.targetDepthImageView = nullptr;
-			renderInfo.includeStencil = false;
-			renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
-			renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
-
-			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
-
-			// draw environment
-			_environmentMap->draw(_rhiContext, &_commandBuffers[index], false);
-
-			for (auto p : _submitRenderlist)
-			{
-
-				p->draw(_rhiContext, &_commandBuffers[index], false);
-			}
-
-			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
-			_rhiContext->endCommandBuffer(_commandBuffers[index]);
-		}
-	}
-
-	void prepareNormalResouces()
-	{
-
 	}
 
 	void Renderer::precomputeBRDFLUT()

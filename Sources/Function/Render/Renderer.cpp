@@ -254,11 +254,6 @@ namespace FOCUS
 		renderInfo.targetImage = &_deffered->_normal;
 		renderInfo.targetImageView = &_deffered->_normalView;
 		renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
-		//renderInfo.targetDepthImage = _viewportDepthImage;
-		//renderInfo.targetDepthImageView = _viewportDepthImageView;
-		//renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
-		//renderInfo.includeStencil = false;
-		//renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
 		renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 

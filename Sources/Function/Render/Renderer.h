@@ -41,11 +41,11 @@ namespace FOCUS
 		std::shared_ptr<SkyCube> _environmentMap{};
 		DRHI::DynamicCommandPool _environmentMapCommandPool{};
 
+		std::shared_ptr<DefferedPipeline> _deffered{};
+
 		bool _prepared = false;
 
 	private:	
-		std::shared_ptr<DefferedPipeline> _deffered{};
-
 		// members of shadow
 		DRHI::DynamicImage        _shadowImage{};
 		DRHI::DynamicDeviceMemory _shadowImageMemory{};

@@ -34,7 +34,26 @@ namespace FOCUS
 		while (running)
 		{
 			if (!*running) break;
+			
 			EngineUI::getInstance()->tick(running);
+			if (!EngineUI::getInstance()->_isEmpty)
+			{
+				RenderSystem::getInstance()->_submitCommandBuffers.clear();
+				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
+					RenderSystem::getInstance()->_renderer->_deffered->_commandBuffer);
+
+				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
+					RenderSystem::getInstance()->_renderer->_shadowCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+
+				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
+					RenderSystem::getInstance()->_scene->_sceneCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+
+				for (uint32_t i = 0; i < EngineUI::getInstance()->_commandBuffers.size(); ++i)
+				{
+					RenderSystem::getInstance()->_submitCommandBuffers.push_back(EngineUI::getInstance()->_commandBuffers[i]);
+				}
+			}
+
 			RenderSystem::getInstance()->tick(running);
 			WindowSystem::getInstance()->tick(running);
 		}

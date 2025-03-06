@@ -35,7 +35,27 @@ namespace FOCUS
 			v7.pos = Vector3(_width / 2, _length / 2, -_height / 2);
 			v8.pos = Vector3(-_width / 2, _length / 2, -_height / 2);
 
-			_vertices = { v1,v2,v3,v4,v5,v6,v7,v8 };
+			v1.normal = normalize(Vector3(0, 0, 1)); 
+			v2.normal = normalize(Vector3(0, 0, 1));
+			v3.normal = normalize(Vector3(0, 0, 1));
+			v4.normal = normalize(Vector3(0, 0, 1));
+
+			v5.normal = normalize(Vector3(0, 0, -1));
+			v6.normal = normalize(Vector3(0, 0, -1));
+			v7.normal = normalize(Vector3(0, 0, -1));
+			v8.normal = normalize(Vector3(0, 0, -1));
+
+			v1.texCoord = Vector2(0, 0);
+			v2.texCoord = Vector2(1, 0); 
+			v3.texCoord = Vector2(1, 1); 
+			v4.texCoord = Vector2(0, 1); 
+
+			v5.texCoord = Vector2(0, 0); 
+			v6.texCoord = Vector2(1, 0);
+			v7.texCoord = Vector2(1, 1);
+			v8.texCoord = Vector2(0, 1); 
+
+			_vertices = { v1,v2,v3, v4, v5, v6, v7, v8 };
 
 			_indices = {
 				0, 1, 2,

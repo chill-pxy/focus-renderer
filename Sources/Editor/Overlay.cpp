@@ -145,18 +145,6 @@ namespace FOCUS
                     _rhi->endRendering(_commandBuffers[index], renderInfo);
                     _rhi->endCommandBuffer(_commandBuffers[index]);
                 }
-
-                RenderSystem::getInstance()->_submitCommandBuffers.clear();
-                for (uint32_t i = 0; i < _commandBuffers.size(); ++i)
-                {
-                    RenderSystem::getInstance()->_submitCommandBuffers.push_back(_commandBuffers[i]);
-                }
-
-                RenderSystem::getInstance()->_submitCommandBuffers.push_back(
-                    RenderSystem::getInstance()->_renderer->_shadowCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
-
-                RenderSystem::getInstance()->_submitCommandBuffers.push_back(
-                    RenderSystem::getInstance()->_scene->_sceneCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
             }
             else
             {

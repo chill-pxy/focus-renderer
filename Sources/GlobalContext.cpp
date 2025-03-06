@@ -40,7 +40,7 @@ namespace FOCUS
 			{
 				RenderSystem::getInstance()->_submitCommandBuffers.clear();
 				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
-					RenderSystem::getInstance()->_renderer->_deffered->_commandBuffer);
+					RenderSystem::getInstance()->_renderer->_defferedCommandBuffer);
 
 				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
 					RenderSystem::getInstance()->_renderer->_shadowCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);

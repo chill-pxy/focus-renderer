@@ -24,8 +24,6 @@ namespace FOCUS
 		int _count = 0;
 
 	public:
-		std::shared_ptr<DRHI::DynamicRHI> _rhi;
-
 		DRHI::DynamicPipeline       _shadowPipeline{};
 		DRHI::DynamicPipelineLayout _shadowPipelineLayout{};
 
@@ -42,17 +40,15 @@ namespace FOCUS
 	public:
 		ShadowMap() = default;
 
-		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
+		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
 		{
-			_rhi = rhi;
-
-			auto api = _rhi->getCurrentAPI();
+			auto api = rhi->getCurrentAPI();
 			auto format = DRHI::DynamicFormat(api);
 			auto sampleCount = DRHI::DynamicSampleCountFlags(api);
 
 			// create uniform buffer
-			_rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(ShadowMapUniformBufferObject));
-			_descriptorBufferInfo.set(_rhi->getCurrentAPI(), _uniformBuffer, sizeof(ShadowMapUniformBufferObject));
+			rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(ShadowMapUniformBufferObject));
+			_descriptorBufferInfo.set(rhi->getCurrentAPI(), _uniformBuffer, sizeof(ShadowMapUniformBufferObject));
 
 			// create descriptor
 			auto descriptorType = DRHI::DynamicDescriptorType(api);
@@ -64,13 +60,13 @@ namespace FOCUS
 			dsbs[0].pImmutableSamplers = nullptr;
 			dsbs[0].stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
 
-			_rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
+			rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
 			std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(1);
 			poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			poolSizes[0].descriptorCount = 3;
 
-			_rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
+			rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
 			std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
 			wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -78,7 +74,7 @@ namespace FOCUS
 			wds[0].pBufferInfo = &_descriptorBufferInfo;
 			wds[0].descriptorCount = 1;
 
-			_rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 0);
+			rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 0);
 
 			// create pipeline
 			DRHI::DynamicPipelineCreateInfo pci = {};
@@ -100,9 +96,9 @@ namespace FOCUS
 			plci.setLayoutCount = 1;
 			plci.pushConstantRangeCount = 0;
 
-			_rhi->createPipelineLayout(&_shadowPipelineLayout, &plci);
+			rhi->createPipelineLayout(&_shadowPipelineLayout, &plci);
 			
-			_rhi->createPipeline(&_shadowPipeline, &_shadowPipelineLayout, pci);
+			rhi->createPipeline(&_shadowPipeline, &_shadowPipelineLayout, pci);
 		}
 
 		void updateUniform(UniformUpdateData& ubo)
@@ -122,12 +118,12 @@ namespace FOCUS
 
 		void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
 		{
-			auto api = _rhi->getCurrentAPI();
+			auto api = rhi->getCurrentAPI();
 			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
 
-			_rhi->cmdSetDepthBias(*commandBuffer, 0.5f, 0.0f, 2.0f);
-			_rhi->bindPipeline(_shadowPipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-			_rhi->bindDescriptorSets(&_descriptorSet, _shadowPipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			rhi->cmdSetDepthBias(*commandBuffer, 0.5f, 0.0f, 2.0f);
+			rhi->bindPipeline(_shadowPipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			rhi->bindDescriptorSets(&_descriptorSet, _shadowPipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 		}
 
 		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)

@@ -24,17 +24,9 @@ namespace FOCUS
         DRHI::DynamicPipelineLayout _pipelineLayout{};
 
         // G-buffer
-        DRHI::DynamicImage _normal{};
-        DRHI::DynamicImageView _normalView{};
-        DRHI::DynamicSampler _normalSampler{};
-        DRHI::DynamicDeviceMemory _normalMemory{};
-
         DRHI::DynamicImage _position{};
         DRHI::DynamicImageView _positionView{};
         DRHI::DynamicSampler _positionSampler{};
-
-        DRHI::DynamicCommandBuffer _commandBuffer{};
-        DRHI::DynamicCommandPool _commandPool{};
 
     private:
         void* _uniformBufferMapped{ nullptr };
@@ -45,10 +37,6 @@ namespace FOCUS
     public:
         void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
         {
-
-            rhi->createCommandPool(&_commandPool);
-            rhi->createCommandBuffer(&_commandBuffer, &_commandPool);
-
             auto api = rhi->getCurrentAPI();
             auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
             auto format = DRHI::DynamicFormat(api);
@@ -61,21 +49,6 @@ namespace FOCUS
             auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
             auto aspect = DRHI::DynamicImageAspectFlagBits(api);
             auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
-
-            rhi->createImage(&_normal, rhi->getSwapChainExtentWidth(), rhi->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
-            rhi->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
-            
-            auto bordercolor = DRHI::DynamicBorderColor(api);
-            auto addressmode = DRHI::DynamicSamplerAddressMode(api);
-            auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
-            DRHI::DynamicSamplerCreateInfo samplerInfo{};
-            samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-            samplerInfo.maxLod = 1;
-            samplerInfo.minLod = 0.0f;
-            samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
-            samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-
-            rhi->createSampler(&_normalSampler, samplerInfo);
 
             std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
             dsbs[0].binding = 0;
@@ -152,6 +125,16 @@ namespace FOCUS
             rhi->clearDescriptorSetLayout(&_descriptorSetLayout);
 
             rhi->clearPipeline(&_pipeline, &_pipelineLayout);
+        }
+
+        void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
+        {
+            auto api = rhi->getCurrentAPI();
+            auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+
+            rhi->cmdSetDepthBias(*commandBuffer, 0.5f, 0.0f, 2.0f);
+            rhi->bindPipeline(_pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+            rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
         }
 	};
 }

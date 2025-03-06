@@ -2,7 +2,7 @@
 
 namespace FOCUS
 {
-	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
+	void Mesh::build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
 	{
         if((_vertices.size() == 0) || (_indices.size() == 0)) return;
 
@@ -20,26 +20,34 @@ namespace FOCUS
 
         //initiailize shadow map
         _shadow = std::make_shared<ShadowMap>();
-        _shadow->initialize(rhi, commandPool);
+        _shadow->initialize(rhi);
+        
+        //initialize deffered
+        _deffered = std::make_shared<DefferedPipeline>();
+        _deffered->initialize(rhi);
 
         //build material
-        _material->build(rhi, commandPool, shadowImage, shadowImageView, shadowSampler);
+        _material->build(rhi, commandPool);
     }
 
-    void Mesh::draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool isShadowPass)
+    void Mesh::draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline)
     {
         if (!_indexBuffer.valid() || !_vertexBuffer.valid()) return;
 
         auto api = rhi->getCurrentAPI();
         auto indexType = DRHI::DynamicIndexType(api);
 
-        if(isShadowPass)
+        switch (pipeline)
         {
-            _shadow->draw(rhi, commandBuffer);
-        }  
-        else
-        {
+        case RenderResourcePipeline::SCENE:
             _material->draw(rhi, commandBuffer);
+            break;
+        case RenderResourcePipeline::SHADOW:
+            _shadow->draw(rhi, commandBuffer);
+            break;        
+        case RenderResourcePipeline::DEFFERED:
+            _deffered->draw(rhi, commandBuffer);
+            break;
         }
 
         rhi->bindVertexBuffers(&_vertexBuffer, commandBuffer);
@@ -77,6 +85,7 @@ namespace FOCUS
 
         uud.model = transMatrix * scaleMatrix * _rotation;
 
+        _deffered->updateUniformBuffer(uud);
         _shadow->updateUniform(uud);
         _material->updateUniformBuffer(uud);
     }

@@ -7,9 +7,7 @@
 
 #include"../../Core/Math.h"
 #include"RenderResource.h"
-#include"SkySphere.h"
 #include"SkyCube.h"
-#include"DefferedPipeline.h"
 
 namespace FOCUS
 {
@@ -22,8 +20,13 @@ namespace FOCUS
 		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers;
 		DRHI::DynamicCommandPool _commandPool;
 
+		// shadow command buffer
 		std::vector<DRHI::DynamicCommandBuffer> _shadowCommandBuffers;
 		DRHI::DynamicCommandPool _shadowCommandPool;
+
+		// deffered command buffer
+		DRHI::DynamicCommandBuffer _defferedCommandBuffer{};
+		DRHI::DynamicCommandPool _defferedCommandPool{};
 
 		// scene image
 		std::vector<DRHI::DynamicImage>* _viewportImages{nullptr};
@@ -41,8 +44,6 @@ namespace FOCUS
 		std::shared_ptr<SkyCube> _environmentMap{};
 		DRHI::DynamicCommandPool _environmentMapCommandPool{};
 
-		std::shared_ptr<DefferedPipeline> _deffered{};
-
 		bool _prepared = false;
 
 	private:	
@@ -54,6 +55,12 @@ namespace FOCUS
 
 		uint32_t _shadowDepthImageWidth{ 2048 };
 		uint32_t _shadowDepthImageHeight{ 2048 };
+
+		// members of deffered
+		DRHI::DynamicImage _normal{};
+		DRHI::DynamicImageView _normalView{};
+		DRHI::DynamicSampler _normalSampler{};
+		DRHI::DynamicDeviceMemory _normalMemory{};
 
 		// members of brdf lut
 		DRHI::DynamicImage        _brdflutImage{};

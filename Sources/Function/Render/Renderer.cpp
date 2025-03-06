@@ -30,54 +30,72 @@ namespace FOCUS
 		bool rayTracingMode = false;
 		_rhiContext->initialize(rayTracingMode);
 
-		_rhiContext->createCommandPool(&_shadowCommandPool);
-		_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
+		{
+			// initialize shadow map
+			_rhiContext->createCommandPool(&_shadowCommandPool);
+			_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
+			auto api = _rhiContext->getCurrentAPI();
+			auto format = DRHI::DynamicFormat(api);
+			auto tilling = DRHI::DynamicImageTiling(api);
+			auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
+			auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
+			auto aspect = DRHI::DynamicImageAspectFlagBits(api);
+			auto sampleCount = DRHI::DynamicSampleCountFlags(api);
 
-		// initialize shadow map
-		// create Depth image
-		auto api = _rhiContext->getCurrentAPI();
-		auto format = DRHI::DynamicFormat(api);
-		auto tilling = DRHI::DynamicImageTiling(api);
-		auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
-		auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
-		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
-		auto sampleCount = DRHI::DynamicSampleCountFlags(api);
+			_rhiContext->createImage(&_shadowImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_shadowImageMemory);
+			_rhiContext->createImageView(&_shadowImageView, &_shadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
 
-		_rhiContext->createImage(&_shadowImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT , memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_shadowImageMemory);
-		_rhiContext->createImageView(&_shadowImageView, &_shadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
+			auto borderColor = DRHI::DynamicBorderColor(api);
+			auto addressMode = DRHI::DynamicSamplerAddressMode(api);
+			DRHI::DynamicSamplerCreateInfo sci{};
+			sci.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+			sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			_rhiContext->createSampler(&_shadowSampler, sci);
 
-		// create sampler
-		auto borderColor = DRHI::DynamicBorderColor(api);
-		auto addressMode = DRHI::DynamicSamplerAddressMode(api);
-		DRHI::DynamicSamplerCreateInfo sci{};
-		sci.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		_rhiContext->createSampler(&_shadowSampler, sci);
+			// initialize deffered
+			_rhiContext->createCommandPool(&_defferedCommandPool);
+			_rhiContext->createCommandBuffer(&_defferedCommandBuffer, &_defferedCommandPool);
+
+			_rhiContext->createImage(&_normal, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
+			_rhiContext->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+
+			auto bordercolor = DRHI::DynamicBorderColor(api);
+			auto addressmode = DRHI::DynamicSamplerAddressMode(api);
+			auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
+			DRHI::DynamicSamplerCreateInfo samplerInfo{};
+			samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+			samplerInfo.maxLod = 1;
+			samplerInfo.minLod = 0.0f;
+			samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+			samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+			_rhiContext->createSampler(&_normalSampler, samplerInfo);
+		}
 
 		// prepare environment map
-		_rhiContext->createCommandPool(&_environmentMapCommandPool);
+		{
+			_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-		auto texture = loadCubeTexture("../../../Asset/Images/vsunset.ktx");
-		_filteredImageWidth = texture->_width;
-		_filteredImageHeight = texture->_height;
-		_environmentMap = std::make_shared<SkyCube>();
-		_environmentMap->initialize(_rhiContext, texture);
-		_environmentMap->build(_rhiContext, &_environmentMapCommandPool, _shadowImage, _shadowImageView, _shadowSampler);
+			auto texture = loadCubeTexture("../../../Asset/Images/vsunset.ktx");
+			_filteredImageWidth = texture->_width;
+			_filteredImageHeight = texture->_height;
+			_environmentMap = std::make_shared<SkyCube>();
+			_environmentMap->initialize(_rhiContext, texture);
+			_environmentMap->build(_rhiContext, &_environmentMapCommandPool);
+		}
 
-		// initialize deffered pipeline
-		_deffered = std::make_shared<DefferedPipeline>();
-		_deffered->initialize(_rhiContext);
-			
 		_prepared = true;
 
 		// precomputing
-		std::cout << "####################################################" << std::endl;
-		precomputeBRDFLUT();
-		std::cout << "####################################################" << std::endl;
-		precomputeIrradianceCube();
-		std::cout << "####################################################" << std::endl;
-		prefilterEnvironmentCube();
-		std::cout << "####################################################" << std::endl;
+		{
+			std::cout << "####################################################" << std::endl;
+			precomputeBRDFLUT();
+			std::cout << "####################################################" << std::endl;
+			precomputeIrradianceCube();
+			std::cout << "####################################################" << std::endl;
+			prefilterEnvironmentCube();
+			std::cout << "####################################################" << std::endl;
+		}
 
 		// init ray tracing
 		//_rhiContext->initRayTracing();
@@ -93,13 +111,20 @@ namespace FOCUS
 		{
 			p->_material->_brdfImageView = &_brdflutImageView;
 			p->_material->_brdfSampler = &_brdflutSampler;
+			
 			p->_material->_irradianceImageView = &_irradianceImageView;
 			p->_material->_irradianceSampler = &_irradianceSampler;
+			
 			p->_material->_filteredImageView = &_filteredImageView;
 			p->_material->_filteredImageSampler = &_filteredImageSampler;
-			p->_material->_normalImageView = &_deffered->_normalView;
-			p->_material->_normalSampler = &_deffered->_normalSampler;
-			p->build(_rhiContext, &_commandPool, _shadowImage, _shadowImageView, _shadowSampler);
+
+			p->_material->_shadowImageView = &_shadowImageView;
+			p->_material->_shadowSampler = &_shadowSampler;
+
+			p->_material->_normalImageView = &_normalView;
+			p->_material->_normalSampler = &_normalSampler;
+
+			p->build(_rhiContext, &_commandPool);
 		}
 
 		buildCommandBuffer();
@@ -193,7 +218,7 @@ namespace FOCUS
 			{
 				if (p->_castShadow)
 				{
-					p->draw(_rhiContext, &_shadowCommandBuffers[index], true);
+					p->draw(_rhiContext, &_shadowCommandBuffers[index], RenderResourcePipeline::SHADOW);
 				}
 			}
 
@@ -229,11 +254,11 @@ namespace FOCUS
 			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
 
 			// draw environment
-			_environmentMap->draw(_rhiContext, &_commandBuffers[index], false);
+			_environmentMap->draw(_rhiContext, &_commandBuffers[index], RenderResourcePipeline::SCENE);
 
 			for (auto p : _submitRenderlist)
 			{
-				p->draw(_rhiContext, &_commandBuffers[index], false);
+				p->draw(_rhiContext, &_commandBuffers[index], RenderResourcePipeline::SCENE);
 			}
 
 			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
@@ -251,22 +276,22 @@ namespace FOCUS
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
 
-		renderInfo.targetImage = &_deffered->_normal;
-		renderInfo.targetImageView = &_deffered->_normalView;
+		renderInfo.targetImage = &_normal;
+		renderInfo.targetImageView = &_normalView;
 		renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
 		renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
 		renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 
-		_rhiContext->beginCommandBuffer(_deffered->_commandBuffer);
-		_rhiContext->beginRendering(_deffered->_commandBuffer, renderInfo);
+		_rhiContext->beginCommandBuffer(_defferedCommandBuffer);
+		_rhiContext->beginRendering(_defferedCommandBuffer, renderInfo);
 
 		for (auto p : _submitRenderlist)
 		{
-			p->draw(_rhiContext, &_deffered->_commandBuffer, _deffered->_pipeline, _deffered->_pipelineLayout, _deffered->_descriptorSet);
+			p->draw(_rhiContext, &_defferedCommandBuffer, RenderResourcePipeline::DEFFERED);
 		}
 
-		_rhiContext->endRendering(_deffered->_commandBuffer, renderInfo);
-		_rhiContext->endCommandBuffer(_deffered->_commandBuffer);
+		_rhiContext->endRendering(_defferedCommandBuffer, renderInfo);
+		_rhiContext->endCommandBuffer(_defferedCommandBuffer);
 	}
 
 	void Renderer::precomputeBRDFLUT()

@@ -6,9 +6,17 @@
 
 #include"Materials/Material.h"
 #include"ShadowMap.h"
+#include"DefferedPipeline.h"
 
 namespace FOCUS
 {
+    enum RenderResourcePipeline
+    {
+        SCENE,
+        SHADOW,
+        DEFFERED
+    };
+
     class RenderResource
     {
     public:
@@ -22,6 +30,7 @@ namespace FOCUS
 
         std::shared_ptr<Material> _material{};
         std::shared_ptr<ShadowMap> _shadow{};
+        std::shared_ptr<DefferedPipeline> _deffered{};
 
         bool _castShadow{ true };
 
@@ -33,8 +42,8 @@ namespace FOCUS
     public:
         RenderResource() = default;
 
-        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler) = 0;
-        virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, bool isShadowPass) = 0;
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool) = 0;
+        virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline) = 0;
         virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, DRHI::DynamicPipeline pipeline, DRHI::DynamicPipelineLayout pipelineLayout, DRHI::DynamicDescriptorSet set) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
     };

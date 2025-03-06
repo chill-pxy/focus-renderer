@@ -47,7 +47,7 @@ namespace FOCUS
         PhysicalMaterial() {};
         PhysicalMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
 
-        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool, DRHI::DynamicImage shadowImage, DRHI::DynamicImageView shadowImageView, DRHI::DynamicSampler shadowSampler)
+        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
         {
             if (_built) return;
             auto api = rhi->getCurrentAPI();
@@ -143,8 +143,8 @@ namespace FOCUS
             dii[0].sampler = _textureSampler;
 
             dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
-            dii[1].imageView = shadowImageView;
-            dii[1].sampler = shadowSampler;
+            dii[1].imageView = *_shadowImageView;
+            dii[1].sampler = *_shadowSampler;
 
             dii[2].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             dii[2].imageView = *_brdfImageView;

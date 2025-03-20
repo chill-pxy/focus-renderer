@@ -18,7 +18,7 @@ float shadowMapping(sampler2D shadowMap, vec4 shadowCoord)
 	float cur_depth = shadowCoord.z;
 	if (cur_depth >= depth + 1e-3 )
 	{
-		return 0.1;
+		return 0.0;
 	}
 	else 
 	{
@@ -36,13 +36,13 @@ float PCF(sampler2D shadowMap, vec4 shadowCoord, float scale)
 
 	float shadowFactor = 0.0;
 	int count = 0;
-	int range = 1;
+	int range = 3;
 
 	for (int x = -range; x <= range; x++)
 	{
 		for (int y = -range; y <= range; y++)
 		{
-			shadowFactor += shadowMapping(shadowMap, shadowCoord);// , vec2(dx * x, dy * y));
+			shadowFactor += shadowMapping(shadowMap, vec4(shadowCoord.x + (x * dx), shadowCoord.y + (y*dy), shadowCoord.z, shadowCoord.w));// , vec2(dx * x, dy * y));
 			count++;
 		}
 	}

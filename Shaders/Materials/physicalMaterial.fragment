@@ -131,7 +131,7 @@ void main()
     //vec3 pointLight = calPointLight(color);
     //vec3 dirLight = calDirLight(color);
     
-    float shadow = PCFrandomSamples(shadowMap, fragShadowCoord / fragShadowCoord.w, 1.0);
+    float shadow = PCF(shadowMap, fragShadowCoord / fragShadowCoord.w, 10.0);
 
 	vec3 N = normalize(fragNormal);
 	vec3 V = normalize(fragViewPosition - fragPosition);

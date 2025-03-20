@@ -40,34 +40,34 @@ namespace FOCUS
 
 	// functions of halton sequence
 	//{
-		static double halton(int index, int base)
-		{
-			double f = 1.0;
-			double r = 0.0;
-			while (index > 0)
-			{
-				f /= base;
-				r += f * (index % base);
-				index /= base;
-			}
+		//static double halton(int index, int base)
+		//{
+		//	double f = 1.0;
+		//	double r = 0.0;
+		//	while (index > 0)
+		//	{
+		//		f /= base;
+		//		r += f * (index % base);
+		//		index /= base;
+		//	}
 
-			return r;
-		}
+		//	return r;
+		//}
 
-		std::vector<std::pair<double, double>> generateHaltonSequence(int count)
-		{
-			std::vector<std::pair<double, double>> sequence(count);
+		//std::vector<std::pair<double, double>> generateHaltonSequence(int count)
+		//{
+		//	std::vector<std::pair<double, double>> sequence(count);
 
-			int baseX = 2;
-			int baseY = 3;
+		//	int baseX = 2;
+		//	int baseY = 3;
 
-			for (int i = 0; i < count; ++i)
-			{
-				sequence[i].first = halton(i + 1, baseX);
-				sequence[i].second = halton(i + 1, baseY);
-			}
+		//	for (int i = 0; i < count; ++i)
+		//	{
+		//		sequence[i].first = halton(i + 1, baseX);
+		//		sequence[i].second = halton(i + 1, baseY);
+		//	}
 
-			return sequence;
-		}
+		//	return sequence;
+		//}
 	//}
 }

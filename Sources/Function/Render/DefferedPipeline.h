@@ -9,9 +9,9 @@ namespace FOCUS
 {
     typedef struct DefferedUniformBufferObject
     {
+        alignas(16) Matrix4 proj;
         alignas(16) Matrix4 model;
         alignas(16) Matrix4 view;
-        alignas(16) Matrix4 proj;
     } DefferedUniformBufferObject;
 
 	class DefferedPipeline

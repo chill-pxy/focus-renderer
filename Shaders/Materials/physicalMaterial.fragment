@@ -164,7 +164,7 @@ void main()
 	kD *= 1.0 - metallic;
 	vec3 ambient = (kD * diffuse + specular);
 
-	vec3 finalColor = ambient + Lo;
+	vec3 finalColor = specular + Lo;//ambient + Lo;
 
 	// Tone mapping
 	finalColor = Uncharted2Tonemap(finalColor * 4.5);

@@ -36,8 +36,8 @@ namespace FOCUS
         _camera->_rotation = Vector3(-9, -361, 0);
 
 		// prepare obj
-		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
-		//add(obj);
+		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
+		add(obj);
 
         auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
@@ -49,38 +49,38 @@ namespace FOCUS
         }
         add(obj2);
 
-        for (int i = 0; i < 10; ++i)
-        {
-            //for (int j = 0; j < 10; ++j)
-            {
-                auto sphere = std::make_shared<Sphere>();
-                auto texture = loadTexture("../../../Asset/Images/white.png");
-                sphere->_material = std::make_shared<PhysicalMaterial>(texture);
-                sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
-                sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
-                sphere->_scale = Vector3(10.0, 10.0, 10.0);
-                sphere->_position = Vector3(i * 25, 10.0, 0);
-                sphere->_name = "obj" + std::to_string(i);
-                add(sphere);
-            }
-        }
+        //for (int i = 0; i < 10; ++i)
+        //{
+        //    //for (int j = 0; j < 10; ++j)
+        //    {
+        //        auto sphere = std::make_shared<Sphere>();
+        //        auto texture = loadTexture("../../../Asset/Images/white.png");
+        //        sphere->_material = std::make_shared<PhysicalMaterial>(texture);
+        //        sphere->_material->_metallic = 0.1;// (clamp((float)i / (float)10, 0.005f, 1.0f));
+        //        sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
+        //        sphere->_scale = Vector3(10.0, 10.0, 10.0);
+        //        sphere->_position = Vector3(i * 25, 10.0, 0);
+        //        sphere->_name = "obj" + std::to_string(i);
+        //        add(sphere);
+        //    }
+        //}
 
        // auto cube = loadModel("../../../Asset/Models/box.obj");
        //add(cube);
 
-        auto teapot = loadModel("../../../Asset/Models/teapot.obj");
-        teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-        teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-        teapot->setPosition(Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
-        teapot->setScale(Vector3(10.0, 10.0, 10.0));
-        add(teapot);
+        //auto teapot = loadModel("../../../Asset/Models/teapot.obj");
+        //teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+        //teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+        //teapot->setPosition(Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
+        //teapot->setScale(Vector3(10.0, 10.0, 10.0));
+        //add(teapot);
 
-        auto sphere = loadModel("../../../Asset/Models/dragon.obj");
-        sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-        sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-        sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
-        sphere->setScale(Vector3(10.0, 10.0, 10.0));
-        add(sphere);
+        //auto sphere = loadModel("../../../Asset/Models/dragon.obj");
+        //sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+        //sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+        //sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
+        //sphere->setScale(Vector3(10.0, 10.0, 10.0));
+        //add(sphere);
 
         //auto box = std::make_shared<Box>();
         //auto texture2 = loadTexture("../../../Asset/Images/white.png");

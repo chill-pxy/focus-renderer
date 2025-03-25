@@ -62,3 +62,8 @@ namespace FOCUS
 		WindowSystemSingleton::getInstance()->close();
 	}
 }
+
+extern "C" __declspec(dllexport) int getSceneObjCount()
+{
+	return FOCUS::RenderSystemSingleton::getInstance()->_scene->_group.size();
+}

@@ -1,4 +1,10 @@
 #pragma once
+#ifdef FOCUS_EXPORT
+#define DLL_EXPORT __declspec(dllexport)
+#else
+#define DLL_EXPORT __declspec(dllimport)
+#endif
+
 #include<memory>
 
 #include"Platform/WindowSystem.h"
@@ -14,3 +20,5 @@ namespace FOCUS
 		void tick(bool* running);
 	};
 }
+
+extern "C" __declspec(dllexport) int getSceneObjCount();

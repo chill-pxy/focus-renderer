@@ -27,10 +27,3 @@ namespace FOCUS
 		}
 	};
 }
-
-extern "C"{
-	int fmcpTest(int v)
-	{
-		return v + 100;
-	}
-}

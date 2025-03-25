@@ -13,7 +13,7 @@ namespace FOCUS
 {
     void EngineUI::initialize()
     {
-        _rhi = RenderSystem::getInstance()->_renderer->_rhiContext;
+        _rhi = RenderSystemSingleton::getInstance()->_renderer->_rhiContext;
 
         _rhi->createCommandPool(&_commandPool);
         _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
@@ -79,7 +79,7 @@ namespace FOCUS
         setStyle();
 
         // Setup Platform/Renderer backends
-        ImGui_ImplWin32_Init(WindowSystem::getInstance()->getNativeWindow()->_hwnd);
+        ImGui_ImplWin32_Init(WindowSystemSingleton::getInstance()->getNativeWindow()->_hwnd);
 
         _backend = _rhi->getCurrentAPI();
 
@@ -111,7 +111,7 @@ namespace FOCUS
             }
         }
 
-        RenderSystem::getInstance()->_renderer->submitRenderTargetImage(&_viewportImages, &_viewportImageViews, &_viewportDepthImage, &_viewportDepthImageView);
+        RenderSystemSingleton::getInstance()->_renderer->submitRenderTargetImage(&_viewportImages, &_viewportImageViews, &_viewportDepthImage, &_viewportDepthImageView);
 
         _prepared = true;
     }
@@ -380,7 +380,7 @@ namespace FOCUS
             {
                 if (ImGui::Button("o"))
                 {
-                    WindowSystem::getInstance()->recoverWindow();
+                    WindowSystemSingleton::getInstance()->recoverWindow();
                     _isMaxSize = false;
                 }
             }
@@ -388,7 +388,7 @@ namespace FOCUS
             {
                 if (ImGui::Button("O"))
                 {
-                    WindowSystem::getInstance()->setMaxWindow();
+                    WindowSystemSingleton::getInstance()->setMaxWindow();
                     _isMaxSize = true;
                 }
             }
@@ -397,7 +397,7 @@ namespace FOCUS
             ImGui::SameLine(ImGui::GetWindowSize().x - 122);
             if (ImGui::Button("-"))
             {
-                WindowSystem::getInstance()->setMinWindow();
+                WindowSystemSingleton::getInstance()->setMinWindow();
             }
             ImGui::PopStyleVar();
 
@@ -413,7 +413,7 @@ namespace FOCUS
         ImGui::Text("--- World Objects list ---");
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.1f, 0.13f, 1.0f));
-        for (auto r : RenderSystem::getInstance()->_scene->_group)
+        for (auto r : RenderSystemSingleton::getInstance()->_scene->_group)
         {
             if (ImGui::Button(r->_name.c_str()))
             {
@@ -431,37 +431,37 @@ namespace FOCUS
     {
         // fps
         ImGui::Begin("Property");
-        ImGui::Text("%d fps", RenderSystem::getInstance()->_lastFPS);
+        ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
 
         // camera position
-        ImGui::Text("camera position x: %f", RenderSystem::getInstance()->_scene->_camera->_position.x);
-        ImGui::Text("camera position y: %f", RenderSystem::getInstance()->_scene->_camera->_position.y);
-        ImGui::Text("camera position z: %f", RenderSystem::getInstance()->_scene->_camera->_position.z);
+        ImGui::Text("camera position x: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.x);
+        ImGui::Text("camera position y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.y);
+        ImGui::Text("camera position z: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.z);
         
         // camera rotation
-        ImGui::Text("camera rotation x: %f", RenderSystem::getInstance()->_scene->_camera->_rotation.x);
-        ImGui::Text("camera rotation y: %f", RenderSystem::getInstance()->_scene->_camera->_rotation.y);
-        ImGui::Text("camera rotation z: %f", RenderSystem::getInstance()->_scene->_camera->_rotation.z);
+        ImGui::Text("camera rotation x: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.x);
+        ImGui::Text("camera rotation y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.y);
+        ImGui::Text("camera rotation z: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.z);
 
         //light color
-        ImGui::DragFloat("point color r", &RenderSystem::getInstance()->_scene->_pointLight->_color.x, 0.1f);
-        ImGui::DragFloat("point color g", &RenderSystem::getInstance()->_scene->_pointLight->_color.y, 0.1f);
-        ImGui::DragFloat("point color b", &RenderSystem::getInstance()->_scene->_pointLight->_color.z, 0.1f);
+        ImGui::DragFloat("point color r", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_color.x, 0.1f);
+        ImGui::DragFloat("point color g", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_color.y, 0.1f);
+        ImGui::DragFloat("point color b", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_color.z, 0.1f);
 
         // light strength
-        ImGui::DragFloat("point strength", &RenderSystem::getInstance()->_scene->_pointLight->_intensity, 0.1f);
+        ImGui::DragFloat("point strength", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_intensity, 0.1f);
 
         // dir light
-        ImGui::DragFloat("DirLight direction x", &RenderSystem::getInstance()->_scene->_dirLight->_position.x, 0.1f);
-        ImGui::DragFloat("DirLight direction y", &RenderSystem::getInstance()->_scene->_dirLight->_position.y, 0.1f);
-        ImGui::DragFloat("DirLight direction z", &RenderSystem::getInstance()->_scene->_dirLight->_position.z, 0.1f);
+        ImGui::DragFloat("DirLight direction x", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.x, 0.1f);
+        ImGui::DragFloat("DirLight direction y", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.y, 0.1f);
+        ImGui::DragFloat("DirLight direction z", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.z, 0.1f);
 
         //dir color
-        ImGui::DragFloat("DirLight color r", &RenderSystem::getInstance()->_scene->_dirLight->_color.x, 0.1f);
-        ImGui::DragFloat("DirLight color g", &RenderSystem::getInstance()->_scene->_dirLight->_color.y, 0.1f);
-        ImGui::DragFloat("DirLight color b", &RenderSystem::getInstance()->_scene->_dirLight->_color.z, 0.1f);
+        ImGui::DragFloat("DirLight color r", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_color.x, 0.1f);
+        ImGui::DragFloat("DirLight color g", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_color.y, 0.1f);
+        ImGui::DragFloat("DirLight color b", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_color.z, 0.1f);
 
-        ImGui::DragFloat("DirLight strength", &RenderSystem::getInstance()->_scene->_dirLight->_intensity, 0.1f);
+        ImGui::DragFloat("DirLight strength", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_intensity, 0.1f);
 
         // selected obj
         if (_currentObj != nullptr)
@@ -493,8 +493,8 @@ namespace FOCUS
             _viewportWidth = viewportPanelSize.x;
             _viewportHeight = viewportPanelSize.y;
 
-            RenderSystem::getInstance()->_scene->_canvasWidth = _viewportWidth;
-            RenderSystem::getInstance()->_scene->_canvasHeight = _viewportHeight;
+            RenderSystemSingleton::getInstance()->_scene->_canvasWidth = _viewportWidth;
+            RenderSystemSingleton::getInstance()->_scene->_canvasHeight = _viewportHeight;
         }
 
         ImGui::End();

@@ -9,6 +9,8 @@ file(GLOB_RECURSE INTERFACE_FILES "*.ixx")
 file(GLOB_RECURSE SOURCE_FILES "*.cpp")
 file(GLOB_RECURSE HEADER_FILES "*.h")
 
+add_compile_definitions(FOCUS_EXPORT)
+
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES})
 
 include_directories(${THIRD_PARTY_DIR}/ktx/include)
@@ -23,7 +25,7 @@ set(KTX_SOURCES
     ${KTX_DIR}/lib/filestream.c)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-add_library(${TARGET_NAME} ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES} ${KTX_SOURCES})
+add_library(${TARGET_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES} ${INTERFACE_FILES} ${KTX_SOURCES})
 
 set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME "engine")
 

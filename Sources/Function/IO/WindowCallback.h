@@ -8,38 +8,38 @@ namespace FOCUS
 {
 	void onRenderCanvasSizeChanged(uint32_t width, uint32_t height)
 	{
-		if (RenderSystem::getInstance()->_isInitialized)
+		if (RenderSystemSingleton::getInstance()->_isInitialized)
 		{
-			RenderSystem::getInstance()->_renderer->_prepared = false;
+			RenderSystemSingleton::getInstance()->_renderer->_prepared = false;
 
-			EngineUI::getInstance()->_prepared = false;
+			EngineUISingleton::getInstance()->_prepared = false;
 
-			RenderSystem::getInstance()->setSwapChainSize(width, height);
+			RenderSystemSingleton::getInstance()->setSwapChainSize(width, height);
 		}
 	}
 
 	void onWindowDestroy()
 	{
-		RenderSystem::getInstance()->clean();
+		RenderSystemSingleton::getInstance()->clean();
 	}
 
 	void onWindowClose()
 	{
-		WindowSystem::getInstance()->close();
+		WindowSystemSingleton::getInstance()->close();
 	}
 
 	void onWindowMaxSize()
 	{
-		WindowSystem::getInstance()->setMaxWindow();
+		WindowSystemSingleton::getInstance()->setMaxWindow();
 	}
 
 	void onWindowMinSize()
 	{
-		WindowSystem::getInstance()->setMinWindow();
+		WindowSystemSingleton::getInstance()->setMinWindow();
 	}
 
 	void onRecoverWindowSize()
 	{
-		WindowSystem::getInstance()->recoverWindow();
+		WindowSystemSingleton::getInstance()->recoverWindow();
 	}
 }

@@ -1,4 +1,9 @@
 #pragma once
+#ifdef FOCUS_EXPORT
+#define DLL_EXPORT __declspec(dllexport)
+#else
+#define DLL_EXPORT __declspec(dllimport)
+#endif
 
 #include<Windows.h>
 #include<memory>
@@ -25,9 +30,6 @@ namespace FOCUS
 		std::shared_ptr<DRHI::DynamicRHI> _rhi;
 		
 	public:
-		static std::shared_ptr<EngineUI> _instance;
-		static std::mutex _mutex;
-
 		std::vector<DRHI::DynamicImage> _viewportImages{};
 		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
 		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
@@ -50,23 +52,6 @@ namespace FOCUS
 		std::shared_ptr<RenderResource> _currentObj{nullptr};
 
 	public:
-		EngineUI(const EngineUI&) = delete;
-		EngineUI& operator=(const EngineUI&) = delete;
-
-		static std::shared_ptr<EngineUI> getInstance()
-		{
-			if (!_instance)
-			{
-				std::lock_guard<std::mutex> lock(_mutex);
-				if (!_instance)
-				{
-					_instance.reset(new EngineUI());
-				}
-			}
-
-			return _instance;
-		}
-
 		EngineUI() = default;
 
 		void draw();
@@ -82,5 +67,23 @@ namespace FOCUS
 		void showPropertyUI();
 		void showViewPortUI();
 		void showMenu(bool* running);
+	};
+
+	class DLL_EXPORT EngineUISingleton
+	{
+	public:
+		static EngineUI* getInstance()
+		{
+			static EngineUI instance;
+			return &instance;
+		}
+
+		EngineUISingleton(EngineUI&&) = delete;
+		EngineUISingleton(const EngineUI&) = delete;
+		void operator= (const EngineUI&) = delete;
+
+	protected:
+		EngineUISingleton() = default;
+		virtual ~EngineUISingleton() = default;
 	};
 }

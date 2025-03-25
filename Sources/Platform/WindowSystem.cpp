@@ -138,7 +138,7 @@ namespace FOCUS
 			UINT width = LOWORD(lParam);
 			UINT height = HIWORD(lParam);
 
-			WindowSystem::getInstance()->setWindowSize(width, height);
+			WindowSystemSingleton::getInstance()->setWindowSize(width, height);
 			onRenderCanvasSizeChanged(width, height);
 			break;
 		}
@@ -150,7 +150,7 @@ namespace FOCUS
 		case WM_KEYDOWN:
 		{
 			wchar_t key = (wchar_t)wParam;
-			onKeyDown(RenderSystem::getInstance()->_scene->_camera.get(), key);
+			onKeyDown(RenderSystemSingleton::getInstance()->_scene->_camera.get(), key);
 			break;
 		}
 
@@ -161,7 +161,7 @@ namespace FOCUS
 		case WM_KEYUP:
 		{
 			wchar_t key = (wchar_t)wParam;
-			onKeyUp(RenderSystem::getInstance()->_scene->_camera.get(), key);
+			onKeyUp(RenderSystemSingleton::getInstance()->_scene->_camera.get(), key);
 			break;
 		}
 
@@ -172,7 +172,7 @@ namespace FOCUS
 			float mouseX = (float)LOWORD(lParam);
 			float mouseY = (float)HIWORD(lParam);
 
-			onRightMouseButtonDown(RenderSystem::getInstance()->_scene->_camera.get(), mouseX, mouseY);
+			onRightMouseButtonDown(RenderSystemSingleton::getInstance()->_scene->_camera.get(), mouseX, mouseY);
 
 			break;
 		}
@@ -182,7 +182,7 @@ namespace FOCUS
 
 		case WM_RBUTTONUP:
 		{
-			onRightMouseButtonUp(RenderSystem::getInstance()->_scene->_camera.get());
+			onRightMouseButtonUp(RenderSystemSingleton::getInstance()->_scene->_camera.get());
 			break;
 		}
 
@@ -194,7 +194,7 @@ namespace FOCUS
 			float x = LOWORD(lParam);
 			float y = HIWORD(lParam);
 
-			onMouseMove(RenderSystem::getInstance()->_scene->_camera.get(), x, y);
+			onMouseMove(RenderSystemSingleton::getInstance()->_scene->_camera.get(), x, y);
 			break;
 		}
 

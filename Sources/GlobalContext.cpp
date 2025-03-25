@@ -10,23 +10,23 @@ namespace FOCUS
 		windowCreateInfo.width = 1280;
 		windowCreateInfo.height = 720;
 
-		WindowSystem::getInstance()->initialize(windowCreateInfo);
+		WindowSystemSingleton::getInstance()->initialize(windowCreateInfo);
 
 		// init render system
 		RenderSystemCreateInfo renderSystemCreateInfo{};
-		renderSystemCreateInfo.window = WindowSystem::getInstance()->getNativeWindow()->getRawWindow();
-		renderSystemCreateInfo.width = WindowSystem::getInstance()->getWindowWidth();
-		renderSystemCreateInfo.height = WindowSystem::getInstance()->getWindowHeight();
+		renderSystemCreateInfo.window = WindowSystemSingleton::getInstance()->getNativeWindow()->getRawWindow();
+		renderSystemCreateInfo.width = WindowSystemSingleton::getInstance()->getWindowWidth();
+		renderSystemCreateInfo.height = WindowSystemSingleton::getInstance()->getWindowHeight();
 
-		RenderSystem::getInstance()->initialize(renderSystemCreateInfo);
+		RenderSystemSingleton::getInstance()->initialize(renderSystemCreateInfo);
 
 		// init ui
-		EngineUI::getInstance()->initialize();
+		EngineUISingleton::getInstance()->initialize();
 
 
-		RenderSystem::getInstance()->_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, EngineUI::getInstance()));
-		RenderSystem::getInstance()->_recreateFunc.push_back(std::bind(&Renderer::recreate, RenderSystem::getInstance()->_renderer));
-		RenderSystem::getInstance()->build();
+		RenderSystemSingleton::getInstance()->_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, EngineUISingleton::getInstance()));
+		RenderSystemSingleton::getInstance()->_recreateFunc.push_back(std::bind(&Renderer::recreate, RenderSystemSingleton::getInstance()->_renderer));
+		RenderSystemSingleton::getInstance()->build();
 	}
 
 	void GlobalContext::tick(bool* running)
@@ -35,30 +35,30 @@ namespace FOCUS
 		{
 			if (!*running) break;
 			
-			EngineUI::getInstance()->tick(running);
-			if (!EngineUI::getInstance()->_isEmpty)
+			EngineUISingleton::getInstance()->tick(running);
+			if (!EngineUISingleton::getInstance()->_isEmpty)
 			{
-				RenderSystem::getInstance()->_submitCommandBuffers.clear();
-				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
-					RenderSystem::getInstance()->_renderer->_defferedCommandBuffer);
+				RenderSystemSingleton::getInstance()->_submitCommandBuffers.clear();
+				RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
+					RenderSystemSingleton::getInstance()->_renderer->_defferedCommandBuffer);
 
-				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
-					RenderSystem::getInstance()->_renderer->_shadowCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+				RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
+					RenderSystemSingleton::getInstance()->_renderer->_shadowCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
 
-				RenderSystem::getInstance()->_submitCommandBuffers.push_back(
-					RenderSystem::getInstance()->_scene->_sceneCommandBuffers[RenderSystem::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+				RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
+					RenderSystemSingleton::getInstance()->_scene->_sceneCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
 
-				for (uint32_t i = 0; i < EngineUI::getInstance()->_commandBuffers.size(); ++i)
+				for (uint32_t i = 0; i < EngineUISingleton::getInstance()->_commandBuffers.size(); ++i)
 				{
-					RenderSystem::getInstance()->_submitCommandBuffers.push_back(EngineUI::getInstance()->_commandBuffers[i]);
+					RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(EngineUISingleton::getInstance()->_commandBuffers[i]);
 				}
 			}
 
-			RenderSystem::getInstance()->tick(running);
-			WindowSystem::getInstance()->tick(running);
+			RenderSystemSingleton::getInstance()->tick(running);
+			WindowSystemSingleton::getInstance()->tick(running);
 		}
 
-		RenderSystem::getInstance()->clean();
-		WindowSystem::getInstance()->close();
+		RenderSystemSingleton::getInstance()->clean();
+		WindowSystemSingleton::getInstance()->close();
 	}
 }

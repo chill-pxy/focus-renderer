@@ -27,3 +27,15 @@ namespace FOCUS
 		}
 	};
 }
+
+extern "C" __declspec(dllexport) int getSceneObjCount()
+{
+	return FOCUS::RenderSystemSingleton::getInstance()->count;
+}
+
+extern "C" __declspec(dllexport) void run()
+{
+	FOCUS::Engine app;
+	app.initialize();
+	app.run();
+}

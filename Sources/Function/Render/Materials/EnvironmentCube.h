@@ -135,8 +135,8 @@ namespace FOCUS
 
             // create pipeline
             DRHI::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = "../../../Shaders/Materials/environmentCubeVertex.spv";
-            pci.fragmentShader = "../../../Shaders/Materials/environmentCubeFragment.spv";
+            pci.vertexShader = RESOURCE_PATH"Shaders/Materials/environmentCubeVertex.spv";
+            pci.fragmentShader = RESOURCE_PATH"Shaders/Materials/environmentCubeFragment.spv";
             pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();

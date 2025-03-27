@@ -1,7 +1,7 @@
 #pragma once
 
 #include<drhi.h>
-
+#include"../../../Core/Path.h"
 #include"../../../Core/Math.h"
 
 namespace FOCUS

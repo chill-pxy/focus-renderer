@@ -39,7 +39,7 @@ namespace FOCUS
 		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
 		//add(obj);
 
-        auto obj2 = loadModel("../../../Asset/Models/defaultPlaneW.obj");
+        auto obj2 = loadModel(RESOURCE_PATH"Asset/Models/defaultPlaneW.obj");//loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
         {
             m->_material->_metallic = 0.98;
@@ -54,7 +54,7 @@ namespace FOCUS
             //for (int j = 0; j < 10; ++j)
             {
                 auto sphere = std::make_shared<Sphere>();
-                auto texture = loadTexture("../../../Asset/Images/white.png");
+                auto texture = loadTexture(RESOURCE_PATH"Asset/Images/white.png");//loadTexture("../../../Asset/Images/white.png");
                 sphere->_material = std::make_shared<PhysicalMaterial>(texture);
                 sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
                 sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
@@ -68,14 +68,14 @@ namespace FOCUS
         //auto cube = loadModel("../../../Asset/Models/box.obj");
         //add(cube);
 
-        auto teapot = loadModel("../../../Asset/Models/teapot.obj");
+        auto teapot = loadModel(RESOURCE_PATH"Asset/Models/teapot.obj");//loadModel("../../../Asset/Models/teapot.obj");
         teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
         teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
         teapot->setPosition(Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
         teapot->setScale(Vector3(10.0, 10.0, 10.0));
         add(teapot);
 
-        auto sphere = loadModel("../../../Asset/Models/dragon.obj");
+        auto sphere = loadModel(RESOURCE_PATH"Asset/Models/dragon.obj");//loadModel("../../../Asset/Models/dragon.obj");
         sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
         sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
         sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));

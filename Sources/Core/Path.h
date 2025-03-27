@@ -1,0 +1,1 @@
+#define RESOURCE_PATH "E:\\project\\FOCUS/"

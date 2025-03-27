@@ -30,6 +30,7 @@ namespace FOCUS
 		std::vector<std::function<void()>>      _recreateFunc;
 		std::vector<DRHI::DynamicCommandBuffer> _submitCommandBuffers;
 
+		int count = 0;
 		uint32_t _frameCounter = 0;
 		uint32_t _lastFPS = 0;
 		float    _frameTimer = 1.0f;

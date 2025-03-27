@@ -11,6 +11,7 @@ namespace FOCUS
 {
 	void RenderSystem::initialize(RenderSystemCreateInfo rsci)
 	{
+		count++;
 		DRHI::PlatformInfo platformCI{};
 		platformCI.window = rsci.window;
 		platformCI.width = rsci.width;

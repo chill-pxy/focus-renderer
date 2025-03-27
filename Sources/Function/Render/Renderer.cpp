@@ -77,7 +77,7 @@ namespace FOCUS
 		{
 			_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-			auto texture = loadCubeTexture("../../../Asset/Images/vsunset.ktx");
+			auto texture = loadCubeTexture(RESOURCE_PATH"Asset/Images/vsunset.ktx");
 			_filteredImageWidth = texture->_width;
 			_filteredImageHeight = texture->_height;
 			_environmentMap = std::make_shared<SkyCube>();
@@ -438,8 +438,8 @@ namespace FOCUS
 		// pipeline
 		auto cullmode = DRHI::DynamicCullMode(api);
 		DRHI::DynamicPipelineCreateInfo pipelineci{};
-		pipelineci.vertexShader = "../../../Shaders/IBL/brdflutVertex.spv";
-		pipelineci.fragmentShader = "../../../Shaders/IBL/brdflutFragment.spv";
+		pipelineci.vertexShader = RESOURCE_PATH"Shaders/IBL/brdflutVertex.spv";
+		pipelineci.fragmentShader = RESOURCE_PATH"Shaders/IBL/brdflutFragment.spv";
 		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
@@ -743,8 +743,8 @@ namespace FOCUS
 		// pipeline
 		auto cullmode = DRHI::DynamicCullMode(api);
 		DRHI::DynamicPipelineCreateInfo pipelineci{};
-		pipelineci.vertexShader = "../../../Shaders/IBL/prefilterCubeVertex.spv";
-		pipelineci.fragmentShader = "../../../Shaders/IBL/irradianceCubeFragment.spv";
+		pipelineci.vertexShader = RESOURCE_PATH"Shaders/IBL/prefilterCubeVertex.spv";
+		pipelineci.fragmentShader = RESOURCE_PATH"Shaders/IBL/irradianceCubeFragment.spv";
 		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
@@ -1105,8 +1105,8 @@ namespace FOCUS
 		// pipeline
 		auto cullmode = DRHI::DynamicCullMode(api);
 		DRHI::DynamicPipelineCreateInfo pipelineci{};
-		pipelineci.vertexShader = "../../../Shaders/IBL/prefilterCubeVertex.spv";
-		pipelineci.fragmentShader = "../../../Shaders/IBL/prefilterEnvmapFragment.spv";
+		pipelineci.vertexShader = RESOURCE_PATH"Shaders/IBL/prefilterCubeVertex.spv";
+		pipelineci.fragmentShader = RESOURCE_PATH"Shaders/IBL/prefilterEnvmapFragment.spv";
 		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();

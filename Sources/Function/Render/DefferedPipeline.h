@@ -3,6 +3,7 @@
 #include<drhi.h>
 
 #include"../../Core/Math.h"
+#include"../../Core/Path.h"
 #include"Geometry/MeshVertex.h"
 
 namespace FOCUS
@@ -80,8 +81,8 @@ namespace FOCUS
 
             // create pipeline
             DRHI::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = "../../../Shaders/Deffered/normalVertex.spv";
-            pci.fragmentShader = "../../../Shaders/Deffered/normalFragment.spv";
+            pci.vertexShader = RESOURCE_PATH"Shaders/Deffered/normalVertex.spv";
+            pci.fragmentShader = RESOURCE_PATH"Shaders/Deffered/normalFragment.spv";
             pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();

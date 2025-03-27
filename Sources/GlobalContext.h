@@ -1,9 +1,4 @@
 #pragma once
-#ifdef FOCUS_EXPORT
-#define DLL_EXPORT __declspec(dllexport)
-#else
-#define DLL_EXPORT __declspec(dllimport)
-#endif
 
 #include<memory>
 
@@ -20,5 +15,3 @@ namespace FOCUS
 		void tick(bool* running);
 	};
 }
-
-extern "C" __declspec(dllexport) int getSceneObjCount();

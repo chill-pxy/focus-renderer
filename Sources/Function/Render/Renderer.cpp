@@ -58,6 +58,7 @@ namespace FOCUS
 
 			_rhiContext->createImage(&_normal, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
 			_rhiContext->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+			_rhiContext->createDepthStencil(&_depth, &_depthView, &_depthMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_1_BIT);
 
 			auto bordercolor = DRHI::DynamicBorderColor(api);
 			auto addressmode = DRHI::DynamicSamplerAddressMode(api);
@@ -279,6 +280,11 @@ namespace FOCUS
 		renderInfo.targetImage = &_normal;
 		renderInfo.targetImageView = &_normalView;
 		renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+		renderInfo.targetDepthImage = &_depth;
+		renderInfo.targetDepthImageView = &_depthView;
+		renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+		renderInfo.includeStencil = true;
+		renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
 		renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 

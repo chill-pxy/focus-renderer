@@ -11,7 +11,9 @@ namespace FOCUS
 	class GlobalContext
 	{
 	public:
+		bool _jobComplete{ false };
+
 		GlobalContext();
-		void tick(bool* running);
+		void tick(bool* running, bool* tempStop);
 	};
 }

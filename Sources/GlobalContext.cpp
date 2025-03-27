@@ -29,33 +29,38 @@ namespace FOCUS
 		RenderSystemSingleton::getInstance()->build();
 	}
 
-	void GlobalContext::tick(bool* running)
+	void GlobalContext::tick(bool* running, bool* tempStop)
 	{
 		while (running)
 		{
+			_jobComplete = false;
 			if (!*running) break;
 			
-			EngineUISingleton::getInstance()->tick(running);
-			if (!EngineUISingleton::getInstance()->_isEmpty)
+			if (*tempStop == false)
 			{
-				RenderSystemSingleton::getInstance()->_submitCommandBuffers.clear();
-				RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
-					RenderSystemSingleton::getInstance()->_renderer->_defferedCommandBuffer);
-
-				RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
-					RenderSystemSingleton::getInstance()->_renderer->_shadowCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
-
-				RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
-					RenderSystemSingleton::getInstance()->_scene->_sceneCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
-
-				for (uint32_t i = 0; i < EngineUISingleton::getInstance()->_commandBuffers.size(); ++i)
+				EngineUISingleton::getInstance()->tick(running);
+				if (!EngineUISingleton::getInstance()->_isEmpty)
 				{
-					RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(EngineUISingleton::getInstance()->_commandBuffers[i]);
-				}
-			}
+					RenderSystemSingleton::getInstance()->_submitCommandBuffers.clear();
+					RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
+						RenderSystemSingleton::getInstance()->_renderer->_defferedCommandBuffer);
 
-			RenderSystemSingleton::getInstance()->tick(running);
-			WindowSystemSingleton::getInstance()->tick(running);
+					RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
+						RenderSystemSingleton::getInstance()->_renderer->_shadowCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+
+					RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
+						RenderSystemSingleton::getInstance()->_scene->_sceneCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+
+					for (uint32_t i = 0; i < EngineUISingleton::getInstance()->_commandBuffers.size(); ++i)
+					{
+						RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(EngineUISingleton::getInstance()->_commandBuffers[i]);
+					}
+				}
+
+				RenderSystemSingleton::getInstance()->tick(running);
+				WindowSystemSingleton::getInstance()->tick(running);
+			}
+			_jobComplete = true;
 		}
 
 		RenderSystemSingleton::getInstance()->clean();

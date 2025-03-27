@@ -5,11 +5,11 @@ import Engine;
 
 int main()
 {
-    FOCUS::Engine app;
-    app.initialize();
+    auto app = FOCUS::EngineSingleton::getInstance();
+    app->initialize();
 
     try {
-        app.run();
+        app->run();
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

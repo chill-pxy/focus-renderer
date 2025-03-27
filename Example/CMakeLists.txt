@@ -4,6 +4,6 @@ project(simple)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(simple simple/main.cpp "simple/export.cpp")
+add_executable(simple simple/main.cpp)
 
 target_link_libraries(simple engine)

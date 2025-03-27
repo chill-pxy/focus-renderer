@@ -47,7 +47,7 @@ namespace FOCUS
             m->_castShadow = false;
             m->_scale = Vector3(0.1, 0.1, 0.1);
         }
-        add(obj2);
+        addModel(obj2);
 
         for (int i = 0; i < 10; ++i)
         {
@@ -66,21 +66,21 @@ namespace FOCUS
         }
 
         //auto cube = loadModel("../../../Asset/Models/box.obj");
-        //add(cube);
+        //add(cube); 
 
-        auto teapot = loadModel(RESOURCE_PATH"Asset/Models/teapot.obj");//loadModel("../../../Asset/Models/teapot.obj");
-        teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-        teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-        teapot->setPosition(Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
-        teapot->setScale(Vector3(10.0, 10.0, 10.0));
-        add(teapot);
+        //auto teapot = loadModel(RESOURCE_PATH"Asset/Models/teapot.obj");//loadModel("../../../Asset/Models/teapot.obj");
+        //teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+        //teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+        //teapot->setPosition(Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
+        //teapot->setScale(Vector3(10.0, 10.0, 10.0));
+        //add(teapot);
 
         auto sphere = loadModel(RESOURCE_PATH"Asset/Models/dragon.obj");//loadModel("../../../Asset/Models/dragon.obj");
         sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
         sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
         sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
         sphere->setScale(Vector3(10.0, 10.0, 10.0));
-        add(sphere);
+        addModel(sphere);
 
         //auto box = std::make_shared<Box>();
         //auto texture2 = loadTexture("../../../Asset/Images/white.png");
@@ -95,15 +95,19 @@ namespace FOCUS
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
 	{
+        //_mutex.lock();
 		_group.push_back(resource);
+        //_mutex.unlock();
 	}
 
-	void RenderScene::add(std::shared_ptr<Model> model)
+	void RenderScene::addModel(std::shared_ptr<Model> model)
 	{
+        //_mutex.lock();
 		for (auto mesh : model->_meshes)
 		{
 			_group.push_back(mesh);
 		}
+       // _mutex.unlock();
 	}
 
 	void RenderScene::tick(float frameTimer)

@@ -2,6 +2,7 @@
 
 #include<memory>
 #include<vector>
+#include<mutex>
 
 #include"Geometry/Model.h"
 #include"RenderResource.h"
@@ -18,7 +19,8 @@ namespace FOCUS
 		MaterialManager _materialManager;
 
 	public:
-		
+		std::mutex _mutex;
+
 		std::vector<DRHI::DynamicCommandBuffer> _sceneCommandBuffers;
 		DRHI::DynamicCommandPool _sceneCommandPool;
 
@@ -38,7 +40,7 @@ namespace FOCUS
 		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void prepareRenderResources(std::shared_ptr<DRHI::DynamicRHI> rhi);
 		void add(std::shared_ptr<RenderResource> resource);
-		void add(std::shared_ptr<Model> model);
+		void addModel(std::shared_ptr<Model> model);
 		void tick(float frameTimer);
 		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi);
 

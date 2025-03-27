@@ -78,7 +78,7 @@ namespace FOCUS
 
 			// create pipeline
 			DRHI::DynamicPipelineCreateInfo pci = {};
-			pci.vertexShader = "E:\\project\\FOCUS\\Shaders/Shadow/shadowMapVertex.spv";
+			pci.vertexShader = RESOURCE_PATH"Shaders/Shadow/shadowMapVertex.spv";
 			pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
 			pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
 			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();

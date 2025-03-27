@@ -34,20 +34,19 @@ namespace FOCUS
 			_globalContext.tick(&_running, &_tempStop);
 		}
 
-		bool stop()
+		void stop()
 		{
 			_tempStop = true;
-			while (_globalContext._jobComplete)
-			{
-				return true;   
-			}
-
-			return false;
 		}
 
 		void start()
 		{
 			_tempStop = false;
+		}
+
+		bool getJobState()
+		{
+			return _globalContext._jobComplete;
 		}
 	};
 

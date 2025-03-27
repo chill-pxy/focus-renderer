@@ -122,8 +122,12 @@ namespace FOCUS
 			p->_material->_shadowImageView = &_shadowImageView;
 			p->_material->_shadowSampler = &_shadowSampler;
 
-			p->_material->_normalImageView = &_normalView;
-			p->_material->_normalSampler = &_normalSampler;
+			{
+				p->_material->_gbuffer.normalImageView = &_normalView;
+				p->_material->_gbuffer.normalSampler = &_normalSampler;
+				p->_material->_gbuffer.depthImageView = &_depthView;
+				p->_material->_gbuffer.depthSampler = &_depthSampler;
+			}
 
 			p->build(_rhiContext, &_commandPool);
 		}

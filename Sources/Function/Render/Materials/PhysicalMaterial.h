@@ -159,8 +159,8 @@ namespace FOCUS
             dii[4].sampler = *_filteredImageSampler;
 
             dii[5].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii[5].imageView = *_normalImageView;
-            dii[5].sampler = *_normalSampler;
+            dii[5].imageView = *_gbuffer.normalImageView;
+            dii[5].sampler = *_gbuffer.normalSampler;
 
             std::vector<DRHI::DynamicWriteDescriptorSet> wds(7);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;

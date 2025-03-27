@@ -35,6 +35,14 @@ namespace FOCUS
  
     }UniformUpdateData;
 
+    typedef struct GBuffer
+    {
+        DRHI::DynamicImageView* normalImageView{ nullptr };
+        DRHI::DynamicSampler* normalSampler{ nullptr };
+        DRHI::DynamicImageView* depthImageView{ nullptr };
+        DRHI::DynamicSampler* depthSampler{ nullptr };
+    }GBuffer;
+
 	class Material
 	{
 	public:
@@ -43,8 +51,7 @@ namespace FOCUS
         DRHI::DynamicSampler      _textureSampler{};
         DRHI::DynamicDeviceMemory _textureMemory{};
 
-        DRHI::DynamicImageView* _normalImageView{ nullptr };
-        DRHI::DynamicSampler* _normalSampler{ nullptr };
+        GBuffer _gbuffer{};
 
         DRHI::DynamicImageView* _shadowImageView{ nullptr };
         DRHI::DynamicSampler* _shadowSampler{ nullptr };

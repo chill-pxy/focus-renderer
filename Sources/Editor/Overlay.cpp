@@ -433,19 +433,6 @@ namespace FOCUS
         ImGui::Begin("Property");
         ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
 
-        if (ImGui::Button("Load OBJ"))
-        {
-            auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
-            auto teapot = scene->loadModel(RESOURCE_PATH"Asset/Models/teapot.obj");//loadModel("../../../Asset/Models/teapot.obj");
-            teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-            teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-            teapot->setPosition(FOCUS::Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
-            teapot->setScale(FOCUS::Vector3(10.0, 10.0, 10.0));
-
-            scene->addModel(teapot);
-            FOCUS::RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_group, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
-        }
-
         // camera position
         ImGui::Text("camera position x: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.x);
         ImGui::Text("camera position y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.y);

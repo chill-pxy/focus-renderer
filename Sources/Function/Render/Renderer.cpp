@@ -147,7 +147,7 @@ namespace FOCUS
 	{
 		if (_prepared)
 		{
-			defferedPass();
+			//defferedPass();
 			shadowPass();
 			scenePass();
 		}

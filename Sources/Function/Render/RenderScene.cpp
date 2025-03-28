@@ -49,21 +49,21 @@ namespace FOCUS
         }
         addModel(obj2);
 
-        for (int i = 0; i < 10; ++i)
-        {
-            //for (int j = 0; j < 10; ++j)
-            {
-                auto sphere = std::make_shared<Sphere>();
-                auto texture = loadTexture(RESOURCE_PATH"Asset/Images/white.png");//loadTexture("../../../Asset/Images/white.png");
-                sphere->_material = std::make_shared<PhysicalMaterial>(texture);
-                sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
-                sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
-                sphere->_scale = Vector3(10.0, 10.0, 10.0);
-                sphere->_position = Vector3(i * 25, 10.0, 0);
-                sphere->_name = "obj" + std::to_string(i);
-                add(sphere);
-            }
-        }
+        //for (int i = 0; i < 10; ++i)
+        //{
+        //    //for (int j = 0; j < 10; ++j)
+        //    {
+        //        auto sphere = std::make_shared<Sphere>();
+        //        auto texture = loadTexture(RESOURCE_PATH"Asset/Images/white.png");//loadTexture("../../../Asset/Images/white.png");
+        //        sphere->_material = std::make_shared<PhysicalMaterial>(texture);
+        //        sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
+        //        sphere->_material->_roughness = 1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
+        //        sphere->_scale = Vector3(10.0, 10.0, 10.0);
+        //        sphere->_position = Vector3(i * 25, 10.0, 0);
+        //        sphere->_name = "obj" + std::to_string(i);
+        //        add(sphere);
+        //    }
+        //}
 
         //auto cube = loadModel("../../../Asset/Models/box.obj");
         //add(cube); 

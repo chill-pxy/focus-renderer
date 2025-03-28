@@ -42,8 +42,8 @@ namespace FOCUS
 				if (!EngineUISingleton::getInstance()->_isEmpty)
 				{
 					RenderSystemSingleton::getInstance()->_submitCommandBuffers.clear();
-					RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
-						RenderSystemSingleton::getInstance()->_renderer->_defferedCommandBuffer);
+					//RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
+						//RenderSystemSingleton::getInstance()->_renderer->_defferedCommandBuffer);
 
 					RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
 						RenderSystemSingleton::getInstance()->_renderer->_shadowCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);

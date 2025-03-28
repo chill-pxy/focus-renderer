@@ -41,7 +41,7 @@ extern "C" __declspec(dllexport) const char* getModelPathList()
 	return list;
 }
 
-extern "C" __declspec(dllexport) void plantObj(const char* path)
+extern "C" __declspec(dllexport) void plantObj(const char* path, const char* name)
 {
 	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
 	auto obj = scene->loadModel(path);
@@ -63,4 +63,28 @@ extern "C" __declspec(dllexport) void plantObj(const char* path)
 	}
 			
 	FOCUS::EngineSingleton::getInstance()->start();
+}
+
+extern "C" __declspec(dllexport) void changeObjPosition(const char* name, float x, float y, float z)
+{
+	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
+	for (auto obj : scene->_group)
+	{
+		if (strcmp(name, obj->_name.c_str()) == 0)
+		{
+			obj->_position = FOCUS::Vector3(x, y, z);
+		}
+	}
+}
+
+extern "C" __declspec(dllexport) void changeObjScale(const char* name, float x, float y, float z)
+{
+	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
+	for (auto obj : scene->_group)
+	{
+		if (strcmp(name, obj->_name.c_str()) == 0)
+		{
+			obj->_scale = FOCUS::Vector3(x, y, z);
+		}
+	}
 }

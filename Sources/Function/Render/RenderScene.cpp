@@ -36,8 +36,8 @@ namespace FOCUS
         _camera->_rotation = Vector3(-9, -361, 0);
 
 		// prepare obj
-		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
-		//add(obj);
+		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
+		addModel(obj);
 
         auto obj2 = loadModel(RESOURCE_PATH"Asset/Models/defaultPlaneW.obj");//loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)
@@ -75,12 +75,12 @@ namespace FOCUS
         //teapot->setScale(Vector3(10.0, 10.0, 10.0));
         //add(teapot);
 
-        auto sphere = loadModel(RESOURCE_PATH"Asset/Models/dragon.obj");//loadModel("../../../Asset/Models/dragon.obj");
-        sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-        sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-        sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
-        sphere->setScale(Vector3(10.0, 10.0, 10.0));
-        addModel(sphere);
+        //auto sphere = loadModel(RESOURCE_PATH"Asset/Models/dragon.obj");//loadModel("../../../Asset/Models/dragon.obj");
+        //sphere->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
+        //sphere->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
+        //sphere->setPosition(Vector3(-80.0, 30.0, 0.0));// (Vector3(30 * i, 10, 0));
+        //sphere->setScale(Vector3(10.0, 10.0, 10.0));
+        //addModel(sphere);
 
         //auto box = std::make_shared<Box>();
         //auto texture2 = loadTexture("../../../Asset/Images/white.png");
@@ -203,11 +203,36 @@ namespace FOCUS
 
                 model->_materials.push_back(material);
             }
+            else
+            {
+                std::shared_ptr<Texture> texture = loadTexture(RESOURCE_PATH"Asset/Images/white.png");
+                material = _materialManager.createMaterial(mat.name, texture);
+
+                material->_name = mat.name;
+                material->_ambient = mat.ambient[0];
+                material->_diffuse = mat.diffuse[0];
+                material->_specular = mat.specular[0];
+                material->_roughness = shininessToRoughness(mat.shininess);
+                material->_shinness = mat.shininess;
+                material->_ior = mat.ior;
+                material->_metallic = mat.metallic;
+
+                material->_ambientTex = mat.ambient_texname;
+                material->_diffuseTex = mat.diffuse_texname;
+                material->_specularTex = mat.specular_texname;
+
+                model->_materials.push_back(material);
+            }
         }
 
         // handle every shape
         std::vector<std::vector<tinyobj::index_t>> allSubFace;
+        std::vector<std::string> name;
+        std::unordered_map<std::string, int> nameTable{};
+        
         allSubFace.resize(materials.size());
+        name.resize(materials.size());
+        
 
         for (uint32_t i = 0; i < shapes.size(); ++i)
         {
@@ -224,6 +249,19 @@ namespace FOCUS
                 subIdx.push_back(shapes[i].mesh.indices[indexOffset++]);
                 subIdx.push_back(shapes[i].mesh.indices[indexOffset++]);
                 subIdx.push_back(shapes[i].mesh.indices[indexOffset++]);
+                if (name[materialIndex] == "")
+                {
+                    if (nameTable.find(shapes[i].name) != nameTable.end())
+                    {
+                        nameTable[shapes[i].name] = 1;
+                        name[materialIndex] = shapes[i].name;
+                    }
+                    else
+                    {
+                        nameTable[shapes[i].name] = nameTable[shapes[i].name] + 1;
+                        name[materialIndex] = shapes[i].name + std::to_string(nameTable[shapes[i].name]);
+                    }                    
+                }
             }
         }
 
@@ -282,12 +320,12 @@ namespace FOCUS
             mesh->_indices = indices;
             mesh->_vertices = vertices;
             mesh->_material = model->_materials[count];
-            mesh->_name = model->_materials[count]->_name;
+            mesh->_name = name[count];
             mesh->_scale = Vector3(0.1, 0.1, 0.1);
 
             model->_meshes.push_back(mesh);
 
-            if (count != model->_materials.size() - 1)
+            if (count < model->_materials.size())
             {
                 count++;
             }

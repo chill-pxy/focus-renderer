@@ -28,21 +28,35 @@ extern "C" __declspec(dllexport) int getSceneObjCount()
 	return FOCUS::RenderSystemSingleton::getInstance()->_scene->_group.size();
 }
 
-extern "C" __declspec(dllexport) void plantObj()
+extern "C" __declspec(dllexport) const char** getModelPathList()
+{
+	const char* list[5] = {
+		RESOURCE_PATH"Asset/Models/teapot.obj",
+		RESOURCE_PATH"Asset/Models/cube.obj",
+		RESOURCE_PATH"Asset/Models/dragon.obj",
+		RESOURCE_PATH"Asset/Models/sphere.obj",
+		RESOURCE_PATH"Asset/Models/viking_room.obj",
+	};
+
+	return list;
+}
+
+extern "C" __declspec(dllexport) void plantObj(const char* path, const char* name = "default obj")
 {
 	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
-	auto teapot = scene->loadModel(RESOURCE_PATH"Asset/Models/teapot.obj");//loadModel("../../../Asset/Models/teapot.obj");
-	teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
-	teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-	teapot->setPosition(FOCUS::Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
-	teapot->setScale(FOCUS::Vector3(10.0, 10.0, 10.0));
+	auto obj = scene->loadModel(path);
+	obj->setMetallic(0.987);
+	obj->setRoughness(0.012);
+	obj->setPosition(FOCUS::Vector3(0.0, 0.0, 0.0));
+	obj->setScale(FOCUS::Vector3(10.0, 10.0, 10.0));
 
+	//for thread safe, sumbit after engine stop committing commands
 	FOCUS::EngineSingleton::getInstance()->stop();
 	while (1)
 	{
 		if (FOCUS::EngineSingleton::getInstance()->getJobState())
 		{
-			scene->addModel(teapot);
+			scene->addModel(obj);
 			FOCUS::RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_group, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
 			break;
 		}

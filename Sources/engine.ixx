@@ -28,20 +28,20 @@ extern "C" __declspec(dllexport) int getSceneObjCount()
 	return FOCUS::RenderSystemSingleton::getInstance()->_scene->_group.size();
 }
 
-extern "C" __declspec(dllexport) const char** getModelPathList()
+extern "C" __declspec(dllexport) const char* getModelPathList()
 {
-	const char* list[5] = {
-		RESOURCE_PATH"Asset/Models/teapot.obj",
-		RESOURCE_PATH"Asset/Models/cube.obj",
-		RESOURCE_PATH"Asset/Models/dragon.obj",
-		RESOURCE_PATH"Asset/Models/sphere.obj",
-		RESOURCE_PATH"Asset/Models/viking_room.obj",
-	};
+	const char* list =
+		RESOURCE_PATH"Asset/Models/teapot.obj"
+		RESOURCE_PATH"Asset/Models/cube.obj"
+		RESOURCE_PATH"Asset/Models/dragon.obj"
+		RESOURCE_PATH"Asset/Models/sphere.obj"
+		RESOURCE_PATH"Asset/Models/viking_room.obj"
+	;
 
 	return list;
 }
 
-extern "C" __declspec(dllexport) void plantObj(const char* path, const char* name = "default obj")
+extern "C" __declspec(dllexport) void plantObj(const char* path)
 {
 	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
 	auto obj = scene->loadModel(path);

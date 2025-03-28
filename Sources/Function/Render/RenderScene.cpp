@@ -36,8 +36,8 @@ namespace FOCUS
         _camera->_rotation = Vector3(-9, -361, 0);
 
 		// prepare obj
-		auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
-		addModel(obj);
+		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
+		//addModel(obj);
 
         auto obj2 = loadModel(RESOURCE_PATH"Asset/Models/defaultPlaneW.obj");//loadModel("../../../Asset/Models/defaultPlaneW.obj");
         for (auto& m : obj2->_meshes)

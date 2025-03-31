@@ -77,7 +77,7 @@ namespace focus
 		{
 			_rhiContext->createCommandPool(&_environmentMapCommandPool);
 
-			auto texture = loadCubeTexture(RESOURCE_PATH"Asset/Images/vsunset.ktx");
+			auto texture = loadCubeTexture(RESOURCE_PATH"Asset/Images/hall.ktx");
 			_filteredImageWidth = texture->_width;
 			_filteredImageHeight = texture->_height;
 			_environmentMap = std::make_shared<SkyCube>();
@@ -163,6 +163,16 @@ namespace focus
 
 		_rhiContext->freeCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
 		_rhiContext->destroyCommandPool(&_shadowCommandPool);
+
+		// deffered
+		_rhiContext->clearImage(&_normalView, &_normal, &_normalMemory);
+		_rhiContext->clearSampler(&_normalSampler);
+
+		_rhiContext->clearImage(&_depthView, &_depth, &_depthMemory);
+		_rhiContext->clearSampler(&_depthSampler);
+
+		_rhiContext->freeCommandBuffer(&_defferedCommandBuffer, & _defferedCommandPool);
+		_rhiContext->destroyCommandPool(&_defferedCommandPool);
 
 		// environment
 		_environmentMap->clean(_rhiContext);
@@ -511,7 +521,7 @@ namespace focus
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
 
-		uint32_t texSize = 64;
+		uint32_t texSize = 512;
 		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
 
 		auto api = _rhiContext->getCurrentAPI();
@@ -877,7 +887,7 @@ namespace focus
 	{
 		auto tStart = std::chrono::high_resolution_clock::now();
 
-		uint32_t texSize = 512;
+		uint32_t texSize = 1024;
 		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
 
 		auto api = _rhiContext->getCurrentAPI();

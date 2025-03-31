@@ -27,6 +27,7 @@ namespace focus
 			__super::clean(rhi);
 			_shadow->clean(rhi);
 			_material->clean(rhi);
+			_deffered->clean(rhi);
 		}
 	};
 }

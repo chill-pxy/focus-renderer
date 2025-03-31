@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-project(FOCUS)
+project(focus)
 
 set(ENGINE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Sources)
 set(PLATFORM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Platform)

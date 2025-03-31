@@ -177,6 +177,7 @@ namespace focus
         showSceneUI();
         showPropertyUI();
         showViewPortUI();
+        showInfoUI();
 
         ImGui::Render();
 
@@ -346,20 +347,20 @@ namespace focus
 
         if (ImGui::BeginMainMenuBar())
         {
-            if (ImGui::BeginMenu("File"))
+            if (ImGui::BeginMenu("Start"))
             {
                 if (ImGui::MenuItem("Create"))
                 {
                 }
-                if (ImGui::MenuItem("Open", "Ctrl+O"))
+
+                if (ImGui::MenuItem("Exit"))
                 {
+                    ImGui::EndMenu();
+                    clean();
+                    *running = false;
+                    return;
                 }
-                if (ImGui::MenuItem("Save", "Ctrl+S"))
-                {
-                }
-                if (ImGui::MenuItem("Save as.."))
-                {
-                }
+
                 ImGui::EndMenu();
             }
 
@@ -429,15 +430,35 @@ namespace focus
 
     void EngineUI::showPropertyUI()
     {
-        // fps
         ImGui::Begin("Property");
+        
+        // selected obj
+        if (_currentObj != nullptr)
+        {
+            ImGui::Text(_currentObj->_name.c_str());
+            ImGui::DragFloat("Position X", &_currentObj->_position.x, 0.1f);
+            ImGui::DragFloat("Position Y", &_currentObj->_position.y, 0.1f);
+            ImGui::DragFloat("Position Z", &_currentObj->_position.z, 0.1f);
+
+            ImGui::DragFloat("Scale X", &_currentObj->_scale.x, 0.1f);
+            ImGui::DragFloat("Scale Y", &_currentObj->_scale.y, 0.1f);
+            ImGui::DragFloat("Scale Z", &_currentObj->_scale.z, 0.1f);
+        }
+       
+        ImGui::End();
+    }
+
+    void EngineUI::showInfoUI()
+    {
+        ImGui::Begin("Infomation");
+
         ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
 
         // camera position
         ImGui::Text("camera position x: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.x);
         ImGui::Text("camera position y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.y);
         ImGui::Text("camera position z: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.z);
-        
+
         // camera rotation
         ImGui::Text("camera rotation x: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.x);
         ImGui::Text("camera rotation y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.y);
@@ -462,20 +483,6 @@ namespace focus
         ImGui::DragFloat("DirLight color b", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_color.z, 0.1f);
 
         ImGui::DragFloat("DirLight strength", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_intensity, 0.1f);
-
-        // selected obj
-        if (_currentObj != nullptr)
-        {
-            ImGui::Text(_currentObj->_name.c_str());
-            ImGui::DragFloat("Position X", &_currentObj->_position.x, 0.1f);
-            ImGui::DragFloat("Position Y", &_currentObj->_position.y, 0.1f);
-            ImGui::DragFloat("Position Z", &_currentObj->_position.z, 0.1f);
-
-            ImGui::DragFloat("Scale X", &_currentObj->_scale.x, 0.1f);
-            ImGui::DragFloat("Scale Y", &_currentObj->_scale.y, 0.1f);
-            ImGui::DragFloat("Scale Z", &_currentObj->_scale.z, 0.1f);
-        }
-       
 
         ImGui::End();
     }

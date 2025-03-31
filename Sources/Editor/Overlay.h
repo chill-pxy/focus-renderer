@@ -66,6 +66,7 @@ namespace focus
 		void showSceneUI();
 		void showPropertyUI();
 		void showViewPortUI();
+		void showInfoUI();
 		void showMenu(bool* running);
 	};
 

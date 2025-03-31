@@ -11,7 +11,7 @@
 #include"RenderCamera.h"
 #include"Materials/MaterialManager.h"
 
-namespace FOCUS
+namespace focus
 {
 	class RenderScene
 	{
@@ -21,8 +21,8 @@ namespace FOCUS
 	public:
 		std::mutex _mutex;
 
-		std::vector<DRHI::DynamicCommandBuffer> _sceneCommandBuffers;
-		DRHI::DynamicCommandPool _sceneCommandPool;
+		std::vector<drhi::DynamicCommandBuffer> _sceneCommandBuffers;
+		drhi::DynamicCommandPool _sceneCommandPool;
 
 		std::vector<std::shared_ptr<RenderResource>> _group;
 		std::shared_ptr<PointLight> _pointLight;
@@ -37,12 +37,12 @@ namespace FOCUS
 	public:
 		RenderScene() = default;
 
-		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi);
-		void prepareRenderResources(std::shared_ptr<DRHI::DynamicRHI> rhi);
+		void initialize(std::shared_ptr<drhi::DynamicRHI> rhi);
+		void prepareRenderResources(std::shared_ptr<drhi::DynamicRHI> rhi);
 		void add(std::shared_ptr<RenderResource> resource);
 		void addModel(std::shared_ptr<Model> model);
 		void tick(float frameTimer);
-		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi);
+		void clean(std::shared_ptr<drhi::DynamicRHI> rhi);
 
 		std::shared_ptr<Model> loadModel(std::string modelPath);
 	};

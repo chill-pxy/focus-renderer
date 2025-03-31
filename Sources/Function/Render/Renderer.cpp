@@ -9,17 +9,17 @@
 #include"Renderer.h"
 #include"RenderResource.h"
 
-namespace FOCUS
+namespace focus
 {
-	Renderer::Renderer(DRHI::API api, DRHI::PlatformInfo platformCI)
+	Renderer::Renderer(drhi::API api, drhi::PlatformInfo platformCI)
 	{
 		switch (api)
 		{
 		default:
-		case DRHI::VULKAN:
-			DRHI::RHICreateInfo rhiCI{};
+		case drhi::VULKAN:
+			drhi::RHICreateInfo rhiCI{};
 			rhiCI.platformInfo = platformCI;
-			_rhiContext = std::make_shared<DRHI::VulkanDRHI>(rhiCI);
+			_rhiContext = std::make_shared<drhi::VulkanDRHI>(rhiCI);
 			break;
 		}
 	}
@@ -35,19 +35,19 @@ namespace FOCUS
 			_rhiContext->createCommandPool(&_shadowCommandPool);
 			_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
 			auto api = _rhiContext->getCurrentAPI();
-			auto format = DRHI::DynamicFormat(api);
-			auto tilling = DRHI::DynamicImageTiling(api);
-			auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
-			auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
-			auto aspect = DRHI::DynamicImageAspectFlagBits(api);
-			auto sampleCount = DRHI::DynamicSampleCountFlags(api);
+			auto format = drhi::DynamicFormat(api);
+			auto tilling = drhi::DynamicImageTiling(api);
+			auto useFlag = drhi::DynamicImageUsageFlagBits(api);
+			auto memoryFlag = drhi::DynamicMemoryPropertyFlags(api);
+			auto aspect = drhi::DynamicImageAspectFlagBits(api);
+			auto sampleCount = drhi::DynamicSampleCountFlags(api);
 
 			_rhiContext->createImage(&_shadowImage, _shadowDepthImageWidth, _shadowDepthImageHeight, format.FORMAT_D16_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_shadowImageMemory);
 			_rhiContext->createImageView(&_shadowImageView, &_shadowImage, format.FORMAT_D16_UNORM, aspect.IMAGE_ASPECT_DEPTH_BIT);
 
-			auto borderColor = DRHI::DynamicBorderColor(api);
-			auto addressMode = DRHI::DynamicSamplerAddressMode(api);
-			DRHI::DynamicSamplerCreateInfo sci{};
+			auto borderColor = drhi::DynamicBorderColor(api);
+			auto addressMode = drhi::DynamicSamplerAddressMode(api);
+			drhi::DynamicSamplerCreateInfo sci{};
 			sci.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 			sci.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 			_rhiContext->createSampler(&_shadowSampler, sci);
@@ -60,10 +60,10 @@ namespace FOCUS
 			_rhiContext->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
 			_rhiContext->createDepthStencil(&_depth, &_depthView, &_depthMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_1_BIT);
 
-			auto bordercolor = DRHI::DynamicBorderColor(api);
-			auto addressmode = DRHI::DynamicSamplerAddressMode(api);
-			auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
-			DRHI::DynamicSamplerCreateInfo samplerInfo{};
+			auto bordercolor = drhi::DynamicBorderColor(api);
+			auto addressmode = drhi::DynamicSamplerAddressMode(api);
+			auto mipmap = drhi::DynamicSamplerMipmapMode(api);
+			drhi::DynamicSamplerCreateInfo samplerInfo{};
 			samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 			samplerInfo.maxLod = 1;
 			samplerInfo.minLod = 0.0f;
@@ -102,7 +102,7 @@ namespace FOCUS
 		//_rhiContext->initRayTracing();
 	}
 
-	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool)
+	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<drhi::DynamicCommandBuffer>* commandBuffers, drhi::DynamicCommandPool* commandPool)
 	{
 		_submitRenderlist = *renderlist;
 		_commandBuffers = *commandBuffers;
@@ -135,7 +135,7 @@ namespace FOCUS
 		buildCommandBuffer();
 	}
 
-	void Renderer::submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews, DRHI::DynamicImage* depthImage, DRHI::DynamicImageView* depthImageView)
+	void Renderer::submitRenderTargetImage(std::vector<drhi::DynamicImage>* viewportImages, std::vector<drhi::DynamicImageView>* viewportImageViews, drhi::DynamicImage* depthImage, drhi::DynamicImageView* depthImageView)
 	{
 		_viewportImages = viewportImages;
 		_viewportImageViews = viewportImageViews;
@@ -198,10 +198,10 @@ namespace FOCUS
 	//-------------------------- private function ----------------------------
 	void Renderer::shadowPass()
 	{
-		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
-		auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
+		auto aspectFlag = drhi::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+		auto imageLayout = drhi::DynamicImageLayout(_rhiContext->getCurrentAPI());
 
-		DRHI::DynamicRenderingInfo renderInfo{};
+		drhi::DynamicRenderingInfo renderInfo{};
 		renderInfo.isRenderOnSwapChain = false;
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
@@ -234,10 +234,10 @@ namespace FOCUS
 
 	void Renderer::scenePass()
 	{
-		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
-		auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
+		auto aspectFlag = drhi::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+		auto imageLayout = drhi::DynamicImageLayout(_rhiContext->getCurrentAPI());
 
-		DRHI::DynamicRenderingInfo renderInfo{};
+		drhi::DynamicRenderingInfo renderInfo{};
 		renderInfo.isRenderOnSwapChain = false;
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
@@ -273,10 +273,10 @@ namespace FOCUS
 
 	void Renderer::defferedPass()
 	{
-		auto aspectFlag = DRHI::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
-		auto imageLayout = DRHI::DynamicImageLayout(_rhiContext->getCurrentAPI());
+		auto aspectFlag = drhi::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
+		auto imageLayout = drhi::DynamicImageLayout(_rhiContext->getCurrentAPI());
 
-		DRHI::DynamicRenderingInfo renderInfo{};
+		drhi::DynamicRenderingInfo renderInfo{};
 		renderInfo.isRenderOnSwapChain = false;
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
@@ -309,14 +309,14 @@ namespace FOCUS
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		auto api = _rhiContext->getCurrentAPI();
-		auto format = DRHI::DynamicFormat(api);
-		auto tilling = DRHI::DynamicImageTiling(api);
-		auto usage = DRHI::DynamicImageUsageFlagBits(api);
-		auto samples = DRHI::DynamicSampleCountFlags(api);
-		auto memory = DRHI::DynamicMemoryPropertyFlagBits(api);
-		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
-		auto bordercolor = DRHI::DynamicBorderColor(api);
-		auto addressmode = DRHI::DynamicSamplerAddressMode(api);
+		auto format = drhi::DynamicFormat(api);
+		auto tilling = drhi::DynamicImageTiling(api);
+		auto usage = drhi::DynamicImageUsageFlagBits(api);
+		auto samples = drhi::DynamicSampleCountFlags(api);
+		auto memory = drhi::DynamicMemoryPropertyFlagBits(api);
+		auto aspect = drhi::DynamicImageAspectFlagBits(api);
+		auto bordercolor = drhi::DynamicBorderColor(api);
+		auto addressmode = drhi::DynamicSamplerAddressMode(api);
 
 		uint32_t texSize = 512;
 
@@ -328,19 +328,19 @@ namespace FOCUS
 			_rhiContext->createImageView(&_brdflutImageView, &_brdflutImage, format.FORMAT_R16G16_SFLOAT, aspect.IMAGE_ASPECT_COLOR_BIT);
 
 			// create brdf lut image sampler
-			DRHI::DynamicSamplerCreateInfo sci{};
+			drhi::DynamicSamplerCreateInfo sci{};
 			sci.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 			sci.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 			_rhiContext->createSampler(&_brdflutSampler, sci);
 		}
 
 		// prepare resources for creating render pass
-		auto loadOp = DRHI::DynamicAttachmentLoadOp(api);
-		auto storeOp = DRHI::DynamicAttachmentStoreOp(api);
-		auto layout = DRHI::DynamicImageLayout(api);
+		auto loadOp = drhi::DynamicAttachmentLoadOp(api);
+		auto storeOp = drhi::DynamicAttachmentStoreOp(api);
+		auto layout = drhi::DynamicImageLayout(api);
 
 		// prepare for attachment
-		DRHI::DynamicAttachmentDescription ad{};
+		drhi::DynamicAttachmentDescription ad{};
 		ad.format = format.FORMAT_R16G16_SFLOAT;
 		ad.samples = samples.SAMPLE_COUNT_1_BIT;
 		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
@@ -350,20 +350,20 @@ namespace FOCUS
 		ad.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
 		ad.finalLayout = layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-		DRHI::DynamicAttachmentReference colorRef{};
+		drhi::DynamicAttachmentReference colorRef{};
 		colorRef.attachment = 0;
 		colorRef.layout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
-		DRHI::DynamicSubpassDescription subpassDescription{};
+		auto bindPoint = drhi::DynamicPipelineBindPoint(api);
+		drhi::DynamicSubpassDescription subpassDescription{};
 		subpassDescription.pipelineBindPoint = bindPoint.PIPELINE_BIND_POINT_GRAPHICS;
 		subpassDescription.colorAttachmentCount = 1;
 		subpassDescription.pColorAttachments = &colorRef;
 
-		auto stage = DRHI::DynamicPipelineStageFlags(api);
-		auto access = DRHI::DynamicAccessFlagBits(api);
-		auto dependcyFlag = DRHI::DynamicDependencyFlagBits(api);
-		std::vector<DRHI::DynamicSubpassDependency> dependencies{2};
+		auto stage = drhi::DynamicPipelineStageFlags(api);
+		auto access = drhi::DynamicAccessFlagBits(api);
+		auto dependcyFlag = drhi::DynamicDependencyFlagBits(api);
+		std::vector<drhi::DynamicSubpassDependency> dependencies{2};
 		dependencies[0].srcSubpass = ~0U;
 		dependencies[0].dstSubpass = 0;
 		dependencies[0].srcStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -381,7 +381,7 @@ namespace FOCUS
 		dependencies[1].dependencyFlags = dependcyFlag.DEPENDENCY_BY_REGION_BIT;
 
 		// create render pass
-		DRHI::DynamicRenderPassCreateInfo rpcreateInfo{};
+		drhi::DynamicRenderPassCreateInfo rpcreateInfo{};
 		rpcreateInfo.attachmentCount = 1;
 		rpcreateInfo.pAttachments = &ad;
 		rpcreateInfo.subpassCount = 1;
@@ -389,11 +389,11 @@ namespace FOCUS
 		rpcreateInfo.dependencyCount = 2;
 		rpcreateInfo.pDependencies = &dependencies;
 
-		DRHI::DynamicRenderPass renderPass{};
+		drhi::DynamicRenderPass renderPass{};
 		_rhiContext->createRenderPass(&renderPass, &rpcreateInfo);
 
 		// create framebuffer
-		DRHI::DynamicFramebufferCreateInfo fcreateInfo{};
+		drhi::DynamicFramebufferCreateInfo fcreateInfo{};
 		fcreateInfo.renderPass = renderPass;
 		fcreateInfo.attachmentCount = 1;
 		fcreateInfo.pAttachments = &_brdflutImageView;
@@ -401,34 +401,34 @@ namespace FOCUS
 		fcreateInfo.height = texSize;
 		fcreateInfo.layers = 1;
 
-		DRHI::DynamicFramebuffer framebuffer{};
+		drhi::DynamicFramebuffer framebuffer{};
 		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
 
 		// descriptors
-		DRHI::DynamicDescriptorSetLayout dsl{nullptr};
-		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> bindings{};
+		drhi::DynamicDescriptorSetLayout dsl{nullptr};
+		std::vector<drhi::DynamicDescriptorSetLayoutBinding> bindings{};
 		_rhiContext->createDescriptorSetLayout(&dsl, &bindings);
 
 		// descriptor pool
-		auto desciptorType = DRHI::DynamicDescriptorType(api);
-		std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes{ 1 };
+		auto desciptorType = drhi::DynamicDescriptorType(api);
+		std::vector<drhi::DynamicDescriptorPoolSize> poolSizes{ 1 };
 		poolSizes[0].descriptorCount = 1;
 		poolSizes[0].type = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-		DRHI::DynamicDescriptorPoolCreateInfo pci{};
+		drhi::DynamicDescriptorPoolCreateInfo pci{};
 		pci.pPoolSizes = &poolSizes;
 		pci.maxSets = 2;
 
-		DRHI::DynamicDescriptorPool desciptorPool;
+		drhi::DynamicDescriptorPool desciptorPool;
 		_rhiContext->createDescriptorPool(&desciptorPool, &pci);
 
 		// descriptor sets
-		DRHI::DynamicDescriptorSet desciptorSet;
+		drhi::DynamicDescriptorSet desciptorSet;
 		_rhiContext->createDescriptorSet(&desciptorSet, &dsl, &desciptorPool, nullptr, 1);
 
 		// pipeline layout
-		DRHI::DynamicPipelineLayout pipelineLayout{};
-		DRHI::DynamicPipelineLayoutCreateInfo plci{};
+		drhi::DynamicPipelineLayout pipelineLayout{};
+		drhi::DynamicPipelineLayoutCreateInfo plci{};
 		plci.pPushConstantRanges = 0;
 		plci.pushConstantRangeCount = 0;
 		plci.pSetLayouts = &dsl;
@@ -436,13 +436,13 @@ namespace FOCUS
 		_rhiContext->createPipelineLayout(&pipelineLayout, &plci);
 
 		// pipeline
-		auto cullmode = DRHI::DynamicCullMode(api);
-		DRHI::DynamicPipelineCreateInfo pipelineci{};
+		auto cullmode = drhi::DynamicCullMode(api);
+		drhi::DynamicPipelineCreateInfo pipelineci{};
 		pipelineci.vertexShader = RESOURCE_PATH"Shaders/IBL/brdflutVertex.spv";
 		pipelineci.fragmentShader = RESOURCE_PATH"Shaders/IBL/brdflutFragment.spv";
-		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+		pipelineci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
-		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+		pipelineci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();
 		pipelineci.colorImageFormat = format.FORMAT_R16G16_SFLOAT;
 		pipelineci.depthImageFormat = format.FORMAT_UNDEFINED;
 		pipelineci.includeStencil = false;
@@ -451,34 +451,34 @@ namespace FOCUS
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
 		pipelineci.renderPass = &renderPass;
 
-		DRHI::DynamicPipeline pipeline;
+		drhi::DynamicPipeline pipeline;
 		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
 
 		// start render
-		DRHI::DynamicRenderPassBeginInfo beginInfo{};
+		drhi::DynamicRenderPassBeginInfo beginInfo{};
 		beginInfo.framebuffer = framebuffer;
 		beginInfo.renderPass = renderPass;
 		beginInfo.renderArea.extent.width = texSize;
 		beginInfo.renderArea.extent.height = texSize;
 
-		DRHI::DynamicCommandBuffer commandBuffer{};
-		DRHI::DynamicCommandPool commandPool{};
+		drhi::DynamicCommandBuffer commandBuffer{};
+		drhi::DynamicCommandPool commandPool{};
 		_rhiContext->createCommandPool(&commandPool);
 		_rhiContext->createCommandBuffer(&commandBuffer, &commandPool);
 	
 		_rhiContext->beginCommandBuffer(commandBuffer);
 
-		auto content = DRHI::DynamicSubpassContents(api);
+		auto content = drhi::DynamicSubpassContents(api);
 		_rhiContext->beginRenderPass(&commandBuffer, &beginInfo, content.SUBPASS_CONTENTS_INLINE);
 		
-		DRHI::DynamicViewport viewport{};
+		drhi::DynamicViewport viewport{};
 		viewport.width = texSize;
 		viewport.height = texSize;
 		viewport.maxDepth = 1.0f;
 		viewport.minDepth = 0.0f;
 		_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
 
-		DRHI::DynamicRect2D scissor{};
+		drhi::DynamicRect2D scissor{};
 		scissor.extent.width = texSize;
 		scissor.extent.height = texSize;
 		scissor.offset.x = 0;
@@ -515,20 +515,20 @@ namespace FOCUS
 		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
 
 		auto api = _rhiContext->getCurrentAPI();
-		auto format = DRHI::DynamicFormat(api);
-		auto tilling = DRHI::DynamicImageTiling(api);
-		auto usage = DRHI::DynamicImageUsageFlagBits(api);
-		auto samples = DRHI::DynamicSampleCountFlags(api);
-		auto memory = DRHI::DynamicMemoryPropertyFlagBits(api);
-		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
-		auto bordercolor = DRHI::DynamicBorderColor(api);
-		auto addressmode = DRHI::DynamicSamplerAddressMode(api);
-		auto imageflags = DRHI::DynamicImageCreateFlags(api);
-		auto viewType = DRHI::DynamicImageViewType(api);
+		auto format = drhi::DynamicFormat(api);
+		auto tilling = drhi::DynamicImageTiling(api);
+		auto usage = drhi::DynamicImageUsageFlagBits(api);
+		auto samples = drhi::DynamicSampleCountFlags(api);
+		auto memory = drhi::DynamicMemoryPropertyFlagBits(api);
+		auto aspect = drhi::DynamicImageAspectFlagBits(api);
+		auto bordercolor = drhi::DynamicBorderColor(api);
+		auto addressmode = drhi::DynamicSamplerAddressMode(api);
+		auto imageflags = drhi::DynamicImageCreateFlags(api);
+		auto viewType = drhi::DynamicImageViewType(api);
 
 		// create irradiance image
 		{
-			DRHI::DynamicImageCreateInfo imageci{};
+			drhi::DynamicImageCreateInfo imageci{};
 			imageci.flags = imageflags.IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 			imageci.format = format.FORMAT_R32G32B32A32_SFLOAT;
 			imageci.extent.width = texSize;
@@ -542,7 +542,7 @@ namespace FOCUS
 			_rhiContext->createImage(&_irradianceImage, &_irradianceImageMemory, imageci, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 			// create irradiance image view
-			DRHI::DynamicImageViewCreateInfo vci{};
+			drhi::DynamicImageViewCreateInfo vci{};
 			vci.type = viewType.IMAGE_VIEW_TYPE_CUBE;
 			vci.format = format.FORMAT_R32G32B32A32_SFLOAT;
 			vci.image = _irradianceImage;
@@ -552,8 +552,8 @@ namespace FOCUS
 			_rhiContext->createImageView(&_irradianceImageView, &_irradianceImage, vci);
 
 			// create irradiance image sampler
-			auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
-			DRHI::DynamicSamplerCreateInfo sci{};
+			auto mipmap = drhi::DynamicSamplerMipmapMode(api);
+			drhi::DynamicSamplerCreateInfo sci{};
 			sci.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 			sci.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 			sci.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
@@ -563,10 +563,10 @@ namespace FOCUS
 		}
 
 		// attachment
-		auto loadOp = DRHI::DynamicAttachmentLoadOp(api);
-		auto storeOp = DRHI::DynamicAttachmentStoreOp(api);
-		auto layout = DRHI::DynamicImageLayout(api);
-		DRHI::DynamicAttachmentDescription ad{};
+		auto loadOp = drhi::DynamicAttachmentLoadOp(api);
+		auto storeOp = drhi::DynamicAttachmentStoreOp(api);
+		auto layout = drhi::DynamicImageLayout(api);
+		drhi::DynamicAttachmentDescription ad{};
 		ad.format = format.FORMAT_R32G32B32A32_SFLOAT;
 		ad.samples = samples.SAMPLE_COUNT_1_BIT;
 		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
@@ -576,22 +576,22 @@ namespace FOCUS
 		ad.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
 		ad.finalLayout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		DRHI::DynamicAttachmentReference ar{};
+		drhi::DynamicAttachmentReference ar{};
 		ar.attachment = 0;
 		ar.layout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		// subpass description
-		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
-		DRHI::DynamicSubpassDescription subpassDescription{};
+		auto bindPoint = drhi::DynamicPipelineBindPoint(api);
+		drhi::DynamicSubpassDescription subpassDescription{};
 		subpassDescription.pipelineBindPoint = bindPoint.PIPELINE_BIND_POINT_GRAPHICS;
 		subpassDescription.colorAttachmentCount = 1;
 		subpassDescription.pColorAttachments = &ar;
 
 		// subpass dependency
-		auto stage = DRHI::DynamicPipelineStageFlags(api);
-		auto access = DRHI::DynamicAccessFlagBits(api);
-		auto dependcyFlag = DRHI::DynamicDependencyFlagBits(api);
-		std::vector<DRHI::DynamicSubpassDependency> dependencies{ 2 };
+		auto stage = drhi::DynamicPipelineStageFlags(api);
+		auto access = drhi::DynamicAccessFlagBits(api);
+		auto dependcyFlag = drhi::DynamicDependencyFlagBits(api);
+		std::vector<drhi::DynamicSubpassDependency> dependencies{ 2 };
 		dependencies[0].srcSubpass = ~0U;
 		dependencies[0].dstSubpass = 0;
 		dependencies[0].srcStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -609,7 +609,7 @@ namespace FOCUS
 		dependencies[1].dependencyFlags = dependcyFlag.DEPENDENCY_BY_REGION_BIT;
 
 		// create render pass
-		DRHI::DynamicRenderPassCreateInfo rpcreateInfo{};
+		drhi::DynamicRenderPassCreateInfo rpcreateInfo{};
 		rpcreateInfo.attachmentCount = 1;
 		rpcreateInfo.pAttachments = &ad;
 		rpcreateInfo.subpassCount = 1;
@@ -617,16 +617,16 @@ namespace FOCUS
 		rpcreateInfo.dependencyCount = 2;
 		rpcreateInfo.pDependencies = &dependencies;
 
-		DRHI::DynamicRenderPass renderPass{};
+		drhi::DynamicRenderPass renderPass{};
 		_rhiContext->createRenderPass(&renderPass, &rpcreateInfo);
 
 		// create offscreen image
-		DRHI::DynamicImage        irradianceOffscreenImage{};
-		DRHI::DynamicDeviceMemory irradianceOffscreenImageMemory{};
-		DRHI::DynamicImageView    irradianceOffscreenImageView{};
-		DRHI::DynamicSampler      irradianceOffscreenSampler{};
+		drhi::DynamicImage        irradianceOffscreenImage{};
+		drhi::DynamicDeviceMemory irradianceOffscreenImageMemory{};
+		drhi::DynamicImageView    irradianceOffscreenImageView{};
+		drhi::DynamicSampler      irradianceOffscreenSampler{};
 
-		DRHI::DynamicImageCreateInfo ici{};
+		drhi::DynamicImageCreateInfo ici{};
 		ici.format = format.FORMAT_R32G32B32A32_SFLOAT;
 		ici.extent.width = texSize;
 		ici.extent.height = texSize;
@@ -639,7 +639,7 @@ namespace FOCUS
 		ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_SRC_BIT;
 		_rhiContext->createImage(&irradianceOffscreenImage, &irradianceOffscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		DRHI::DynamicImageViewCreateInfo ivci{};
+		drhi::DynamicImageViewCreateInfo ivci{};
 		ivci.format = format.FORMAT_R32G32B32A32_SFLOAT;
 		ivci.image = irradianceOffscreenImage;
 		ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
@@ -652,7 +652,7 @@ namespace FOCUS
 		_rhiContext->createImageView(&irradianceOffscreenImageView, &irradianceOffscreenImage, ivci);
 
 		// create framebuffer
-		DRHI::DynamicFramebufferCreateInfo fcreateInfo{};
+		drhi::DynamicFramebufferCreateInfo fcreateInfo{};
 		fcreateInfo.renderPass = renderPass;
 		fcreateInfo.attachmentCount = 1;
 		fcreateInfo.pAttachments = &irradianceOffscreenImageView;
@@ -660,15 +660,15 @@ namespace FOCUS
 		fcreateInfo.height = texSize;
 		fcreateInfo.layers = 1;
 
-		DRHI::DynamicFramebuffer framebuffer{};
+		drhi::DynamicFramebuffer framebuffer{};
 		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
 
 		// set image layout
-		DRHI::DynamicCommandPool commandPool{};
+		drhi::DynamicCommandPool commandPool{};
 		_rhiContext->createCommandPool(&commandPool);
 
 		// once commandbuffer
-		DRHI::DynamicCommandBuffer onceCmdBuf{};
+		drhi::DynamicCommandBuffer onceCmdBuf{};
 		_rhiContext->createCommandBuffer(&onceCmdBuf, &commandPool);
 
 		_rhiContext->beginCommandBuffer(onceCmdBuf);
@@ -678,10 +678,10 @@ namespace FOCUS
 		_rhiContext->flushCommandBuffer(onceCmdBuf, commandPool, true);
 
 		// descriptors
-		auto descriptorType = DRHI::DynamicDescriptorType(api);
-		auto stageFlags = DRHI::DynamicShaderStageFlags(api);
-		DRHI::DynamicDescriptorSetLayout dsl{ nullptr };
-		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
+		auto descriptorType = drhi::DynamicDescriptorType(api);
+		auto stageFlags = drhi::DynamicShaderStageFlags(api);
+		drhi::DynamicDescriptorSetLayout dsl{ nullptr };
+		std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(1);
 		dsbs[0].binding = 0;
 		dsbs[0].descriptorCount = 1;
 		dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -690,27 +690,27 @@ namespace FOCUS
 		_rhiContext->createDescriptorSetLayout(&dsl, &dsbs);
 
 		// descriptor pool
-		auto desciptorType = DRHI::DynamicDescriptorType(api);
-		std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes{ 1 };
+		auto desciptorType = drhi::DynamicDescriptorType(api);
+		std::vector<drhi::DynamicDescriptorPoolSize> poolSizes{ 1 };
 		poolSizes[0].descriptorCount = 1;
 		poolSizes[0].type = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-		DRHI::DynamicDescriptorPoolCreateInfo pci{};
+		drhi::DynamicDescriptorPoolCreateInfo pci{};
 		pci.pPoolSizes = &poolSizes;
 		pci.maxSets = 2;
 
-		DRHI::DynamicDescriptorPool desciptorPool;
+		drhi::DynamicDescriptorPool desciptorPool;
 		_rhiContext->createDescriptorPool(&desciptorPool, &pci);
 
 		// descriptor sets
-		DRHI::DynamicDescriptorSet desciptorSet;
+		drhi::DynamicDescriptorSet desciptorSet;
 
-		DRHI::DynamicDescriptorImageInfo dii{};
+		drhi::DynamicDescriptorImageInfo dii{};
 		dii.imageLayout = layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		dii.imageView = _environmentMap->_material->_textureImageView;
 		dii.sampler = _environmentMap->_material->_textureSampler;
 
-		std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
+		std::vector<drhi::DynamicWriteDescriptorSet> wds(1);
 		wds[0].descriptorType = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		wds[0].dstBinding = 0;
 		wds[0].descriptorCount = 1;
@@ -726,14 +726,14 @@ namespace FOCUS
 			float deltaTheta = (0.5f * float(PI) / 64.f);
 		}pushBlock;
 
-		auto pushStage = DRHI::DynamicShaderStageFlags(api);
-		DRHI::DynamicPushConstantRange pcr{};
+		auto pushStage = drhi::DynamicShaderStageFlags(api);
+		drhi::DynamicPushConstantRange pcr{};
 		pcr.stageFlags = pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT;
 		pcr.offset = 0;
 		pcr.size = sizeof(PushBlock);
 
-		DRHI::DynamicPipelineLayout pipelineLayout{};
-		DRHI::DynamicPipelineLayoutCreateInfo plci{};
+		drhi::DynamicPipelineLayout pipelineLayout{};
+		drhi::DynamicPipelineLayoutCreateInfo plci{};
 		plci.pPushConstantRanges = &pcr;
 		plci.pushConstantRangeCount = 1;
 		plci.pSetLayouts = &dsl;
@@ -741,13 +741,13 @@ namespace FOCUS
 		_rhiContext->createPipelineLayout(&pipelineLayout, &plci);
 
 		// pipeline
-		auto cullmode = DRHI::DynamicCullMode(api);
-		DRHI::DynamicPipelineCreateInfo pipelineci{};
+		auto cullmode = drhi::DynamicCullMode(api);
+		drhi::DynamicPipelineCreateInfo pipelineci{};
 		pipelineci.vertexShader = RESOURCE_PATH"Shaders/IBL/prefilterCubeVertex.spv";
 		pipelineci.fragmentShader = RESOURCE_PATH"Shaders/IBL/irradianceCubeFragment.spv";
-		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+		pipelineci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
-		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+		pipelineci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();
 		pipelineci.vertexInputAttributes.resize(1);
 		pipelineci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
 		pipelineci.colorImageFormat = format.FORMAT_R32G32B32A32_SFLOAT;
@@ -758,12 +758,12 @@ namespace FOCUS
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
 		pipelineci.renderPass = &renderPass;
 
-		DRHI::DynamicPipeline pipeline;
+		drhi::DynamicPipeline pipeline;
 		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
 
 		// rendering
-		auto content = DRHI::DynamicSubpassContents(api);
-		DRHI::DynamicRenderPassBeginInfo binfo{};
+		auto content = drhi::DynamicSubpassContents(api);
+		drhi::DynamicRenderPassBeginInfo binfo{};
 		binfo.framebuffer = framebuffer;
 		binfo.renderPass = renderPass;
 		binfo.renderArea.extent.width = texSize;
@@ -772,20 +772,20 @@ namespace FOCUS
 		binfo.renderArea.offset.y = 0;
 
 		// prepare command buffer
-		DRHI::DynamicCommandBuffer commandBuffer{};
+		drhi::DynamicCommandBuffer commandBuffer{};
 		_rhiContext->createCommandBuffer(&commandBuffer, &commandPool);
 
 		_rhiContext->beginCommandBuffer(commandBuffer);
 
 		// scissor
-		DRHI::DynamicViewport viewport{};
+		drhi::DynamicViewport viewport{};
 		viewport.width = texSize;
 		viewport.height = texSize;
 		viewport.maxDepth = 1.0f;
 		viewport.minDepth = 0.0f;
 		_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewport);
 
-		DRHI::DynamicRect2D scissor{};
+		drhi::DynamicRect2D scissor{};
 		scissor.extent.width = texSize;
 		scissor.extent.height = texSize;
 		scissor.offset.x = 0;
@@ -803,7 +803,7 @@ namespace FOCUS
 		};
 
 		// set image layout
-		DRHI::DynamicImageSubresourceRange range{};
+		drhi::DynamicImageSubresourceRange range{};
 		range.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 		range.baseMipLevel = 0;
 		range.levelCount = numMips;
@@ -831,7 +831,7 @@ namespace FOCUS
 
 				_rhiContext->setImageLayout(&commandBuffer, &irradianceOffscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-				DRHI::DynamicImageCopy copy{};
+				drhi::DynamicImageCopy copy{};
 				copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 				copy.srcSubresource.baseArrayLayer = 0;
 				copy.srcSubresource.mipLevel = 0;
@@ -881,20 +881,20 @@ namespace FOCUS
 		const uint32_t numMips = static_cast<uint32_t>(floor(std::log2(texSize))) + 1;
 
 		auto api = _rhiContext->getCurrentAPI();
-		auto format = DRHI::DynamicFormat(api);
-		auto tilling = DRHI::DynamicImageTiling(api);
-		auto usage = DRHI::DynamicImageUsageFlagBits(api);
-		auto samples = DRHI::DynamicSampleCountFlags(api);
-		auto memory = DRHI::DynamicMemoryPropertyFlagBits(api);
-		auto aspect = DRHI::DynamicImageAspectFlagBits(api);
-		auto bordercolor = DRHI::DynamicBorderColor(api);
-		auto addressmode = DRHI::DynamicSamplerAddressMode(api);
-		auto imageflags = DRHI::DynamicImageCreateFlags(api);
-		auto viewType = DRHI::DynamicImageViewType(api);
+		auto format = drhi::DynamicFormat(api);
+		auto tilling = drhi::DynamicImageTiling(api);
+		auto usage = drhi::DynamicImageUsageFlagBits(api);
+		auto samples = drhi::DynamicSampleCountFlags(api);
+		auto memory = drhi::DynamicMemoryPropertyFlagBits(api);
+		auto aspect = drhi::DynamicImageAspectFlagBits(api);
+		auto bordercolor = drhi::DynamicBorderColor(api);
+		auto addressmode = drhi::DynamicSamplerAddressMode(api);
+		auto imageflags = drhi::DynamicImageCreateFlags(api);
+		auto viewType = drhi::DynamicImageViewType(api);
 
 		// create image
 		{
-			DRHI::DynamicImageCreateInfo imageCI{};
+			drhi::DynamicImageCreateInfo imageCI{};
 			imageCI.format = format.FORMAT_R16G16B16A16_SFLOAT;
 			imageCI.extent.width = texSize;
 			imageCI.extent.height = texSize;
@@ -908,7 +908,7 @@ namespace FOCUS
 
 			_rhiContext->createImage(&_filteredImage, &_filteredImageMemory, imageCI, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		
-			DRHI::DynamicImageViewCreateInfo viewInfo{};
+			drhi::DynamicImageViewCreateInfo viewInfo{};
 			viewInfo.format = format.FORMAT_R16G16B16A16_SFLOAT;
 			viewInfo.image = _filteredImage;
 			viewInfo.type = viewType.IMAGE_VIEW_TYPE_CUBE;
@@ -920,8 +920,8 @@ namespace FOCUS
 
 			_rhiContext->createImageView(&_filteredImageView, &_filteredImage, viewInfo);
 
-			auto mipmap = DRHI::DynamicSamplerMipmapMode(api);
-			DRHI::DynamicSamplerCreateInfo samplerInfo{};
+			auto mipmap = drhi::DynamicSamplerMipmapMode(api);
+			drhi::DynamicSamplerCreateInfo samplerInfo{};
 			samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 			samplerInfo.maxLod = 1;
 			samplerInfo.minLod = 0.0f;
@@ -932,10 +932,10 @@ namespace FOCUS
 		}
 
 		// color attachment
-		auto loadOp = DRHI::DynamicAttachmentLoadOp(api);
-		auto storeOp = DRHI::DynamicAttachmentStoreOp(api);
-		auto layout = DRHI::DynamicImageLayout(api);
-		DRHI::DynamicAttachmentDescription ad{};
+		auto loadOp = drhi::DynamicAttachmentLoadOp(api);
+		auto storeOp = drhi::DynamicAttachmentStoreOp(api);
+		auto layout = drhi::DynamicImageLayout(api);
+		drhi::DynamicAttachmentDescription ad{};
 		ad.format = format.FORMAT_R16G16B16A16_SFLOAT;
 		ad.samples = samples.SAMPLE_COUNT_1_BIT;
 		ad.loadOp = loadOp.ATTACHMENT_LOAD_OP_CLEAR;
@@ -945,22 +945,22 @@ namespace FOCUS
 		ad.initialLayout = layout.IMAGE_LAYOUT_UNDEFINED;
 		ad.finalLayout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		DRHI::DynamicAttachmentReference ar{};
+		drhi::DynamicAttachmentReference ar{};
 		ar.attachment = 0;
 		ar.layout = layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		
 		// subpass description
-		auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
-		DRHI::DynamicSubpassDescription subpassDescription{};
+		auto bindPoint = drhi::DynamicPipelineBindPoint(api);
+		drhi::DynamicSubpassDescription subpassDescription{};
 		subpassDescription.pipelineBindPoint = bindPoint.PIPELINE_BIND_POINT_GRAPHICS;
 		subpassDescription.colorAttachmentCount = 1;
 		subpassDescription.pColorAttachments = &ar;
 
 		// subpass dependencies
-		auto stage = DRHI::DynamicPipelineStageFlags(api);
-		auto access = DRHI::DynamicAccessFlagBits(api);
-		auto dependcyFlag = DRHI::DynamicDependencyFlagBits(api);
-		std::vector<DRHI::DynamicSubpassDependency> dependencies{ 2 };
+		auto stage = drhi::DynamicPipelineStageFlags(api);
+		auto access = drhi::DynamicAccessFlagBits(api);
+		auto dependcyFlag = drhi::DynamicDependencyFlagBits(api);
+		std::vector<drhi::DynamicSubpassDependency> dependencies{ 2 };
 		dependencies[0].srcSubpass = ~0U;
 		dependencies[0].dstSubpass = 0;
 		dependencies[0].srcStageMask = stage.PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -978,7 +978,7 @@ namespace FOCUS
 		dependencies[1].dependencyFlags = dependcyFlag.DEPENDENCY_BY_REGION_BIT;
 
 		// create renderpass
-		DRHI::DynamicRenderPassCreateInfo renderPassCI{};
+		drhi::DynamicRenderPassCreateInfo renderPassCI{};
 		renderPassCI.attachmentCount = 1;
 		renderPassCI.pAttachments = &ad;
 		renderPassCI.subpassCount = 1;
@@ -986,16 +986,16 @@ namespace FOCUS
 		renderPassCI.dependencyCount = 2;
 		renderPassCI.pDependencies = &dependencies;
 
-		DRHI::DynamicRenderPass renderPass{};
+		drhi::DynamicRenderPass renderPass{};
 		_rhiContext->createRenderPass(&renderPass, &renderPassCI);
 
 		// create offscreen image
-		DRHI::DynamicImage        offscreenImage{};
-		DRHI::DynamicDeviceMemory offscreenImageMemory{};
-		DRHI::DynamicImageView    offscreenImageView{};
-		DRHI::DynamicSampler      offscreenSampler{};
+		drhi::DynamicImage        offscreenImage{};
+		drhi::DynamicDeviceMemory offscreenImageMemory{};
+		drhi::DynamicImageView    offscreenImageView{};
+		drhi::DynamicSampler      offscreenSampler{};
 
-		DRHI::DynamicImageCreateInfo ici{};
+		drhi::DynamicImageCreateInfo ici{};
 		ici.format = format.FORMAT_R16G16B16A16_SFLOAT;
 		ici.extent.width = texSize;
 		ici.extent.height = texSize;
@@ -1008,7 +1008,7 @@ namespace FOCUS
 		ici.usage = usage.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | usage.IMAGE_USAGE_TRANSFER_SRC_BIT;
 		_rhiContext->createImage(&offscreenImage, &offscreenImageMemory, ici, memory.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		DRHI::DynamicImageViewCreateInfo ivci{};
+		drhi::DynamicImageViewCreateInfo ivci{};
 		ivci.format = format.FORMAT_R16G16B16A16_SFLOAT;
 		ivci.image = offscreenImage;
 		ivci.type = viewType.IMAGE_VIEW_TYPE_2D;
@@ -1021,7 +1021,7 @@ namespace FOCUS
 		_rhiContext->createImageView(&offscreenImageView, &offscreenImage, ivci);
 
 		// create framebuffer
-		DRHI::DynamicFramebufferCreateInfo fcreateInfo{};
+		drhi::DynamicFramebufferCreateInfo fcreateInfo{};
 		fcreateInfo.renderPass = renderPass;
 		fcreateInfo.attachmentCount = 1;
 		fcreateInfo.pAttachments = &offscreenImageView;
@@ -1029,11 +1029,11 @@ namespace FOCUS
 		fcreateInfo.height = texSize;
 		fcreateInfo.layers = 1;
 
-		DRHI::DynamicFramebuffer framebuffer{};
+		drhi::DynamicFramebuffer framebuffer{};
 		_rhiContext->createFramebuffer(&framebuffer, &fcreateInfo);
 
-		DRHI::DynamicCommandPool cmdPool{};
-		DRHI::DynamicCommandBuffer cmdBuffer{};
+		drhi::DynamicCommandPool cmdPool{};
+		drhi::DynamicCommandBuffer cmdBuffer{};
 		_rhiContext->createCommandPool(&cmdPool);
 		_rhiContext->createCommandBuffer(&cmdBuffer, &cmdPool);
 		_rhiContext->beginCommandBuffer(cmdBuffer);
@@ -1041,10 +1041,10 @@ namespace FOCUS
 		_rhiContext->flushCommandBuffer(cmdBuffer, cmdPool, true);
 
 		// descriptors
-		auto descriptorType = DRHI::DynamicDescriptorType(api);
-		auto stageFlags = DRHI::DynamicShaderStageFlags(api);
-		DRHI::DynamicDescriptorSetLayout dsl{ nullptr };
-		std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
+		auto descriptorType = drhi::DynamicDescriptorType(api);
+		auto stageFlags = drhi::DynamicShaderStageFlags(api);
+		drhi::DynamicDescriptorSetLayout dsl{ nullptr };
+		std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(1);
 		dsbs[0].binding = 0;
 		dsbs[0].descriptorCount = 1;
 		dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -1053,27 +1053,27 @@ namespace FOCUS
 		_rhiContext->createDescriptorSetLayout(&dsl, &dsbs);
 
 		// descriptor pool
-		auto desciptorType = DRHI::DynamicDescriptorType(api);
-		std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes{ 1 };
+		auto desciptorType = drhi::DynamicDescriptorType(api);
+		std::vector<drhi::DynamicDescriptorPoolSize> poolSizes{ 1 };
 		poolSizes[0].descriptorCount = 1;
 		poolSizes[0].type = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-		DRHI::DynamicDescriptorPoolCreateInfo pci{};
+		drhi::DynamicDescriptorPoolCreateInfo pci{};
 		pci.pPoolSizes = &poolSizes;
 		pci.maxSets = 2;
 
-		DRHI::DynamicDescriptorPool desciptorPool;
+		drhi::DynamicDescriptorPool desciptorPool;
 		_rhiContext->createDescriptorPool(&desciptorPool, &pci);
 
 		// descriptor sets
-		DRHI::DynamicDescriptorSet desciptorSet;
+		drhi::DynamicDescriptorSet desciptorSet;
 
-		DRHI::DynamicDescriptorImageInfo dii{};
+		drhi::DynamicDescriptorImageInfo dii{};
 		dii.imageLayout = layout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		dii.imageView = _environmentMap->_material->_textureImageView;
 		dii.sampler = _environmentMap->_material->_textureSampler;
 
-		std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
+		std::vector<drhi::DynamicWriteDescriptorSet> wds(1);
 		wds[0].descriptorType = desciptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		wds[0].dstBinding = 0;
 		wds[0].descriptorCount = 1;
@@ -1088,14 +1088,14 @@ namespace FOCUS
 			uint32_t numSamples = 32u;
 		} pushBlock;
 
-		auto pushStage = DRHI::DynamicShaderStageFlags(api);
-		DRHI::DynamicPushConstantRange pcr{};
+		auto pushStage = drhi::DynamicShaderStageFlags(api);
+		drhi::DynamicPushConstantRange pcr{};
 		pcr.stageFlags = pushStage.SHADER_STAGE_VERTEX_BIT | pushStage.SHADER_STAGE_FRAGMENT_BIT;
 		pcr.offset = 0;
 		pcr.size = sizeof(PushBlock);
 
-		DRHI::DynamicPipelineLayout pipelineLayout{};
-		DRHI::DynamicPipelineLayoutCreateInfo plci{};
+		drhi::DynamicPipelineLayout pipelineLayout{};
+		drhi::DynamicPipelineLayoutCreateInfo plci{};
 		plci.pPushConstantRanges = &pcr;
 		plci.pushConstantRangeCount = 1;
 		plci.pSetLayouts = &dsl;
@@ -1103,13 +1103,13 @@ namespace FOCUS
 		_rhiContext->createPipelineLayout(&pipelineLayout, &plci);
 
 		// pipeline
-		auto cullmode = DRHI::DynamicCullMode(api);
-		DRHI::DynamicPipelineCreateInfo pipelineci{};
+		auto cullmode = drhi::DynamicCullMode(api);
+		drhi::DynamicPipelineCreateInfo pipelineci{};
 		pipelineci.vertexShader = RESOURCE_PATH"Shaders/IBL/prefilterCubeVertex.spv";
 		pipelineci.fragmentShader = RESOURCE_PATH"Shaders/IBL/prefilterEnvmapFragment.spv";
-		pipelineci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+		pipelineci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
 		pipelineci.vertexInputBinding.set(api, 0, sizeof(Vertex));
-		pipelineci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+		pipelineci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();
 		pipelineci.vertexInputAttributes.resize(1);
 		pipelineci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
 		pipelineci.colorImageFormat = format.FORMAT_R16G16B16A16_SFLOAT;
@@ -1120,11 +1120,11 @@ namespace FOCUS
 		pipelineci.sampleCounts = samples.SAMPLE_COUNT_1_BIT;
 		pipelineci.renderPass = &renderPass;
 
-		DRHI::DynamicPipeline pipeline{};
+		drhi::DynamicPipeline pipeline{};
 		_rhiContext->createPipeline(&pipeline, &pipelineLayout, pipelineci);
 
 		// begin render pass
-		DRHI::DynamicRenderPassBeginInfo rbinfo{};
+		drhi::DynamicRenderPassBeginInfo rbinfo{};
 		rbinfo.renderPass = renderPass;
 		rbinfo.framebuffer = framebuffer;
 		rbinfo.renderArea.extent.width = texSize;
@@ -1145,11 +1145,11 @@ namespace FOCUS
 			rotate(Matrix4(1.0f), radians(180.0f), Vector3(0.0f, 0.0f, 1.0f)),
 		};
 
-		DRHI::DynamicCommandBuffer commandBuffer{};
+		drhi::DynamicCommandBuffer commandBuffer{};
 		_rhiContext->createCommandBuffer(&commandBuffer, &cmdPool);
 		_rhiContext->beginCommandBuffer(commandBuffer);
 
-		DRHI::DynamicViewport viewPort{};
+		drhi::DynamicViewport viewPort{};
 		viewPort.width = texSize;
 		viewPort.height = texSize;
 		viewPort.minDepth = 0.0f;
@@ -1159,22 +1159,22 @@ namespace FOCUS
 
 		_rhiContext->cmdSetViewport(commandBuffer, 0, 1, viewPort);
 
-		DRHI::DynamicRect2D scissor{};
+		drhi::DynamicRect2D scissor{};
 		scissor.extent.width = texSize;
 		scissor.extent.height = texSize;
 		scissor.offset.x = 0;
 		scissor.offset.y = 0;
 		_rhiContext->cmdSetScissor(commandBuffer, 0, 1, scissor);
 
-		DRHI::DynamicImageSubresourceRange range{};
+		drhi::DynamicImageSubresourceRange range{};
 		range.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 		range.baseMipLevel = 0;
 		range.levelCount = numMips;
 		range.layerCount = 6;
 		_rhiContext->setImageLayout(&commandBuffer, &_filteredImage, layout.IMAGE_LAYOUT_UNDEFINED, layout.IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, range);
 
-		auto content = DRHI::DynamicSubpassContents(api);
-		auto shaderStage = DRHI::DynamicShaderStageFlags(api);
+		auto content = drhi::DynamicSubpassContents(api);
+		auto shaderStage = drhi::DynamicShaderStageFlags(api);
 		// rendering
 		for (uint32_t m = 0; m < numMips; m++) {
 			pushBlock.roughness = (float)m / (float)(numMips - 1);
@@ -1200,7 +1200,7 @@ namespace FOCUS
 
 				_rhiContext->setImageLayout(&commandBuffer, &offscreenImage, aspect.IMAGE_ASPECT_COLOR_BIT, layout.IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, layout.IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-				DRHI::DynamicImageCopy copy{};
+				drhi::DynamicImageCopy copy{};
 				copy.srcSubresource.aspectMask = aspect.IMAGE_ASPECT_COLOR_BIT;
 				copy.srcSubresource.baseArrayLayer = 0;
 				copy.srcSubresource.mipLevel = 0;

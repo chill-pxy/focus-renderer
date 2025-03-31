@@ -1,7 +1,7 @@
 #pragma once
 #include"../Geometry/Model.h"
 
-namespace FOCUS
+namespace focus
 {
 	void modelToBLAS(std::shared_ptr<Model> model)
 	{

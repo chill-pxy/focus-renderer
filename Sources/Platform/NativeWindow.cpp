@@ -1,6 +1,6 @@
 #include"NativeWindow.h"
 
-namespace FOCUS
+namespace focus
 {
 	void NativeWindow::createWin32Windwow(WNDPROC wndproc)
 	{

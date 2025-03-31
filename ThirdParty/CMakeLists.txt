@@ -47,5 +47,5 @@ if(NOT TARGET imgui)
     set_target_properties(imgui PROPERTIES FOLDER ${third_party_folder}/imgui)
 endif()
 
-# DRHI
+# drhi
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/drhi/drhi.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

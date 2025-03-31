@@ -7,7 +7,7 @@ module;
 #include"Engine.h"
 export module Engine;
 
-namespace FOCUS
+namespace focus
 {
 	export EngineSingleton;
 }
@@ -15,7 +15,7 @@ namespace FOCUS
 extern "C" __declspec(dllexport) void run()
 {
 	std::thread t([] {
-		auto app = FOCUS::EngineSingleton::getInstance();
+		auto app = focus::EngineSingleton::getInstance();
 		app->initialize();
 		app->run();
 	});
@@ -25,7 +25,7 @@ extern "C" __declspec(dllexport) void run()
 
 extern "C" __declspec(dllexport) int getSceneObjCount()
 {
-	return FOCUS::RenderSystemSingleton::getInstance()->_scene->_group.size();
+	return focus::RenderSystemSingleton::getInstance()->_scene->_group.size();
 }
 
 extern "C" __declspec(dllexport) const char* getModelPathList()
@@ -43,48 +43,48 @@ extern "C" __declspec(dllexport) const char* getModelPathList()
 
 extern "C" __declspec(dllexport) void plantObj(const char* path, const char* name)
 {
-	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
+	auto scene = focus::RenderSystemSingleton::getInstance()->_scene;
 	auto obj = scene->loadModel(path);
 	obj->setMetallic(0.987);
 	obj->setRoughness(0.012);
-	obj->setPosition(FOCUS::Vector3(0.0, 0.0, 0.0));
-	obj->setScale(FOCUS::Vector3(10.0, 10.0, 10.0));
+	obj->setPosition(focus::Vector3(0.0, 0.0, 0.0));
+	obj->setScale(focus::Vector3(10.0, 10.0, 10.0));
 
 	//for thread safe, sumbit after engine stop committing commands
-	FOCUS::EngineSingleton::getInstance()->stop();
+	focus::EngineSingleton::getInstance()->stop();
 	while (1)
 	{
-		if (FOCUS::EngineSingleton::getInstance()->getJobState())
+		if (focus::EngineSingleton::getInstance()->getJobState())
 		{
 			scene->addModel(obj);
-			FOCUS::RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_group, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
+			focus::RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_group, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
 			break;
 		}
 	}
 			
-	FOCUS::EngineSingleton::getInstance()->start();
+	focus::EngineSingleton::getInstance()->start();
 }
 
 extern "C" __declspec(dllexport) void changeObjPosition(const char* name, float x, float y, float z)
 {
-	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
+	auto scene = focus::RenderSystemSingleton::getInstance()->_scene;
 	for (auto obj : scene->_group)
 	{
 		if (strcmp(name, obj->_name.c_str()) == 0)
 		{
-			obj->_position = FOCUS::Vector3(x, y, z);
+			obj->_position = focus::Vector3(x, y, z);
 		}
 	}
 }
 
 extern "C" __declspec(dllexport) void changeObjScale(const char* name, float x, float y, float z)
 {
-	auto scene = FOCUS::RenderSystemSingleton::getInstance()->_scene;
+	auto scene = focus::RenderSystemSingleton::getInstance()->_scene;
 	for (auto obj : scene->_group)
 	{
 		if (strcmp(name, obj->_name.c_str()) == 0)
 		{
-			obj->_scale = FOCUS::Vector3(x, y, z);
+			obj->_scale = focus::Vector3(x, y, z);
 		}
 	}
 }

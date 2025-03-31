@@ -5,7 +5,7 @@
 
 #include"../../../Core/Math.h"
 
-namespace FOCUS
+namespace focus
 {
     typedef struct Vertex
     {
@@ -23,11 +23,11 @@ namespace FOCUS
 
 namespace std
 {
-    template<> struct hash<FOCUS::Vertex>
+    template<> struct hash<focus::Vertex>
     {
-        size_t operator()(FOCUS::Vertex const& vertex) const
+        size_t operator()(focus::Vertex const& vertex) const
         {
-            return ((hash<FOCUS::Vector3>()(vertex.pos) ^ (hash<FOCUS::Vector3>()(vertex.color) << 1)) >> 1) ^ (hash<FOCUS::Vector2>()(vertex.texCoord) << 1);
+            return ((hash<focus::Vector3>()(vertex.pos) ^ (hash<focus::Vector3>()(vertex.color) << 1)) >> 1) ^ (hash<focus::Vector2>()(vertex.texCoord) << 1);
         }
     };
 }

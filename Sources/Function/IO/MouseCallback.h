@@ -1,7 +1,7 @@
 #pragma once
 
 #include"../Render/RenderCamera.h"
-namespace FOCUS
+namespace focus
 {
 	void onRightMouseButtonDown(RenderCamera* camera, float x, float y)
 	{

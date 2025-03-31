@@ -7,7 +7,7 @@
 #include"PhysicalMaterial.h"
 #include"../Texture.h"
 
-namespace FOCUS
+namespace focus
 {
 	class MaterialManager
 	{
@@ -25,9 +25,9 @@ namespace FOCUS
 
 namespace std
 {
-	template<> struct hash<FOCUS::PhysicalMaterial>
+	template<> struct hash<focus::PhysicalMaterial>
 	{
-		size_t operator()(FOCUS::PhysicalMaterial const& material) const
+		size_t operator()(focus::PhysicalMaterial const& material) const
 		{
 			return std::hash<std::string>()(material._name);
 		}

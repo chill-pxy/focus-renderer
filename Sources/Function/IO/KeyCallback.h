@@ -2,7 +2,7 @@
 
 #include"../Render/RenderCamera.h"
 
-namespace FOCUS
+namespace focus
 {
 	void onKeyDown(RenderCamera* camera, char key)
 	{

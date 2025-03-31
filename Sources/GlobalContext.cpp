@@ -1,6 +1,6 @@
 #include"GlobalContext.h"
 
-namespace FOCUS
+namespace focus
 {
 	GlobalContext::GlobalContext()
 	{

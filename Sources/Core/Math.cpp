@@ -1,6 +1,6 @@
 #include"Math.h"
 
-namespace FOCUS
+namespace focus
 {
 	float shininessToRoughness(float Ypoint)
 	{

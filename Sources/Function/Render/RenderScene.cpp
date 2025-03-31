@@ -7,9 +7,9 @@
 #include"Geometry/Box.h"
 #include"SkyCube.h"
 
-namespace FOCUS
+namespace focus
 {
-	void RenderScene::initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
+	void RenderScene::initialize(std::shared_ptr<drhi::DynamicRHI> rhi)
 	{
 		rhi->createCommandPool(&_sceneCommandPool);
 		rhi->createCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
@@ -21,7 +21,7 @@ namespace FOCUS
 		prepareRenderResources(rhi);
 	}
 
-	void RenderScene::prepareRenderResources(std::shared_ptr<DRHI::DynamicRHI> rhi)
+	void RenderScene::prepareRenderResources(std::shared_ptr<drhi::DynamicRHI> rhi)
 	{
 		// prepare light
 		_pointLight->_position = Vector3(0.0f, 55.0f, 0.0f);
@@ -136,7 +136,7 @@ namespace FOCUS
 		}
 	}
 
-	void RenderScene::clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+	void RenderScene::clean(std::shared_ptr<drhi::DynamicRHI> rhi)
 	{
 		// clean render resources
 		for (auto r : _group)

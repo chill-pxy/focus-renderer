@@ -9,89 +9,89 @@
 #include"RenderResource.h"
 #include"SkyCube.h"
 
-namespace FOCUS
+namespace focus
 {
 	class Renderer
 	{
 	public:
-		std::shared_ptr<DRHI::DynamicRHI> _rhiContext;
+		std::shared_ptr<drhi::DynamicRHI> _rhiContext;
 		std::vector<std::shared_ptr<RenderResource>> _submitRenderlist;
 		
-		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers;
-		DRHI::DynamicCommandPool _commandPool;
+		std::vector<drhi::DynamicCommandBuffer> _commandBuffers;
+		drhi::DynamicCommandPool _commandPool;
 
 		// shadow command buffer
-		std::vector<DRHI::DynamicCommandBuffer> _shadowCommandBuffers;
-		DRHI::DynamicCommandPool _shadowCommandPool;
+		std::vector<drhi::DynamicCommandBuffer> _shadowCommandBuffers;
+		drhi::DynamicCommandPool _shadowCommandPool;
 
 		// deffered command buffer
-		DRHI::DynamicCommandBuffer _defferedCommandBuffer{};
-		DRHI::DynamicCommandPool _defferedCommandPool{};
+		drhi::DynamicCommandBuffer _defferedCommandBuffer{};
+		drhi::DynamicCommandPool _defferedCommandPool{};
 
 		// scene image
-		std::vector<DRHI::DynamicImage>* _viewportImages{nullptr};
-		std::vector<DRHI::DynamicImageView>* _viewportImageViews{nullptr};
+		std::vector<drhi::DynamicImage>* _viewportImages{nullptr};
+		std::vector<drhi::DynamicImageView>* _viewportImageViews{nullptr};
 		
 		// scene depth image
-		DRHI::DynamicImage* _viewportDepthImage{nullptr};
-		DRHI::DynamicImageView* _viewportDepthImageView{nullptr};
+		drhi::DynamicImage* _viewportDepthImage{nullptr};
+		drhi::DynamicImageView* _viewportDepthImageView{nullptr};
 
 		// environment map
 		std::shared_ptr<SkyCube> _environmentMap{};
-		DRHI::DynamicCommandPool _environmentMapCommandPool{};
+		drhi::DynamicCommandPool _environmentMapCommandPool{};
 
 		bool _prepared = false;
 
 	private:	
 		// members of shadow
-		DRHI::DynamicImage        _shadowImage{};
-		DRHI::DynamicDeviceMemory _shadowImageMemory{};
-		DRHI::DynamicImageView    _shadowImageView{};
-		DRHI::DynamicSampler      _shadowSampler{};
+		drhi::DynamicImage        _shadowImage{};
+		drhi::DynamicDeviceMemory _shadowImageMemory{};
+		drhi::DynamicImageView    _shadowImageView{};
+		drhi::DynamicSampler      _shadowSampler{};
 
 		uint32_t _shadowDepthImageWidth{ 2048 };
 		uint32_t _shadowDepthImageHeight{ 2048 };
 
 		// members of deffered
-		DRHI::DynamicImage _normal{};
-		DRHI::DynamicImageView _normalView{};
-		DRHI::DynamicSampler _normalSampler{};
-		DRHI::DynamicDeviceMemory _normalMemory{};
+		drhi::DynamicImage _normal{};
+		drhi::DynamicImageView _normalView{};
+		drhi::DynamicSampler _normalSampler{};
+		drhi::DynamicDeviceMemory _normalMemory{};
 
-		DRHI::DynamicImage _depth{};
-		DRHI::DynamicImageView _depthView{};
-		DRHI::DynamicSampler _depthSampler{};
-		DRHI::DynamicDeviceMemory _depthMemory{};
+		drhi::DynamicImage _depth{};
+		drhi::DynamicImageView _depthView{};
+		drhi::DynamicSampler _depthSampler{};
+		drhi::DynamicDeviceMemory _depthMemory{};
 
 		// members of brdf lut
-		DRHI::DynamicImage        _brdflutImage{};
-		DRHI::DynamicDeviceMemory _brdflutImageMemory{};
-		DRHI::DynamicImageView    _brdflutImageView{};
-		DRHI::DynamicSampler      _brdflutSampler{};
+		drhi::DynamicImage        _brdflutImage{};
+		drhi::DynamicDeviceMemory _brdflutImageMemory{};
+		drhi::DynamicImageView    _brdflutImageView{};
+		drhi::DynamicSampler      _brdflutSampler{};
 
 		// members of irradiance map
-		DRHI::DynamicImage        _irradianceImage{};
-		DRHI::DynamicDeviceMemory _irradianceImageMemory{};
-		DRHI::DynamicImageView    _irradianceImageView{};
-		DRHI::DynamicSampler      _irradianceSampler{};
+		drhi::DynamicImage        _irradianceImage{};
+		drhi::DynamicDeviceMemory _irradianceImageMemory{};
+		drhi::DynamicImageView    _irradianceImageView{};
+		drhi::DynamicSampler      _irradianceSampler{};
 
 		// members of prefilteredImage
 		uint32_t _filteredImageWidth{};
 		uint32_t _filteredImageHeight{};
-		DRHI::DynamicImage        _filteredImage{};
-		DRHI::DynamicDeviceMemory _filteredImageMemory{};
-		DRHI::DynamicImageView    _filteredImageView{};
-		DRHI::DynamicSampler      _filteredImageSampler{};
+		drhi::DynamicImage        _filteredImage{};
+		drhi::DynamicDeviceMemory _filteredImageMemory{};
+		drhi::DynamicImageView    _filteredImageView{};
+		drhi::DynamicSampler      _filteredImageSampler{};
 
 	public:
 		Renderer() = delete;
 
-		Renderer(DRHI::API api, DRHI::PlatformInfo platformCI);
+		Renderer(drhi::API api, drhi::PlatformInfo platformCI);
 		
 		void initialize();
 		void buildCommandBuffer();
-		void buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<DRHI::DynamicCommandBuffer>* commandBuffers, DRHI::DynamicCommandPool* commandPool);
-		void submitRenderTargetImage(std::vector<DRHI::DynamicImage>* viewportImages, std::vector<DRHI::DynamicImageView>* viewportImageViews, DRHI::DynamicImage* depthImage, DRHI::DynamicImageView* depthImageView);
+		void buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<drhi::DynamicCommandBuffer>* commandBuffers, drhi::DynamicCommandPool* commandPool);
+		void submitRenderTargetImage(std::vector<drhi::DynamicImage>* viewportImages, std::vector<drhi::DynamicImageView>* viewportImageViews, drhi::DynamicImage* depthImage, drhi::DynamicImageView* depthImageView);
 		void clean();
 		void recreate();
 

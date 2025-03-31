@@ -4,7 +4,7 @@
 #include"Geometry/Sphere.h"
 #include"Materials/GeometryMaterial.h"
 
-namespace FOCUS
+namespace focus
 {
 	class PointLight : public Sphere
 	{

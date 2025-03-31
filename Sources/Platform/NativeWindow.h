@@ -3,7 +3,7 @@
 #include<Windows.h>
 #include<vector>
 
-namespace FOCUS
+namespace focus
 {
     struct NativeWindowCreateInfo
     {

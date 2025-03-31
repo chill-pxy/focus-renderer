@@ -4,7 +4,7 @@
 #include"../../../Core/Path.h"
 #include"../../../Core/Math.h"
 
-namespace FOCUS
+namespace focus
 {
     typedef struct UniformUpdateData
     {
@@ -37,40 +37,40 @@ namespace FOCUS
 
     typedef struct GBuffer
     {
-        DRHI::DynamicImageView* normalImageView{ nullptr };
-        DRHI::DynamicSampler* normalSampler{ nullptr };
-        DRHI::DynamicImageView* depthImageView{ nullptr };
-        DRHI::DynamicSampler* depthSampler{ nullptr };
+        drhi::DynamicImageView* normalImageView{ nullptr };
+        drhi::DynamicSampler* normalSampler{ nullptr };
+        drhi::DynamicImageView* depthImageView{ nullptr };
+        drhi::DynamicSampler* depthSampler{ nullptr };
     }GBuffer;
 
 	class Material
 	{
 	public:
-        DRHI::DynamicImage        _textureImage{};
-        DRHI::DynamicImageView    _textureImageView{};
-        DRHI::DynamicSampler      _textureSampler{};
-        DRHI::DynamicDeviceMemory _textureMemory{};
+        drhi::DynamicImage        _textureImage{};
+        drhi::DynamicImageView    _textureImageView{};
+        drhi::DynamicSampler      _textureSampler{};
+        drhi::DynamicDeviceMemory _textureMemory{};
 
         GBuffer _gbuffer{};
 
-        DRHI::DynamicImageView* _shadowImageView{ nullptr };
-        DRHI::DynamicSampler* _shadowSampler{ nullptr };
+        drhi::DynamicImageView* _shadowImageView{ nullptr };
+        drhi::DynamicSampler* _shadowSampler{ nullptr };
 
-        DRHI::DynamicImageView* _brdfImageView{ nullptr };
-        DRHI::DynamicSampler* _brdfSampler{ nullptr };
+        drhi::DynamicImageView* _brdfImageView{ nullptr };
+        drhi::DynamicSampler* _brdfSampler{ nullptr };
 
-        DRHI::DynamicImageView*  _irradianceImageView{nullptr};
-        DRHI::DynamicSampler*    _irradianceSampler{nullptr};
+        drhi::DynamicImageView*  _irradianceImageView{nullptr};
+        drhi::DynamicSampler*    _irradianceSampler{nullptr};
 
-        DRHI::DynamicImageView*    _filteredImageView{nullptr};
-        DRHI::DynamicSampler*      _filteredImageSampler{nullptr};
+        drhi::DynamicImageView*    _filteredImageView{nullptr};
+        drhi::DynamicSampler*      _filteredImageSampler{nullptr};
 
-        DRHI::DynamicDescriptorPool      _descriptorPool{};
-        DRHI::DynamicDescriptorSet       _descriptorSet{};
-        DRHI::DynamicDescriptorSetLayout _descriptorSetLayout{};
+        drhi::DynamicDescriptorPool      _descriptorPool{};
+        drhi::DynamicDescriptorSet       _descriptorSet{};
+        drhi::DynamicDescriptorSetLayout _descriptorSetLayout{};
 
-        DRHI::DynamicPipeline       _pipeline{};
-        DRHI::DynamicPipelineLayout _pipelineLayout{};
+        drhi::DynamicPipeline       _pipeline{};
+        drhi::DynamicPipelineLayout _pipelineLayout{};
 
         std::string _type = "Material Base";
 
@@ -98,14 +98,14 @@ namespace FOCUS
 	public:
 		Material() = default;
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool) = 0;
+		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
-        virtual void clean(std::shared_ptr<DRHI::DynamicRHI> rhi) = 0;
+        virtual void clean(std::shared_ptr<drhi::DynamicRHI> rhi) = 0;
 
-        void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
+        void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer)
         {
             auto api = rhi->getCurrentAPI();
-            auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+            auto bindPoint = drhi::DynamicPipelineBindPoint(api);
 
             rhi->bindPipeline(_pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
             rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);

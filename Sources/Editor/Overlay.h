@@ -15,31 +15,31 @@
 #include"../Core/Math.h"
 #include"../Function/Render/RenderResource.h"
 
-namespace FOCUS
+namespace focus
 {
 	class EngineUI
 	{
 	private:
-		DRHI::API      _backend{ DRHI::VULKAN };
+		drhi::API      _backend{ drhi::VULKAN };
 
-		DRHI::DynamicDescriptorPool _descriptorPool{};
-		std::vector<DRHI::DynamicDescriptorSet> _descriptorSets{};
+		drhi::DynamicDescriptorPool _descriptorPool{};
+		std::vector<drhi::DynamicDescriptorSet> _descriptorSets{};
 	
-		DRHI::DynamicSampler _textureSampler{};
+		drhi::DynamicSampler _textureSampler{};
 
-		std::shared_ptr<DRHI::DynamicRHI> _rhi;
+		std::shared_ptr<drhi::DynamicRHI> _rhi;
 		
 	public:
-		std::vector<DRHI::DynamicImage> _viewportImages{};
-		std::vector<DRHI::DynamicDeviceMemory> _viewportImageMemorys{};
-		std::vector<DRHI::DynamicImageView> _viewportImageViews{};
+		std::vector<drhi::DynamicImage> _viewportImages{};
+		std::vector<drhi::DynamicDeviceMemory> _viewportImageMemorys{};
+		std::vector<drhi::DynamicImageView> _viewportImageViews{};
 
-		DRHI::DynamicImage _viewportDepthImage{};
-		DRHI::DynamicDeviceMemory _viewportDepthImageMemory{};
-		DRHI::DynamicImageView _viewportDepthImageView{};
+		drhi::DynamicImage _viewportDepthImage{};
+		drhi::DynamicDeviceMemory _viewportDepthImageMemory{};
+		drhi::DynamicImageView _viewportDepthImageView{};
 
-		DRHI::DynamicCommandPool _commandPool{};
-		std::vector<DRHI::DynamicCommandBuffer> _commandBuffers{};
+		drhi::DynamicCommandPool _commandPool{};
+		std::vector<drhi::DynamicCommandBuffer> _commandBuffers{};
 		
 		bool _isEmpty = true;
 		bool _prepared{ false };

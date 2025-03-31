@@ -8,7 +8,7 @@
 #include"../Texture.h"
 #include"../Geometry/MeshVertex.h"
 
-namespace FOCUS
+namespace focus
 {
     typedef struct PhysicalUniformBufferObject
     {
@@ -39,32 +39,32 @@ namespace FOCUS
 
     private:
         void* _vuniformBufferMapped{ nullptr };
-        DRHI::DynamicBuffer               _vuniformBuffer;
-        DRHI::DynamicDeviceMemory        _vuniformBufferMemory;
-        DRHI::DynamicDescriptorBufferInfo _vdescriptorBufferInfo;
+        drhi::DynamicBuffer               _vuniformBuffer;
+        drhi::DynamicDeviceMemory        _vuniformBufferMemory;
+        drhi::DynamicDescriptorBufferInfo _vdescriptorBufferInfo;
 
     public:
         PhysicalMaterial() {};
         PhysicalMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
 
-        virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
+        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
         {
             if (_built) return;
             auto api = rhi->getCurrentAPI();
-            auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
-            auto format = DRHI::DynamicFormat(api);
-            auto descriptorType = DRHI::DynamicDescriptorType(api);
-            auto imageLayout = DRHI::DynamicImageLayout(api);
-            auto imageAspect = DRHI::DynamicImageAspectFlagBits(api);
-            auto stageFlags = DRHI::DynamicShaderStageFlags(api);
-            auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
-            auto cullMode = DRHI::DynamicCullMode(api);
-            auto sampleCount = DRHI::DynamicSampleCountFlags(api);
+            auto bufferUsage = drhi::DynamicBufferUsageFlags(api);
+            auto format = drhi::DynamicFormat(api);
+            auto descriptorType = drhi::DynamicDescriptorType(api);
+            auto imageLayout = drhi::DynamicImageLayout(api);
+            auto imageAspect = drhi::DynamicImageAspectFlagBits(api);
+            auto stageFlags = drhi::DynamicShaderStageFlags(api);
+            auto memoryFlags = drhi::DynamicMemoryPropertyFlagBits(api);
+            auto cullMode = drhi::DynamicCullMode(api);
+            auto sampleCount = drhi::DynamicSampleCountFlags(api);
 
             if (_cullMode == 0)
                 _cullMode = cullMode.CULL_MODE_BACK_BIT;
 
-            std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(7);
+            std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(7);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -118,7 +118,7 @@ namespace FOCUS
             rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
             rhi->createTextureSampler(&_textureSampler);
 
-            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(7);
+            std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(7);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             poolSizes[0].descriptorCount = 7;
             poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -137,7 +137,7 @@ namespace FOCUS
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            DRHI::DynamicDescriptorImageInfo dii[6]{};
+            drhi::DynamicDescriptorImageInfo dii[6]{};
             dii[0].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             dii[0].imageView = _textureImageView;
             dii[0].sampler = _textureSampler;
@@ -162,7 +162,7 @@ namespace FOCUS
             dii[5].imageView = *_gbuffer.normalImageView;
             dii[5].sampler = *_gbuffer.normalSampler;
 
-            std::vector<DRHI::DynamicWriteDescriptorSet> wds(7);
+            std::vector<drhi::DynamicWriteDescriptorSet> wds(7);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_vdescriptorBufferInfo;
@@ -201,12 +201,12 @@ namespace FOCUS
             rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 7);
 
             // create pipeline
-            DRHI::DynamicPipelineCreateInfo pci = {};
+            drhi::DynamicPipelineCreateInfo pci = {};
             pci.vertexShader = RESOURCE_PATH"Shaders/Materials/physicalMaterialVertex.spv";
             pci.fragmentShader = RESOURCE_PATH"Shaders/Materials/physicalMaterialFragment.spv";
-            pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+            pci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
-            pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+            pci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();
             pci.vertexInputAttributes.resize(4);
             pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
             pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
@@ -219,7 +219,7 @@ namespace FOCUS
             pci.cullMode = _cullMode;
             pci.sampleCounts = sampleCount.SAMPLE_COUNT_1_BIT;
 
-            DRHI::DynamicPipelineLayoutCreateInfo plci{};
+            drhi::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;
             plci.setLayoutCount = 1;
             plci.pushConstantRangeCount = 0;
@@ -256,7 +256,7 @@ namespace FOCUS
             memcpy(_vuniformBufferMapped, &ubo, sizeof(ubo));
         }
 
-        virtual void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+        virtual void clean(std::shared_ptr<drhi::DynamicRHI> rhi)
         {
             if (_cleared) return;
             rhi->clearBuffer(&_vuniformBuffer, &_vuniformBufferMemory);

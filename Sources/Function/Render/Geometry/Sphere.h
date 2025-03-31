@@ -5,7 +5,7 @@
 #include"../RenderResource.h"
 #include"MeshVertex.h"
 
-namespace FOCUS
+namespace focus
 {
 	class Sphere : public RenderResource
 	{
@@ -23,7 +23,7 @@ namespace FOCUS
 
 		Sphere(uint32_t latBands, uint32_t lonBands, float radius) : _latBands(latBands), _lonBands(lonBands), _radius(radius) {}
 
-		virtual void build(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandPool* commandPool)
+		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
 		{
 			// create vertices
 			for (int i = 0; i <= _latBands; ++i)
@@ -58,8 +58,8 @@ namespace FOCUS
 			}
 
 			auto api = rhi->getCurrentAPI();
-			auto bufferUsage = DRHI::DynamicBufferUsageFlags(api);
-			auto memoryFlags = DRHI::DynamicMemoryPropertyFlagBits(api);
+			auto bufferUsage = drhi::DynamicBufferUsageFlags(api);
+			auto memoryFlags = drhi::DynamicMemoryPropertyFlagBits(api);
 
 			//create vertex buffer
 			auto vertexBufferSize = sizeof(_vertices[0]) * _vertices.size();
@@ -80,12 +80,12 @@ namespace FOCUS
 			_material->build(rhi, commandPool);
 		}
 
-		virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline)
+		virtual void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline)
 		{
 			if (!_indexBuffer.valid() || !_vertexBuffer.valid()) return;
 
 			auto api = rhi->getCurrentAPI();
-			auto indexType = DRHI::DynamicIndexType(api);
+			auto indexType = drhi::DynamicIndexType(api);
 
 			switch (pipeline)
 			{
@@ -107,11 +107,11 @@ namespace FOCUS
 			rhi->drawIndexed(commandBuffer, static_cast<uint32_t>(_indices.size()), 1, 0, 0, 0);
 		}
 
-		virtual void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer, DRHI::DynamicPipeline pipeline, DRHI::DynamicPipelineLayout pipelineLayout, DRHI::DynamicDescriptorSet set)
+		virtual void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer, drhi::DynamicPipeline pipeline, drhi::DynamicPipelineLayout pipelineLayout, drhi::DynamicDescriptorSet set)
 		{
 			auto api = rhi->getCurrentAPI();
-			auto indexType = DRHI::DynamicIndexType(api);
-			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+			auto indexType = drhi::DynamicIndexType(api);
+			auto bindPoint = drhi::DynamicPipelineBindPoint(api);
 
 			rhi->bindPipeline(pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 			rhi->bindDescriptorSets(&set, pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
@@ -140,7 +140,7 @@ namespace FOCUS
 			_material->updateUniformBuffer(uud);
 		}
 
-		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		void clean(std::shared_ptr<drhi::DynamicRHI> rhi)
 		{
 			rhi->clearBuffer(&_vertexBuffer, &_vertexDeviceMemory);
 			rhi->clearBuffer(&_indexBuffer, &_indexDeviceMemory);

@@ -1,6 +1,6 @@
 #include "MaterialManager.h"
 
-namespace FOCUS
+namespace focus
 {
 	std::shared_ptr<PhysicalMaterial> MaterialManager::createMaterial(std::string name, std::shared_ptr<Texture> texture)
 	{

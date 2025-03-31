@@ -9,7 +9,7 @@
 #include"Geometry/MeshVertex.h"
 #include"Materials/Material.h"
 
-namespace FOCUS
+namespace focus
 {
 	typedef struct ShadowMapUniformBufferObject
 	{
@@ -24,36 +24,36 @@ namespace FOCUS
 		int _count = 0;
 
 	public:
-		DRHI::DynamicPipeline       _shadowPipeline{};
-		DRHI::DynamicPipelineLayout _shadowPipelineLayout{};
+		drhi::DynamicPipeline       _shadowPipeline{};
+		drhi::DynamicPipelineLayout _shadowPipelineLayout{};
 
-		DRHI::DynamicDescriptorPool      _descriptorPool{};
-		DRHI::DynamicDescriptorSet       _descriptorSet{};
-		DRHI::DynamicDescriptorSetLayout _descriptorSetLayout{};
+		drhi::DynamicDescriptorPool      _descriptorPool{};
+		drhi::DynamicDescriptorSet       _descriptorSet{};
+		drhi::DynamicDescriptorSetLayout _descriptorSetLayout{};
 
-		DRHI::DynamicBuffer       _uniformBuffer{};
-		DRHI::DynamicDeviceMemory _uniformBufferMemory{};
+		drhi::DynamicBuffer       _uniformBuffer{};
+		drhi::DynamicDeviceMemory _uniformBufferMemory{};
 		void*                     _uniformBufferMapped{ nullptr };
 
-		DRHI::DynamicDescriptorBufferInfo _descriptorBufferInfo{};
+		drhi::DynamicDescriptorBufferInfo _descriptorBufferInfo{};
 
 	public:
 		ShadowMap() = default;
 
-		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		void initialize(std::shared_ptr<drhi::DynamicRHI> rhi)
 		{
 			auto api = rhi->getCurrentAPI();
-			auto format = DRHI::DynamicFormat(api);
-			auto sampleCount = DRHI::DynamicSampleCountFlags(api);
+			auto format = drhi::DynamicFormat(api);
+			auto sampleCount = drhi::DynamicSampleCountFlags(api);
 
 			// create uniform buffer
 			rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(ShadowMapUniformBufferObject));
 			_descriptorBufferInfo.set(rhi->getCurrentAPI(), _uniformBuffer, sizeof(ShadowMapUniformBufferObject));
 
 			// create descriptor
-			auto descriptorType = DRHI::DynamicDescriptorType(api);
-			auto stageFlags = DRHI::DynamicShaderStageFlags(api);
-			std::vector<DRHI::DynamicDescriptorSetLayoutBinding> dsbs(1);
+			auto descriptorType = drhi::DynamicDescriptorType(api);
+			auto stageFlags = drhi::DynamicShaderStageFlags(api);
+			std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(1);
 			dsbs[0].binding = 0;
 			dsbs[0].descriptorCount = 1;
 			dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -62,13 +62,13 @@ namespace FOCUS
 
 			rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
-			std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes(1);
+			std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(1);
 			poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			poolSizes[0].descriptorCount = 3;
 
 			rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-			std::vector<DRHI::DynamicWriteDescriptorSet> wds(1);
+			std::vector<drhi::DynamicWriteDescriptorSet> wds(1);
 			wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			wds[0].dstBinding = 0;
 			wds[0].pBufferInfo = &_descriptorBufferInfo;
@@ -77,11 +77,11 @@ namespace FOCUS
 			rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 0);
 
 			// create pipeline
-			DRHI::DynamicPipelineCreateInfo pci = {};
+			drhi::DynamicPipelineCreateInfo pci = {};
 			pci.vertexShader = RESOURCE_PATH"Shaders/Shadow/shadowMapVertex.spv";
-			pci.vertexInputBinding = DRHI::DynamicVertexInputBindingDescription();
+			pci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
 			pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
-			pci.vertexInputAttributes = std::vector<DRHI::DynamicVertexInputAttributeDescription>();
+			pci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();
 			pci.vertexInputAttributes.resize(2);
 			pci.vertexInputAttributes[0].set(api, 0, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::pos));
 			pci.vertexInputAttributes[1].set(api, 1, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::color));
@@ -91,7 +91,7 @@ namespace FOCUS
 			pci.dynamicDepthBias = true;
 			pci.sampleCounts = sampleCount.SAMPLE_COUNT_1_BIT;
 
-			DRHI::DynamicPipelineLayoutCreateInfo plci{};
+			drhi::DynamicPipelineLayoutCreateInfo plci{};
 			plci.pSetLayouts = &_descriptorSetLayout;
 			plci.setLayoutCount = 1;
 			plci.pushConstantRangeCount = 0;
@@ -116,17 +116,17 @@ namespace FOCUS
 			memcpy(_uniformBufferMapped, &subo, sizeof(ShadowMapUniformBufferObject));
 		}
 
-		void draw(std::shared_ptr<DRHI::DynamicRHI> rhi, DRHI::DynamicCommandBuffer* commandBuffer)
+		void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer)
 		{
 			auto api = rhi->getCurrentAPI();
-			auto bindPoint = DRHI::DynamicPipelineBindPoint(api);
+			auto bindPoint = drhi::DynamicPipelineBindPoint(api);
 
 			rhi->cmdSetDepthBias(*commandBuffer, 0.5f, 0.0f, 2.0f);
 			rhi->bindPipeline(_shadowPipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 			rhi->bindDescriptorSets(&_descriptorSet, _shadowPipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
 		}
 
-		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		void clean(std::shared_ptr<drhi::DynamicRHI> rhi)
 		{
 			rhi->clearBuffer(&_uniformBuffer, &_uniformBufferMemory);
 

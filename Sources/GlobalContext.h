@@ -6,7 +6,7 @@
 #include"Function/Render/RenderSystem.h"
 #include"Editor/Overlay.h"
 
-namespace FOCUS
+namespace focus
 {
 	class GlobalContext
 	{

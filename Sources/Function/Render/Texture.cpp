@@ -1,6 +1,6 @@
 #include"Texture.h"
 
-namespace FOCUS
+namespace focus
 {
 	std::shared_ptr<Texture> loadTexture(const char* texturePath)
 	{
@@ -30,7 +30,7 @@ namespace FOCUS
 			{
 				for (uint32_t level = 0; level < t->_mipLevels; ++level)
 				{
-					DRHI::DynamicExtent2D extent{};
+					drhi::DynamicExtent2D extent{};
 					extent.width = ktxTexture->baseWidth >> level;
 					extent.height = ktxTexture->baseHeight >> level;
 					

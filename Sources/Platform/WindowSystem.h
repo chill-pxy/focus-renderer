@@ -10,7 +10,7 @@
 
 #include"NativeWindow.h"
 
-namespace FOCUS
+namespace focus
 {
 	struct WindowSystemCreateInfo
 	{

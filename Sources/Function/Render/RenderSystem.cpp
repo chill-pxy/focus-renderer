@@ -7,18 +7,18 @@
 #include<imgui_impl_vulkan.h>
 #include<imgui_impl_win32.h>
 
-namespace FOCUS
+namespace focus
 {
 	void RenderSystem::initialize(RenderSystemCreateInfo rsci)
 	{
 		count++;
-		DRHI::PlatformInfo platformCI{};
+		drhi::PlatformInfo platformCI{};
 		platformCI.window = rsci.window;
 		platformCI.width = rsci.width;
 		platformCI.height = rsci.height;
 
 		// initialize renderer
-		_renderer = std::make_shared<Renderer>(DRHI::VULKAN, platformCI);
+		_renderer = std::make_shared<Renderer>(drhi::VULKAN, platformCI);
 		_renderer->initialize();
 
 		// initialize scene
@@ -82,7 +82,7 @@ namespace FOCUS
 	{
 		if (_renderer)
 		{
-			auto vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
+			auto vkrhi = static_cast<drhi::VulkanDRHI*>(_renderer->_rhiContext.get());
 			vkrhi->_viewPortWidth = width;
 			vkrhi->_viewPortHeight = height;
 		}
@@ -92,7 +92,7 @@ namespace FOCUS
 	{
 		if (_renderer)
 		{
-			auto vkrhi = static_cast<DRHI::VulkanDRHI*>(_renderer->_rhiContext.get());
+			auto vkrhi = static_cast<drhi::VulkanDRHI*>(_renderer->_rhiContext.get());
 			vkrhi->_swapChainExtent.width = width;
 			vkrhi->_swapChainExtent.height = height;
 		}

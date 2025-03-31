@@ -9,7 +9,7 @@
 #include"../Function/Render/RenderSystem.h"
 #include"../Platform/WindowSystem.h"
 
-namespace FOCUS
+namespace focus
 {
     void EngineUI::initialize()
     {
@@ -22,18 +22,18 @@ namespace FOCUS
 
         // create depth image
         auto api = _rhi->getCurrentAPI();
-        auto format = DRHI::DynamicFormat(api);
-        auto tilling = DRHI::DynamicImageTiling(api);
-        auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
-        auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
-        auto sampleCount = DRHI::DynamicSampleCountFlags(api);
+        auto format = drhi::DynamicFormat(api);
+        auto tilling = drhi::DynamicImageTiling(api);
+        auto useFlag = drhi::DynamicImageUsageFlagBits(api);
+        auto memoryFlag = drhi::DynamicMemoryPropertyFlags(api);
+        auto sampleCount = drhi::DynamicSampleCountFlags(api);
 
         _rhi->createDepthStencil(&_viewportDepthImage, &_viewportDepthImageView, &_viewportDepthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT,_rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_1_BIT);
 
         // creata descriptor pool
         {
-            DRHI::DynamicDescriptorType type(_rhi->getCurrentAPI());
-            std::vector<DRHI::DynamicDescriptorPoolSize> poolSizes =
+            drhi::DynamicDescriptorType type(_rhi->getCurrentAPI());
+            std::vector<drhi::DynamicDescriptorPoolSize> poolSizes =
             {
                 {type.DESCRIPTOR_TYPE_SAMPLER, 1000},
                 {type.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
@@ -48,8 +48,8 @@ namespace FOCUS
                 {type.DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}
             };
 
-            DRHI::DynamicDescriptorPoolCreateFlag flag(_rhi->getCurrentAPI());
-            DRHI::DynamicDescriptorPoolCreateInfo ci{};
+            drhi::DynamicDescriptorPoolCreateFlag flag(_rhi->getCurrentAPI());
+            drhi::DynamicDescriptorPoolCreateInfo ci{};
             ci.flags = flag.DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
             ci.maxSets = 1000 * poolSizes.size();
             ci.pPoolSizes = &poolSizes;
@@ -58,9 +58,9 @@ namespace FOCUS
 
         // create texture sampler
         {
-            DRHI::DynamicBorderColor color(_rhi->getCurrentAPI());
-            DRHI::DynamicSamplerAddressMode mode(_rhi->getCurrentAPI());
-            DRHI::DynamicSamplerCreateInfo sci{};
+            drhi::DynamicBorderColor color(_rhi->getCurrentAPI());
+            drhi::DynamicSamplerAddressMode mode(_rhi->getCurrentAPI());
+            drhi::DynamicSamplerCreateInfo sci{};
             sci.borderColor = color.BORDER_COLOR_INT_OPAQUE_BLACK;
             sci.sampleraAddressMode = mode.SAMPLER_ADDRESS_MODE_REPEAT;
 
@@ -84,9 +84,9 @@ namespace FOCUS
         _backend = _rhi->getCurrentAPI();
 
         // init for vulkan
-        if (_backend == DRHI::VULKAN)
+        if (_backend == drhi::VULKAN)
         {
-            DRHI::VulkanDRHI* vkrhi = static_cast<DRHI::VulkanDRHI*>(_rhi.get());
+            drhi::VulkanDRHI* vkrhi = static_cast<drhi::VulkanDRHI*>(_rhi.get());
 
             ImGui_ImplVulkan_InitInfo initInfo{};
             initInfo.Instance = vkrhi->_instance;
@@ -118,9 +118,9 @@ namespace FOCUS
 
     void EngineUI::draw()
     {
-        auto imageLayout = DRHI::DynamicImageLayout(_rhi->getCurrentAPI());
+        auto imageLayout = drhi::DynamicImageLayout(_rhi->getCurrentAPI());
         ImDrawData* imDrawData = ImGui::GetDrawData();
-        DRHI::DynamicRenderingInfo renderInfo{};
+        drhi::DynamicRenderingInfo renderInfo{};
         renderInfo.isRenderOnSwapChain = true;
         renderInfo.isClearEveryFrame = true;
         renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -137,7 +137,7 @@ namespace FOCUS
                     _rhi->beginCommandBuffer(_commandBuffers[index]);
                     _rhi->beginRendering(_commandBuffers[index], renderInfo);
 
-                    if (_backend == DRHI::VULKAN)
+                    if (_backend == drhi::VULKAN)
                     {
                         ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
                     }
@@ -161,7 +161,7 @@ namespace FOCUS
     {
         if (!*running) return;
 
-        if (_backend == DRHI::VULKAN)
+        if (_backend == drhi::VULKAN)
         {
             ImGui_ImplVulkan_NewFrame();
         }
@@ -202,15 +202,15 @@ namespace FOCUS
         
         _rhi->clearImage(&_viewportDepthImageView, &_viewportDepthImage, &_viewportDepthImageMemory);
         auto api = _rhi->getCurrentAPI();
-        auto format = DRHI::DynamicFormat(api);
-        auto tilling = DRHI::DynamicImageTiling(api);
-        auto useFlag = DRHI::DynamicImageUsageFlagBits(api);
-        auto memoryFlag = DRHI::DynamicMemoryPropertyFlags(api);
-        auto sampleCount = DRHI::DynamicSampleCountFlags(api);
+        auto format = drhi::DynamicFormat(api);
+        auto tilling = drhi::DynamicImageTiling(api);
+        auto useFlag = drhi::DynamicImageUsageFlagBits(api);
+        auto memoryFlag = drhi::DynamicMemoryPropertyFlags(api);
+        auto sampleCount = drhi::DynamicSampleCountFlags(api);
         _rhi->createDepthStencil(&_viewportDepthImage, &_viewportDepthImageView, &_viewportDepthImageMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhi->getSwapChainExtentWidth(), _rhi->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_1_BIT);
 
         _descriptorSets.resize(_viewportImageViews.size());
-        if (_backend == DRHI::VULKAN)
+        if (_backend == drhi::VULKAN)
         {
             for (uint32_t i = 0; i < _viewportImageViews.size(); i++)
             {

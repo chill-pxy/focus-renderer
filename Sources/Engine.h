@@ -11,7 +11,7 @@
 #include"GlobalContext.h"
 #include"Core/Path.h"
 
-namespace FOCUS
+namespace focus
 {
 	class Engine
 	{

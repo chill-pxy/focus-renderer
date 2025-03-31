@@ -4,7 +4,7 @@
 #include"../../Platform/WindowSystem.h"
 #include"../../Editor/Overlay.h"
 
-namespace FOCUS
+namespace focus
 {
 	void onRenderCanvasSizeChanged(uint32_t width, uint32_t height)
 	{

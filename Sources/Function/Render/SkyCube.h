@@ -3,7 +3,7 @@
 #include"Materials/EnvironmentCube.h"
 #include"Geometry/Box.h"
 
-namespace FOCUS
+namespace focus
 {
 	class SkyCube : public Box
 	{
@@ -14,15 +14,15 @@ namespace FOCUS
 
 		}
 
-		void initialize(std::shared_ptr<DRHI::DynamicRHI> rhi, std::shared_ptr<Texture> texture)
+		void initialize(std::shared_ptr<drhi::DynamicRHI> rhi, std::shared_ptr<Texture> texture)
 		{
 			_material = std::make_shared<EnvironmentCube>(texture);
-			_material->_cullMode = DRHI::DynamicCullMode(rhi->getCurrentAPI()).CULL_MODE_FRONT_BIT;
+			_material->_cullMode = drhi::DynamicCullMode(rhi->getCurrentAPI()).CULL_MODE_FRONT_BIT;
 			_scale = Vector3(5000, 5000, 5000);
 			_castShadow = false;
 		}
 
-		void clean(std::shared_ptr<DRHI::DynamicRHI> rhi)
+		void clean(std::shared_ptr<drhi::DynamicRHI> rhi)
 		{
 			__super::clean(rhi);
 			_shadow->clean(rhi);

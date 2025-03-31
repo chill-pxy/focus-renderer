@@ -6,7 +6,7 @@
 #include<mutex>
 #include<memory>
 
-namespace FOCUS
+namespace focus
 {
 	class Thread
 	{

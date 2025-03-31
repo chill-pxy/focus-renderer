@@ -1,6 +1,6 @@
 #include"RenderCamera.h"
 
-namespace FOCUS
+namespace focus
 {
 	Matrix4 RenderCamera::getViewMatrix()
 	{

@@ -6,7 +6,7 @@
 #include<glm/glm.hpp>
 #include<glm/gtx/hash.hpp>
 
-namespace FOCUS
+namespace focus
 {
 	using namespace glm;
 

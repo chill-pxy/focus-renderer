@@ -12,7 +12,7 @@
 #include"RenderScene.h"
 #include"RenderCamera.h"
 
-namespace FOCUS
+namespace focus
 {
 	struct RenderSystemCreateInfo
 	{
@@ -28,7 +28,7 @@ namespace FOCUS
 		std::shared_ptr<RenderScene> _scene;
 
 		std::vector<std::function<void()>>      _recreateFunc;
-		std::vector<DRHI::DynamicCommandBuffer> _submitCommandBuffers;
+		std::vector<drhi::DynamicCommandBuffer> _submitCommandBuffers;
 
 		int count = 0;
 		uint32_t _frameCounter = 0;

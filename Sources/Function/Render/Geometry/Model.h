@@ -7,7 +7,7 @@
 #include"../Materials/PhysicalMaterial.h"
 #include"../Texture.h"
 
-namespace FOCUS
+namespace focus
 {
 	class Model
 	{

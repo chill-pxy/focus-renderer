@@ -2,7 +2,7 @@
 
 #include"../../Core/Math.h"
 
-namespace FOCUS
+namespace focus
 {
 	class RenderCamera
 	{

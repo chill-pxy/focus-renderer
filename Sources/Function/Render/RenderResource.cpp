@@ -1,6 +1,6 @@
 #include"RenderResource.h"
 
-namespace FOCUS
+namespace focus
 {
 
 }

@@ -9,7 +9,7 @@
 #include<vector>
 
 
-namespace FOCUS
+namespace focus
 {
 	class Texture
 	{
@@ -24,7 +24,7 @@ namespace FOCUS
 		ktx_size_t _ktxSize;
 		uint32_t _mipLevels;
 		std::vector<size_t> _offsets;
-		std::vector<DRHI::DynamicExtent2D> _texSizes;
+		std::vector<drhi::DynamicExtent2D> _texSizes;
 
 	public:
 		Texture() = default;

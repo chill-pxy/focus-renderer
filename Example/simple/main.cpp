@@ -5,7 +5,7 @@ import Engine;
 
 int main()
 {
-    auto app = FOCUS::EngineSingleton::getInstance();
+    auto app = focus::EngineSingleton::getInstance();
     app->initialize();
 
     try {

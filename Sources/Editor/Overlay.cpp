@@ -551,8 +551,8 @@ namespace focus
     }
 
     //Icon size
-    static float padding = 16.0f;
-    static float thumbnailSize = 128.0f;
+    static float padding = 10.0f;
+    static float thumbnailSize = 98.0f;
 
     void EngineUI::showFileBrowswerUI()
     {
@@ -635,16 +635,19 @@ namespace focus
             {
                 switch (_selectedType)
                 {
-                case FileType::MODEL :
-                    std::cout << "is model" << std::endl;
+                case FileType::MODEL:
+                {
+                    /*auto scene = RenderSystemSingleton::getInstance()->_scene;
+                    auto obj = scene->loadModel(_selectedFile);
+                    scene->addModel(obj);*/
+                    std::cout << _selectedFile << std::endl;
                     _selectedType = FileType::NONE;
                     break;
+                }
                 case FileType::FOLDER:
-                    std::cout << "is folder" << std::endl;
                     _selectedType = FileType::NONE;
                     break;
                 case FileType::IMAGE:
-                    std::cout << "is image" << std::endl;
                     _selectedType = FileType::NONE;
                     break;
                 }

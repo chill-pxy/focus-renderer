@@ -6,6 +6,7 @@
 #include<volk.h>
 
 #include"Overlay.h"
+#include"IconsFontAwesome4.h"
 #include"../Function/Render/RenderSystem.h"
 #include"../Platform/WindowSystem.h"
 
@@ -76,6 +77,14 @@ namespace focus
         io.ConfigFlags |= ImGuiConfigFlags_IsSRGB;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
+        // init icon 
+        io.Fonts->AddFontDefault();
+        ImFontConfig config;
+        config.MergeMode = true;
+        config.GlyphMinAdvanceX = 16.0f;
+        static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+        io.Fonts->AddFontFromFileTTF(RESOURCE_PATH"Asset/Fonts/fontawesome-webfont.ttf", 16.0f, &config, icon_ranges);
+        
         setStyle();
 
         // Setup Platform/Renderer backends
@@ -113,9 +122,8 @@ namespace focus
 
         RenderSystemSingleton::getInstance()->_renderer->submitRenderTargetImage(&_viewportImages, &_viewportImageViews, &_viewportDepthImage, &_viewportDepthImageView);
 
-        ImGuiFileBrowserFlags flags = ImGuiFileBrowserFlags_::ImGuiFileBrowserFlags_NoModal;
-        _fileDialog = std::make_shared<ImGui::FileBrowser>(flags);
-        _fileDialog->Open();
+        // init browser
+        _browserPath = std::filesystem::path(RESOURCE_PATH"Asset/Models");
 
         _prepared = true;
     }
@@ -182,15 +190,7 @@ namespace focus
         showPropertyUI();
         showViewPortUI();
         showInfoUI();
-
-        
-        _fileDialog->Display();
-
-        if (_fileDialog->HasSelected())
-        {
-            std::cout << "Selected filename" << _fileDialog->GetSelected().string() << std::endl;
-            _fileDialog->ClearSelected();
-        }
+        showFileBrowswerUI();
 
         ImGui::Render();
 
@@ -519,4 +519,51 @@ namespace focus
 
         ImGui::End();
     }
+
+    //Icon size
+    static float padding = 16.0f;
+    static float thumbnailSize = 128.0f;
+
+    void EngineUI::showFileBrowswerUI()
+    {
+        ImGui::Begin("Content Browser");
+
+        if (ImGui::Button("<<"))
+        {
+            _browserPath = _browserPath.parent_path();
+            std::cout << _browserPath << std::endl;
+        }
+
+        float cellSize = thumbnailSize + padding;
+
+        float panelWidth = ImGui::GetContentRegionAvail().x;
+        int columnCount = (int)(panelWidth / cellSize);
+        if (columnCount < 1)
+        {
+            columnCount = 1;
+        }
+        ImGui::Columns(columnCount, 0, false);
+
+        for (auto& directory : std::filesystem::directory_iterator(_browserPath))
+        {
+            const auto& path = directory.path();
+            auto relativePath = std::filesystem::relative(path, _browserPath);
+            std::string filename = relativePath.filename().string();
+
+            ImGui::PushID(filename.c_str());
+
+            // icon
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+            ImGui::Button(ICON_FA_FILE, ImVec2(50, 50));
+            ImGui::Text(filename.c_str());
+            ImGui::PopStyleColor();
+
+            ImGui::NextColumn();
+
+            ImGui::PopID();
+        }
+
+        ImGui::End();
+    }
+    
 }

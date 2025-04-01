@@ -8,13 +8,14 @@
 #include<Windows.h>
 #include<memory>
 #include<mutex>
+#include<filesystem>
 
 #include<imgui.h>
-#include <imfilebrowser.h>
 #include<drhi.h>
 
 #include"../Core/Math.h"
 #include"../Function/Render/RenderResource.h"
+#include"../Core/Path.h"
 
 namespace focus
 {
@@ -30,7 +31,7 @@ namespace focus
 
 		std::shared_ptr<drhi::DynamicRHI> _rhi;
 
-		std::shared_ptr<ImGui::FileBrowser> _fileDialog;
+		std::filesystem::path _browserPath;
 		
 	public:
 		std::vector<drhi::DynamicImage> _viewportImages{};
@@ -70,6 +71,7 @@ namespace focus
 		void showPropertyUI();
 		void showViewPortUI();
 		void showInfoUI();
+		void showFileBrowswerUI();
 		void showMenu(bool* running);
 	};
 

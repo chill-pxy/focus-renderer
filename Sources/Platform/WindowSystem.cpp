@@ -9,6 +9,7 @@
 #include"../Function/IO/WindowCallback.h"
 #include"../Function/IO/KeyCallback.h"
 #include"../Function/IO/MouseCallback.h"
+#include"../Core/Path.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -48,7 +49,7 @@ namespace focus
 			SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 			
 			HICON hIcon = (HICON)LoadImage(NULL,
-				TEXT("../../../Asset/Images/focus.ico"), 
+				TEXT(RESOURCE_PATH"Asset/Images/focus.ico"), 
 				IMAGE_ICON, 
 				0, 0, 
 				LR_LOADFROMFILE | LR_DEFAULTSIZE);

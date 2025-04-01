@@ -10,6 +10,7 @@
 #include<mutex>
 
 #include<imgui.h>
+#include <imfilebrowser.h>
 #include<drhi.h>
 
 #include"../Core/Math.h"
@@ -28,6 +29,8 @@ namespace focus
 		drhi::DynamicSampler _textureSampler{};
 
 		std::shared_ptr<drhi::DynamicRHI> _rhi;
+
+		std::shared_ptr<ImGui::FileBrowser> _fileDialog;
 		
 	public:
 		std::vector<drhi::DynamicImage> _viewportImages{};

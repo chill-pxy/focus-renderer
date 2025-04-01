@@ -113,6 +113,10 @@ namespace focus
 
         RenderSystemSingleton::getInstance()->_renderer->submitRenderTargetImage(&_viewportImages, &_viewportImageViews, &_viewportDepthImage, &_viewportDepthImageView);
 
+        ImGuiFileBrowserFlags flags = ImGuiFileBrowserFlags_::ImGuiFileBrowserFlags_NoModal;
+        _fileDialog = std::make_shared<ImGui::FileBrowser>(flags);
+        _fileDialog->Open();
+
         _prepared = true;
     }
 
@@ -178,6 +182,15 @@ namespace focus
         showPropertyUI();
         showViewPortUI();
         showInfoUI();
+
+        
+        _fileDialog->Display();
+
+        if (_fileDialog->HasSelected())
+        {
+            std::cout << "Selected filename" << _fileDialog->GetSelected().string() << std::endl;
+            _fileDialog->ClearSelected();
+        }
 
         ImGui::Render();
 

@@ -19,6 +19,14 @@
 
 namespace focus
 {
+	enum FileType
+	{
+		NONE,
+		FOLDER,
+		MODEL,	
+		IMAGE
+	};
+
 	class EngineUI
 	{
 	private:
@@ -32,7 +40,9 @@ namespace focus
 		std::shared_ptr<drhi::DynamicRHI> _rhi;
 
 		std::filesystem::path _browserPath;
-		
+		std::string _selectedFile{"UnSelected"};
+		FileType _selectedType{ FileType::NONE };
+
 	public:
 		std::vector<drhi::DynamicImage> _viewportImages{};
 		std::vector<drhi::DynamicDeviceMemory> _viewportImageMemorys{};
@@ -51,6 +61,12 @@ namespace focus
 
 		uint32_t _viewportWidth{ 0 };
 		uint32_t _viewportHeight{ 0 };
+
+		bool _sceneOpen{ true };
+		bool _propertyOpen{ true };
+		bool _infoOpen{ true };
+		bool _viewportOpen{ true };
+		bool _filebrowserOpen{ true };
 
 		//property
 		std::shared_ptr<RenderResource> _currentObj{nullptr};
@@ -73,6 +89,7 @@ namespace focus
 		void showInfoUI();
 		void showFileBrowswerUI();
 		void showMenu(bool* running);
+
 	};
 
 	class DLL_EXPORT EngineUISingleton

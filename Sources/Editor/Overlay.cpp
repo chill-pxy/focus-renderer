@@ -362,16 +362,42 @@ namespace focus
         {
             if (ImGui::BeginMenu("Start"))
             {
-                if (ImGui::MenuItem("Create"))
-                {
-                }
-
                 if (ImGui::MenuItem("Exit"))
                 {
                     ImGui::EndMenu();
                     clean();
                     *running = false;
                     return;
+                }
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Windows"))
+            {
+                if (ImGui::MenuItem("Scene"))
+                {
+                    _sceneOpen = !_sceneOpen;
+                }
+
+                if (ImGui::MenuItem("Property"))
+                {
+                    _propertyOpen = !_propertyOpen;
+                }
+
+                if (ImGui::MenuItem("ViewPort"))
+                {
+                    _viewportOpen = !_viewportOpen;
+                }
+
+                if (ImGui::MenuItem("Info"))
+                {
+                    _infoOpen = !_infoOpen;
+                }
+
+                if (ImGui::MenuItem("FileBrowser"))
+                {
+                    _filebrowserOpen = !_filebrowserOpen;
                 }
 
                 ImGui::EndMenu();
@@ -422,6 +448,7 @@ namespace focus
 
     void EngineUI::showSceneUI()
     {
+        if (!_sceneOpen) return;
         ImGui::Begin("Scene");
 
         ImGui::Text("--- World Objects list ---");
@@ -443,6 +470,7 @@ namespace focus
 
     void EngineUI::showPropertyUI()
     {
+        if (!_propertyOpen) return;
         ImGui::Begin("Property");
         
         // selected obj
@@ -463,6 +491,7 @@ namespace focus
 
     void EngineUI::showInfoUI()
     {
+        if (!_infoOpen) return;
         ImGui::Begin("Infomation");
 
         ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
@@ -502,6 +531,7 @@ namespace focus
 
     void EngineUI::showViewPortUI()
     {
+        if (!_viewportOpen) return;
         ImGui::Begin("Viewport");
 
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -526,6 +556,7 @@ namespace focus
 
     void EngineUI::showFileBrowswerUI()
     {
+        if (!_filebrowserOpen) return;
         ImGui::Begin("Content Browser");
 
         if (ImGui::Button("<<"))
@@ -533,6 +564,8 @@ namespace focus
             _browserPath = _browserPath.parent_path();
             std::cout << _browserPath << std::endl;
         }
+        ImGui::SameLine();
+        ImGui::Text(_browserPath.string().c_str());
 
         float cellSize = thumbnailSize + padding;
 
@@ -552,9 +585,72 @@ namespace focus
 
             ImGui::PushID(filename.c_str());
 
-            // icon
+            // handle icon with different type
+            std::string type = filename;
+            if(filename.size() > 4)
+                type = filename.substr(filename.size() - 4, 4);
+
+            FileType fileType{};
+            auto icon = ICON_FA_FILE;
+            if (directory.is_directory())
+            {
+                icon = ICON_FA_FOLDER; 
+                fileType = FileType::FOLDER;
+            }
+            else
+            {
+                if (type == ".obj")
+                {
+                    icon = ICON_FA_CUBE;
+                    fileType = FileType::MODEL;
+                }
+
+                if (type == ".jpg" || type == ".png" || type == ".ktx")
+                {
+                    icon = ICON_FA_PICTURE_O;
+                    fileType = FileType::IMAGE;
+                }
+            }
+
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-            ImGui::Button(ICON_FA_FILE, ImVec2(50, 50));
+
+            // file button
+            auto fileButton = ImGui::Button(icon, ImVec2(50, 50));
+
+            // double click event
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(fileButton))
+            {
+                if (directory.is_directory())
+                    _browserPath = path;
+            }
+
+            // drag event
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDragging(fileButton))
+            {
+                _selectedType = fileType;
+                _selectedFile = path.string();
+            }
+
+            if (ImGui::IsMouseReleased(fileButton))
+            {
+                switch (_selectedType)
+                {
+                case FileType::MODEL :
+                    std::cout << "is model" << std::endl;
+                    _selectedType = FileType::NONE;
+                    break;
+                case FileType::FOLDER:
+                    std::cout << "is folder" << std::endl;
+                    _selectedType = FileType::NONE;
+                    break;
+                case FileType::IMAGE:
+                    std::cout << "is image" << std::endl;
+                    _selectedType = FileType::NONE;
+                    break;
+                }
+                _selectedFile = "UnSelected";
+            }
+
             ImGui::Text(filename.c_str());
             ImGui::PopStyleColor();
 

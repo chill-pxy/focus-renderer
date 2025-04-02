@@ -7,6 +7,7 @@
 
 #include"Overlay.h"
 #include"IconsFontAwesome4.h"
+#include"IconsMaterialDesign.h"
 #include"../Function/Render/RenderSystem.h"
 #include"../Platform/WindowSystem.h"
 
@@ -84,6 +85,9 @@ namespace focus
         config.GlyphMinAdvanceX = 16.0f;
         static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         io.Fonts->AddFontFromFileTTF(RESOURCE_PATH"Asset/Fonts/fontawesome-webfont.ttf", 16.0f, &config, icon_ranges);
+
+        static const ImWchar icon_rangess[] = { ICON_MIN_MD, ICON_MAX_16_MD, 0 };
+        io.Fonts->AddFontFromFileTTF(RESOURCE_PATH"Asset/Fonts/MaterialIcons-Regular.ttf", 32.0f, &config, icon_rangess);
         
         setStyle();
 
@@ -360,6 +364,10 @@ namespace focus
 
         if (ImGui::BeginMainMenuBar())
         {
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 100));
+            ImGui::Text(ICON_MD_PSYCHOLOGY);
+            ImGui::PopStyleVar();
+
             if (ImGui::BeginMenu("Start"))
             {
                 if (ImGui::MenuItem("Exit"))
@@ -413,7 +421,8 @@ namespace focus
             // close window
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 12));
             ImGui::SameLine(ImGui::GetWindowSize().x - 50);
-            if (ImGui::Button("X"))
+            auto iconSize = ImVec2(40, 40);
+            if (ImGui::Button(ICON_MD_CLOSE, iconSize))
             {
                 clean();
                 *running = false;
@@ -424,7 +433,7 @@ namespace focus
             ImGui::SameLine(ImGui::GetWindowSize().x - 86);
             if (_isMaxSize)
             {
-                if (ImGui::Button("o"))
+                if (ImGui::Button(ICON_FA_WINDOW_RESTORE, iconSize))
                 {
                     WindowSystemSingleton::getInstance()->recoverWindow();
                     _isMaxSize = false;
@@ -432,7 +441,7 @@ namespace focus
             }
             else
             {
-                if (ImGui::Button("O"))
+                if (ImGui::Button(ICON_FA_WINDOW_MAXIMIZE, iconSize))
                 {
                     WindowSystemSingleton::getInstance()->setMaxWindow();
                     _isMaxSize = true;
@@ -441,7 +450,7 @@ namespace focus
 
             // minimal window
             ImGui::SameLine(ImGui::GetWindowSize().x - 122);
-            if (ImGui::Button("-"))
+            if (ImGui::Button(ICON_FA_WINDOW_MINIMIZE, iconSize))
             {
                 WindowSystemSingleton::getInstance()->setMinWindow();
             }
@@ -498,7 +507,7 @@ namespace focus
     void EngineUI::showInfoUI()
     {
         if (!_infoOpen) return;
-        ImGui::Begin("Infomation");
+        ImGui::Begin(ICON_FA_INFO"Infomation");
 
         ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
 

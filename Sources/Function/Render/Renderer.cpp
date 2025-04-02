@@ -104,12 +104,16 @@ namespace focus
 
 	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<drhi::DynamicCommandBuffer>* commandBuffers, drhi::DynamicCommandPool* commandPool)
 	{
-		_submitRenderlist = *renderlist;
+		if (_submitRenderlist != nullptr)
+			_submitRenderlist = nullptr;
+
+		_submitRenderlist = renderlist;
 		_commandBuffers = *commandBuffers;
 		_commandPool = *commandPool;
 
-		for (auto p : _submitRenderlist)
+		for (auto p : *_submitRenderlist)
 		{
+			if (p->_built) continue;
 			p->_material->_brdfImageView = &_brdflutImageView;
 			p->_material->_brdfSampler = &_brdflutSampler;
 			
@@ -229,7 +233,7 @@ namespace focus
 			_rhiContext->beginCommandBuffer(_shadowCommandBuffers[index]);
 			_rhiContext->beginRendering(_shadowCommandBuffers[index], renderInfo);
 
-			for (auto p : _submitRenderlist)
+			for (auto p : *_submitRenderlist)
 			{
 				if (p->_castShadow)
 				{
@@ -271,7 +275,7 @@ namespace focus
 			// draw environment
 			_environmentMap->draw(_rhiContext, &_commandBuffers[index], RenderResourcePipeline::SCENE);
 
-			for (auto p : _submitRenderlist)
+			for (auto p : *_submitRenderlist)
 			{
 				p->draw(_rhiContext, &_commandBuffers[index], RenderResourcePipeline::SCENE);
 			}
@@ -305,7 +309,7 @@ namespace focus
 		_rhiContext->beginCommandBuffer(_defferedCommandBuffer);
 		_rhiContext->beginRendering(_defferedCommandBuffer, renderInfo);
 
-		for (auto p : _submitRenderlist)
+		for (auto p : *_submitRenderlist)
 		{
 			p->draw(_rhiContext, &_defferedCommandBuffer, RenderResourcePipeline::DEFFERED);
 		}

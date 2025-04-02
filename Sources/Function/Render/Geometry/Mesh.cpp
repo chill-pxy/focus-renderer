@@ -28,6 +28,8 @@ namespace focus
 
         //build material
         _material->build(rhi, commandPool);
+
+        _built = true;
     }
 
     void Mesh::draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline)

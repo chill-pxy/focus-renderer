@@ -15,7 +15,7 @@ namespace focus
 	{
 	public:
 		std::shared_ptr<drhi::DynamicRHI> _rhiContext;
-		std::vector<std::shared_ptr<RenderResource>> _submitRenderlist;
+		std::vector<std::shared_ptr<RenderResource>>* _submitRenderlist;
 		
 		std::vector<drhi::DynamicCommandBuffer> _commandBuffers;
 		drhi::DynamicCommandPool _commandPool;

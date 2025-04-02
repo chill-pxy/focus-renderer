@@ -62,7 +62,7 @@ namespace focus
             auto sampleCount = drhi::DynamicSampleCountFlags(api);
 
             if (_cullMode == 0)
-                _cullMode = cullMode.CULL_MODE_BACK_BIT;
+                _cullMode = cullMode.CULL_MODE_NONE;
 
             std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(7);
             dsbs[0].binding = 0;

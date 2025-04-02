@@ -42,6 +42,7 @@ namespace focus
 		std::filesystem::path _browserPath;
 		std::string _selectedFile{"UnSelected"};
 		FileType _selectedType{ FileType::NONE };
+		bool _pathChange{ false };
 
 	public:
 		std::vector<drhi::DynamicImage> _viewportImages{};

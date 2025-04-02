@@ -93,6 +93,8 @@ namespace focus
 			_deffered->initialize(rhi);
 
 			_material->build(rhi, commandPool);
+
+			_built = true;
 		}
 
 		virtual void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline)

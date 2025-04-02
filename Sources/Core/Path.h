@@ -1,1 +1,1 @@
-#define RESOURCE_PATH "C:\\project\\focus-renderer/"
+#define RESOURCE_PATH "E:\\project\\focus-renderer/"

@@ -375,27 +375,33 @@ namespace focus
 
             if (ImGui::BeginMenu("Windows"))
             {
-                if (ImGui::MenuItem("Scene"))
+                auto iconScene = _sceneOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
+                auto iconProperty = _propertyOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
+                auto iconViewport = _viewportOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
+                auto iconInfo = _infoOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
+                auto iconFilebrowser = _filebrowserOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
+
+                if (ImGui::MenuItem("Scene", iconScene))
                 {
                     _sceneOpen = !_sceneOpen;
                 }
 
-                if (ImGui::MenuItem("Property"))
+                if (ImGui::MenuItem("Property", iconProperty))
                 {
                     _propertyOpen = !_propertyOpen;
                 }
 
-                if (ImGui::MenuItem("ViewPort"))
+                if (ImGui::MenuItem("ViewPort", iconViewport))
                 {
                     _viewportOpen = !_viewportOpen;
                 }
 
-                if (ImGui::MenuItem("Info"))
+                if (ImGui::MenuItem("Info", iconInfo))
                 {
                     _infoOpen = !_infoOpen;
                 }
 
-                if (ImGui::MenuItem("FileBrowser"))
+                if (ImGui::MenuItem("FileBrowser", iconFilebrowser))
                 {
                     _filebrowserOpen = !_filebrowserOpen;
                 }
@@ -631,15 +637,17 @@ namespace focus
                 _selectedFile = path.string();
             }
 
+            // load obj event
             if (ImGui::IsMouseReleased(fileButton))
             {
                 switch (_selectedType)
                 {
                 case FileType::MODEL:
                 {
-                    /*auto scene = RenderSystemSingleton::getInstance()->_scene;
+                    auto scene = RenderSystemSingleton::getInstance()->_scene;
                     auto obj = scene->loadModel(_selectedFile);
-                    scene->addModel(obj);*/
+                    scene->addModel(obj);
+                    RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_group, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
                     std::cout << _selectedFile << std::endl;
                     _selectedType = FileType::NONE;
                     break;

@@ -46,6 +46,7 @@ namespace focus
             m->_material->_roughness = 0.98;
             m->_castShadow = false;
             m->_scale = Vector3(0.1, 0.1, 0.1);
+            m->_position = Vector3(0, -5.0, 0);
         }
         addModel(obj2);
 
@@ -59,7 +60,7 @@ namespace focus
                 sphere->_material->_metallic = (clamp((float)i / (float)10, 0.005f, 1.0f));
                 sphere->_material->_roughness = 1.0;//1.0f - clamp((float)i / (float)10, 0.005f, 1.0f);
                 sphere->_scale = Vector3(10.0, 10.0, 10.0);
-                sphere->_position = Vector3(i * 25, 10.0, 0);
+                sphere->_position = Vector3(i * 25, 10.0, -50);
                 sphere->_name = "obj" + std::to_string(i);
                 add(sphere);
             }
@@ -71,7 +72,7 @@ namespace focus
         auto teapot = loadModel(RESOURCE_PATH"Asset/Models/teapot.obj");//loadModel("../../../Asset/Models/teapot.obj");
         teapot->setMetallic(0.987);// ((clamp((float)i / (float)10, 0.005f, 1.0f)));
         teapot->setRoughness(0.012);// (1.0f - clamp((float)i / (float)10, 0.005f, 1.0f));
-        teapot->setPosition(Vector3(0.0, 20.0, -75.0));// (Vector3(30 * i, 10, 0));
+        teapot->setPosition(Vector3(0.0, 20.0, -105.0));// (Vector3(30 * i, 10, 0));
         teapot->setScale(Vector3(10.0, 10.0, 10.0));
         addModel(teapot);
 
@@ -160,6 +161,8 @@ namespace focus
         // find mlt path
         std::string basePath;
         size_t pos = modelPath.rfind('/');
+        size_t pos2 = modelPath.rfind('\\');
+        pos = std::max(pos, pos2);
         if (pos != std::string::npos)
         {
             basePath = modelPath.substr(0, pos);
@@ -322,7 +325,7 @@ namespace focus
             mesh->_vertices = vertices;
             mesh->_material = model->_materials[count];
             mesh->_name = name[count];
-            mesh->_scale = Vector3(0.1, 0.1, 0.1);
+            mesh->_scale = Vector3(1, 1, 1);
 
             model->_meshes.push_back(mesh);
 

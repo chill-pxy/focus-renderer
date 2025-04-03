@@ -553,10 +553,6 @@ namespace focus
 
         ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
 
-        auto scene = RenderSystemSingleton::getInstance()->_scene;
-        float* pointLightColor[3] = { &scene->_pointLight->_color.x,  &scene->_pointLight->_color.y,  &scene->_pointLight->_color.z };
-        ImGui::ColorEdit3("Point Light Color", *pointLightColor);
-
         // camera position
         ImGui::Text("camera position x: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.x);
         ImGui::Text("camera position y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.y);
@@ -567,15 +563,24 @@ namespace focus
         ImGui::Text("camera rotation y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.y);
         ImGui::Text("camera rotation z: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.z);
 
+        auto scene = RenderSystemSingleton::getInstance()->_scene;
+        float* pointLightColor[3] = { &scene->_pointLight->_color.x,  &scene->_pointLight->_color.y,  &scene->_pointLight->_color.z };
+        ImGui::ColorEdit3("Point Light Color", *pointLightColor);
+
         // light strength
-        ImGui::DragFloat("point strength", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_intensity, 0.1f);
+        ImGui::Text("Point Light Strength");
+        ImGui::SameLine();
+        ImGui::DragFloat("##point strength", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_intensity, 0.1f);
 
         // dir light
-        ImGui::DragFloat("DirLight direction x", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.x, 0.1f);
-        ImGui::DragFloat("DirLight direction y", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.y, 0.1f);
-        ImGui::DragFloat("DirLight direction z", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.z, 0.1f);
+        ImGui::Text("Directional Light Direction");
+        ImGui::SameLine();
+        float* dirLightDirection[3] = { &scene->_dirLight->_position.x,&scene->_dirLight->_position.y ,&scene->_dirLight->_position.z};
+        ImGui::DragFloat3("##Directional light direction", *dirLightDirection, 0.1f);
 
-        ImGui::DragFloat("DirLight strength", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_intensity, 0.1f);
+        ImGui::Text("Directional Light Strength");
+        ImGui::SameLine();
+        ImGui::DragFloat("##DirLight strength", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_intensity, 0.1f);
 
         ImGui::End();
     }

@@ -351,6 +351,7 @@ namespace focus
         style.FrameRounding = 3;
         style.PopupRounding = 4;
         style.ChildRounding = 4;
+		style.WindowMenuButtonPosition = ImGuiDir_None;
     }
 
     void EngineUI::showMenu(bool* running)
@@ -460,8 +461,13 @@ namespace focus
         if (!_sceneOpen) return;
         ImGui::Begin("Scene");
 
-        ImGui::Text("--- World Objects list ---");
-
+        ImGui::Columns(2, 0, false);
+        ImGui::SetColumnWidth(0, 120);
+        ImGui::SetColumnWidth(1, 100);
+        ImGui::Text("Object Name");
+		ImGui::NextColumn();
+        ImGui::Text("Type");
+        ImGui::NextColumn();
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.1f, 0.13f, 1.0f));
         for (auto r : RenderSystemSingleton::getInstance()->_scene->_group)
         {
@@ -469,10 +475,12 @@ namespace focus
             {
                 _currentObj = r;
             }
+
+            ImGui::NextColumn();
+            ImGui::Text("Mesh"); 
+            ImGui::NextColumn();
         }
         ImGui::PopStyleColor();
-
-        ImGui::Text("--------------------------");
 
         ImGui::End();
     }
@@ -481,18 +489,58 @@ namespace focus
     {
         if (!_propertyOpen) return;
         ImGui::Begin("Property");
-        
+
         // selected obj
         if (_currentObj != nullptr)
         {
-            ImGui::Text(_currentObj->_name.c_str());
-            ImGui::DragFloat("Position X", &_currentObj->_position.x, 0.1f);
-            ImGui::DragFloat("Position Y", &_currentObj->_position.y, 0.1f);
-            ImGui::DragFloat("Position Z", &_currentObj->_position.z, 0.1f);
+            ImGui::TextColored(ImVec4(0, 128, 255, 255), _currentObj->_name.c_str());
+            
+            // common info
+            ImGui::SeparatorText("Common");
 
-            ImGui::DragFloat("Scale X", &_currentObj->_scale.x, 0.1f);
-            ImGui::DragFloat("Scale Y", &_currentObj->_scale.y, 0.1f);
-            ImGui::DragFloat("Scale Z", &_currentObj->_scale.z, 0.1f);
+            ImGui::Columns(2, 0, false);
+            ImGui::SetColumnWidth(0, 70);
+            ImGui::SetColumnWidth(1, 300);
+
+            ImGui::Text("Position");
+            ImGui::NextColumn();
+            float* position[3] = {&_currentObj->_position.x, &_currentObj->_position.y, &_currentObj->_position.z};
+            ImGui::DragFloat3("##Position", *position, 0.1);
+            ImGui::SameLine();
+            ImGui::Text("(Meters)");
+            ImGui::NextColumn();
+
+            ImGui::Text("Rotation");
+            ImGui::NextColumn();
+            float* rotate[3] = { &_currentObj->_rotate.x, &_currentObj->_rotate.y, &_currentObj->_rotate.z };
+            ImGui::DragFloat3("##Rotation", *rotate, 0.1);
+            ImGui::SameLine();
+            ImGui::Text("(Angle)");
+            ImGui::NextColumn();
+
+            ImGui::Text("Scale");
+            ImGui::NextColumn();
+            float* scale[3] = { &_currentObj->_scale.x, &_currentObj->_scale.y, &_currentObj->_scale.z };
+            ImGui::DragFloat3("##Scale", *scale, 0.1);
+            ImGui::SameLine();
+            ImGui::Text("(Percentage)");
+
+            // material info
+            ImGui::Columns(1);
+            ImGui::SeparatorText("Material");
+            ImGui::Text(("Type : " + _currentObj->_material->_type).c_str());
+            ImGui::Columns(2, 0, false);
+            ImGui::SetColumnWidth(0, 75);
+            ImGui::SetColumnWidth(1, 300);
+
+            ImGui::Text("Roughness");
+            ImGui::NextColumn();
+            ImGui::DragFloat("##MaterialRoughness", &_currentObj->_material->_roughness, 0.01f, 0.0f, 1.0f);
+            ImGui::NextColumn();
+
+            ImGui::Text("Metallic");
+            ImGui::NextColumn();
+            ImGui::DragFloat("##MaterialMetallic", &_currentObj->_material->_metallic, 0.01f, 0.0f, 1.0f);
         }
        
         ImGui::End();
@@ -505,6 +553,10 @@ namespace focus
 
         ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
 
+        auto scene = RenderSystemSingleton::getInstance()->_scene;
+        float* pointLightColor[3] = { &scene->_pointLight->_color.x,  &scene->_pointLight->_color.y,  &scene->_pointLight->_color.z };
+        ImGui::ColorEdit3("Point Light Color", *pointLightColor);
+
         // camera position
         ImGui::Text("camera position x: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.x);
         ImGui::Text("camera position y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_position.y);
@@ -515,11 +567,6 @@ namespace focus
         ImGui::Text("camera rotation y: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.y);
         ImGui::Text("camera rotation z: %f", RenderSystemSingleton::getInstance()->_scene->_camera->_rotation.z);
 
-        //light color
-        ImGui::DragFloat("point color r", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_color.x, 0.1f);
-        ImGui::DragFloat("point color g", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_color.y, 0.1f);
-        ImGui::DragFloat("point color b", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_color.z, 0.1f);
-
         // light strength
         ImGui::DragFloat("point strength", &RenderSystemSingleton::getInstance()->_scene->_pointLight->_intensity, 0.1f);
 
@@ -527,11 +574,6 @@ namespace focus
         ImGui::DragFloat("DirLight direction x", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.x, 0.1f);
         ImGui::DragFloat("DirLight direction y", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.y, 0.1f);
         ImGui::DragFloat("DirLight direction z", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_position.z, 0.1f);
-
-        //dir color
-        ImGui::DragFloat("DirLight color r", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_color.x, 0.1f);
-        ImGui::DragFloat("DirLight color g", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_color.y, 0.1f);
-        ImGui::DragFloat("DirLight color b", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_color.z, 0.1f);
 
         ImGui::DragFloat("DirLight strength", &RenderSystemSingleton::getInstance()->_scene->_dirLight->_intensity, 0.1f);
 
@@ -588,6 +630,7 @@ namespace focus
 
         for (auto& directory : std::filesystem::directory_iterator(_browserPath))
         {
+            ImGui::SetWindowFontScale(1.0);
             const auto& path = directory.path();
             auto relativePath = std::filesystem::relative(path, _browserPath);
             std::string filename = relativePath.filename().string();
@@ -665,6 +708,10 @@ namespace focus
                 _selectedFile = "UnSelected";
             }
 
+            ImGui::SetWindowFontScale(0.3);
+            ImGui::Text(ICON_MD_BLUR_ON);
+            ImGui::SameLine();
+            ImGui::SetWindowFontScale(1.0);
             ImGui::Text(filename.c_str());
 			ImGui::PopStyleVar();
             ImGui::PopStyleColor();

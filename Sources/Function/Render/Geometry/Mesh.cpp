@@ -79,13 +79,18 @@ namespace focus
     {
         uud.vertexColor = _color;
 
+        // handle rotate
+        auto rotateMatrix = rotate(identity<Matrix4>(), radians(_rotate.x), glm::vec3(1.0, 0.0, 0.0)) * 
+            rotate(identity<Matrix4>(), radians(_rotate.y), glm::vec3(0.0, 1.0, 0.0)) * 
+            rotate(identity<Matrix4>(), radians(_rotate.z), glm::vec3(0.0, 0.0, 1.0));
+
         // handle scale
         auto scaleMatrix = scale(identity<Matrix4>(), Vector3(_scale.x, _scale.y, _scale.z));
 
         // handle translate
         auto transMatrix = translate(identity<Matrix4>(), _position);
 
-        uud.model = transMatrix * scaleMatrix * _rotation;
+        uud.model = transMatrix * rotateMatrix * scaleMatrix;
 
         _deffered->updateUniformBuffer(uud);
         _shadow->updateUniform(uud);

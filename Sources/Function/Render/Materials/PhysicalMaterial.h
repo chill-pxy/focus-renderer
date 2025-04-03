@@ -45,7 +45,9 @@ namespace focus
 
     public:
         PhysicalMaterial() {};
-        PhysicalMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {}
+        PhysicalMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {
+            _type = "Physical Material";
+        }
 
         virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
         {

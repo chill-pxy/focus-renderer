@@ -38,6 +38,7 @@ namespace focus
         Vector3 _position{ 0.0,0.0,0.0 };
         Vector3 _color{ 1.0f, 1.0f, 1.0f };
         Vector3 _scale{ 1.0f, 1.0f, 1.0f };
+        Vector3 _rotate{ 0.0f, 0.0f, 0.0f };
         Matrix4 _rotation{1.0f};
 
     public:

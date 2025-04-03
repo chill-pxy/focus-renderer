@@ -6,7 +6,6 @@
 #include<volk.h>
 
 #include"Overlay.h"
-#include"IconsFontAwesome4.h"
 #include"IconsMaterialDesign.h"
 #include"../Function/Render/RenderSystem.h"
 #include"../Platform/WindowSystem.h"
@@ -82,10 +81,7 @@ namespace focus
         io.Fonts->AddFontDefault();
         ImFontConfig config;
         config.MergeMode = true;
-        config.GlyphMinAdvanceX = 16.0f;
-        static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-        io.Fonts->AddFontFromFileTTF(RESOURCE_PATH"Asset/Fonts/fontawesome-webfont.ttf", 16.0f, &config, icon_ranges);
-
+        config.GlyphMinAdvanceX = 32.0f;
         static const ImWchar icon_rangess[] = { ICON_MIN_MD, ICON_MAX_16_MD, 0 };
         io.Fonts->AddFontFromFileTTF(RESOURCE_PATH"Asset/Fonts/MaterialIcons-Regular.ttf", 32.0f, &config, icon_rangess);
         
@@ -360,14 +356,15 @@ namespace focus
     void EngineUI::showMenu(bool* running)
     {
         // menu bar
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 15));
-
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(15, 20));
+        
         if (ImGui::BeginMainMenuBar())
         {
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 100));
-            ImGui::Text(ICON_MD_PSYCHOLOGY);
-            ImGui::PopStyleVar();
+            ImGui::SetCursorScreenPos(ImVec2(15, 10));
+            ImGui::SetWindowFontScale(1.0);
+            ImGui::Text(ICON_MD_DEVELOPER_BOARD);
 
+            ImGui::SetCursorScreenPos(ImVec2(60, 0));
             if (ImGui::BeginMenu("Start"))
             {
                 if (ImGui::MenuItem("Exit"))
@@ -381,35 +378,30 @@ namespace focus
                 ImGui::EndMenu();
             }
 
+            ImGui::SetCursorScreenPos(ImVec2(120, 0));
             if (ImGui::BeginMenu("Windows"))
             {
-                auto iconScene = _sceneOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
-                auto iconProperty = _propertyOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
-                auto iconViewport = _viewportOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
-                auto iconInfo = _infoOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
-                auto iconFilebrowser = _filebrowserOpen ? ICON_FA_CHECK : ICON_FA_LOCK;
-
-                if (ImGui::MenuItem("Scene", iconScene))
+                if (ImGui::MenuItem("Scene", "", _sceneOpen))
                 {
                     _sceneOpen = !_sceneOpen;
                 }
 
-                if (ImGui::MenuItem("Property", iconProperty))
+                if (ImGui::MenuItem("Property", "", _propertyOpen))
                 {
                     _propertyOpen = !_propertyOpen;
                 }
 
-                if (ImGui::MenuItem("ViewPort", iconViewport))
+                if (ImGui::MenuItem("ViewPort", "", _viewportOpen))
                 {
                     _viewportOpen = !_viewportOpen;
                 }
 
-                if (ImGui::MenuItem("Info", iconInfo))
+                if (ImGui::MenuItem("Info", "", _infoOpen))
                 {
                     _infoOpen = !_infoOpen;
                 }
 
-                if (ImGui::MenuItem("FileBrowser", iconFilebrowser))
+                if (ImGui::MenuItem("FileBrowser", "", _filebrowserOpen))
                 {
                     _filebrowserOpen = !_filebrowserOpen;
                 }
@@ -419,10 +411,12 @@ namespace focus
 
             // simulate title bar
             // close window
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12, 12));
+            ImGui::SetCursorScreenPos(ImVec2(15, 15));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 15));
             ImGui::SameLine(ImGui::GetWindowSize().x - 50);
-            auto iconSize = ImVec2(40, 40);
-            if (ImGui::Button(ICON_MD_CLOSE, iconSize))
+            auto iconSize = ImVec2(35, 35);
+            ImGui::SetWindowFontScale(0.5);
+            if (ImGui::Button(ICON_MD_DISABLED_BY_DEFAULT, iconSize))
             {
                 clean();
                 *running = false;
@@ -433,7 +427,7 @@ namespace focus
             ImGui::SameLine(ImGui::GetWindowSize().x - 86);
             if (_isMaxSize)
             {
-                if (ImGui::Button(ICON_FA_WINDOW_RESTORE, iconSize))
+                if (ImGui::Button(ICON_MD_FULLSCREEN_EXIT, iconSize))
                 {
                     WindowSystemSingleton::getInstance()->recoverWindow();
                     _isMaxSize = false;
@@ -441,7 +435,7 @@ namespace focus
             }
             else
             {
-                if (ImGui::Button(ICON_FA_WINDOW_MAXIMIZE, iconSize))
+                if (ImGui::Button(ICON_MD_FULLSCREEN, iconSize))
                 {
                     WindowSystemSingleton::getInstance()->setMaxWindow();
                     _isMaxSize = true;
@@ -450,7 +444,7 @@ namespace focus
 
             // minimal window
             ImGui::SameLine(ImGui::GetWindowSize().x - 122);
-            if (ImGui::Button(ICON_FA_WINDOW_MINIMIZE, iconSize))
+            if (ImGui::Button(ICON_MD_MINIMIZE, iconSize))
             {
                 WindowSystemSingleton::getInstance()->setMinWindow();
             }
@@ -507,7 +501,7 @@ namespace focus
     void EngineUI::showInfoUI()
     {
         if (!_infoOpen) return;
-        ImGui::Begin(ICON_FA_INFO"Infomation");
+        ImGui::Begin("Infomation");
 
         ImGui::Text("%d fps", RenderSystemSingleton::getInstance()->_lastFPS);
 
@@ -606,29 +600,29 @@ namespace focus
                 type = filename.substr(filename.size() - 4, 4);
 
             FileType fileType{};
-            auto icon = ICON_FA_FILE;
+            auto icon = ICON_MD_DESCRIPTION;
             if (directory.is_directory())
             {
-                icon = ICON_FA_FOLDER; 
+                icon = ICON_MD_FOLDER;
                 fileType = FileType::FOLDER;
             }
             else
             {
                 if (type == ".obj")
                 {
-                    icon = ICON_FA_CUBE;
+                    icon = ICON_MD_VIEW_IN_AR;
                     fileType = FileType::MODEL;
                 }
 
                 if (type == ".jpg" || type == ".png" || type == ".ktx")
                 {
-                    icon = ICON_FA_PICTURE_O;
+                    icon = ICON_MD_PANORAMA;
                     fileType = FileType::IMAGE;
                 }
             }
 
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-
+            ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign , ImVec2(0.5, 0.9));
             // file button
             auto fileButton = ImGui::Button(icon, ImVec2(50, 50));
 
@@ -672,6 +666,7 @@ namespace focus
             }
 
             ImGui::Text(filename.c_str());
+			ImGui::PopStyleVar();
             ImGui::PopStyleColor();
 
             ImGui::NextColumn();

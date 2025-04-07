@@ -1,7 +1,5 @@
 #pragma once
 
-#include<tiny_obj_loader.h>
-
 #include<functional>
 #include<memory>
 

@@ -16,7 +16,7 @@ namespace focus
 	class RenderScene
 	{
 	private:
-		MaterialManager _materialManager;
+		std::shared_ptr<MaterialManager> _materialManager;
 
 	public:
 		std::mutex _mutex;

@@ -469,6 +469,7 @@ namespace focus
         ImGui::Text("Type");
         ImGui::NextColumn();
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.1f, 0.13f, 1.0f));
+
         for (auto r : RenderSystemSingleton::getInstance()->_scene->_group)
         {
             if (ImGui::Button(r->_name.c_str()))
@@ -477,9 +478,31 @@ namespace focus
             }
 
             ImGui::NextColumn();
-            ImGui::Text("Mesh"); 
+            ImGui::Text("Mesh");
             ImGui::NextColumn();
         }
+
+        for (auto r : RenderSystemSingleton::getInstance()->_scene->_modelGroup)
+        {
+            if (ImGui::TreeNode(r->_name.c_str()))
+            {
+                for (auto m : r->_meshes)
+                {
+                    if (ImGui::Button(m->_name.c_str()))
+                    {
+                        _currentObj = m;
+                    }
+                }
+
+                ImGui::TreePop();
+            }
+
+            ImGui::NextColumn();
+            ImGui::Text("Group"); 
+            ImGui::NextColumn();
+        }
+
+
         ImGui::PopStyleColor();
 
         ImGui::End();
@@ -698,7 +721,7 @@ namespace focus
                     auto scene = RenderSystemSingleton::getInstance()->_scene;
                     auto obj = scene->loadModel(_selectedFile);
                     scene->addModel(obj);
-                    RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_group, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
+                    RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_submitGroup, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
                     std::cout << _selectedFile << std::endl;
                     _selectedType = FileType::NONE;
                     break;

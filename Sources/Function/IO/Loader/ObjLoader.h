@@ -12,7 +12,7 @@ namespace focus
 		ObjLoader() = default;
 		~ObjLoader() = default;
 
-		std::shared_ptr<Model> loadModel(const std::string& modelPath, std::shared_ptr<MaterialManager> materialManager) override
+		std::shared_ptr<Model> loadModel(const std::string& modelPath, std::shared_ptr<MaterialManager> materialManager, std::string setname = "undefined") override
 		{
             std::shared_ptr<Model> model = std::make_shared<Model>();
 
@@ -215,6 +215,7 @@ namespace focus
                     count++;
                 }
 
+                model->_name = setname;
             }
 
             return model;

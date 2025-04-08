@@ -12,6 +12,7 @@ namespace focus
 	class Model
 	{
     public:
+		std::string _name{"undefined"};
         std::vector<std::shared_ptr<Mesh>> _meshes;
         std::vector<std::shared_ptr<PhysicalMaterial>> _materials;
 

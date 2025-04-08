@@ -100,7 +100,7 @@ namespace focus
 
 	void RenderSystem::build()
 	{
-		_renderer->buildAndSubmit(&_scene->_group, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);
+		_renderer->buildAndSubmit(&_scene->_submitGroup, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);
 	}
 
 	std::shared_ptr<Renderer> RenderSystem::getRenderer()

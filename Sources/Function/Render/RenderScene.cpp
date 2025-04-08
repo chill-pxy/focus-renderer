@@ -42,7 +42,7 @@ namespace focus
 		//auto obj = loadModel("../../../Asset/Models/sponza/sponza.obj");
 		//addModel(obj);
 
-        auto obj2 = loadModel(RESOURCE_PATH"Asset/Models/defaultPlaneW.obj");
+        auto obj2 = loadModel(RESOURCE_PATH"Asset/Models/defaultPlaneW.obj", "plane");
         for (auto& m : obj2->_meshes)
         {
             m->_material->_metallic = 0.98;
@@ -99,19 +99,19 @@ namespace focus
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
 	{
-        //_mutex.lock();
+		_submitGroup.push_back(resource);
+
 		_group.push_back(resource);
-        //_mutex.unlock();
 	}
 
 	void RenderScene::addModel(std::shared_ptr<Model> model)
 	{
-        //_mutex.lock();
 		for (auto mesh : model->_meshes)
 		{
-			_group.push_back(mesh);
+			_submitGroup.push_back(mesh);
 		}
-       // _mutex.unlock();
+
+		_modelGroup.push_back(model);
 	}
 
 	void RenderScene::tick(float frameTimer)
@@ -134,7 +134,7 @@ namespace focus
 		_uud.dirLightColor = _dirLight->_color;
 		_uud.dirLightStrength = _dirLight->_intensity;
 
-		for (auto object : _group)
+		for (auto object : _submitGroup)
 		{
 			object->updateUniformBuffer(_uud);
 		}
@@ -143,7 +143,7 @@ namespace focus
 	void RenderScene::clean(std::shared_ptr<drhi::DynamicRHI> rhi)
 	{
 		// clean render resources
-		for (auto r : _group)
+		for (auto r : _submitGroup)
 		{
 			rhi->clearBuffer(&r->_indexBuffer, &r->_indexDeviceMemory);
 			rhi->clearBuffer(&r->_vertexBuffer, &r->_vertexDeviceMemory);
@@ -157,9 +157,18 @@ namespace focus
 		rhi->destroyCommandPool(&_sceneCommandPool);
 	}
 
-    std::shared_ptr<Model> RenderScene::loadModel(std::string modelPath)
+    std::shared_ptr<Model> RenderScene::loadModel(std::string modelPath, std::string name)
     {
-		ObjLoader loader{};
-		return loader.loadModel(modelPath, _materialManager);
+		auto type = modelPath.substr(modelPath.find("."));
+
+		if (type == ".obj")
+		{
+			ObjLoader loader{};
+			return loader.loadModel(modelPath, _materialManager, name);
+		}
+		else
+		{
+			return nullptr;
+		}
     }
 }

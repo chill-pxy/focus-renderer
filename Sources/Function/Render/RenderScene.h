@@ -19,12 +19,13 @@ namespace focus
 		std::shared_ptr<MaterialManager> _materialManager;
 
 	public:
-		std::mutex _mutex;
-
 		std::vector<drhi::DynamicCommandBuffer> _sceneCommandBuffers;
 		drhi::DynamicCommandPool _sceneCommandPool;
 
 		std::vector<std::shared_ptr<RenderResource>> _group;
+		std::vector<std::shared_ptr<Model>> _modelGroup;
+		std::vector<std::shared_ptr<RenderResource>> _submitGroup;
+
 		std::shared_ptr<PointLight> _pointLight;
 		std::shared_ptr<DirectionalLight> _dirLight;
 		std::shared_ptr<RenderCamera> _camera;
@@ -44,6 +45,6 @@ namespace focus
 		void tick(float frameTimer);
 		void clean(std::shared_ptr<drhi::DynamicRHI> rhi);
 
-		std::shared_ptr<Model> loadModel(std::string modelPath);
+		std::shared_ptr<Model> loadModel(std::string modelPath, std::string name = "undefined");
 	};
 }

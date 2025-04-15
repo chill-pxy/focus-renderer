@@ -484,22 +484,36 @@ namespace focus
 
         for (auto r : RenderSystemSingleton::getInstance()->_scene->_modelGroup)
         {
-            if (ImGui::TreeNode(r->_name.c_str()))
+            if (r->_meshes.size() == 1)
             {
-                for (auto m : r->_meshes)
+                if (ImGui::Button(r->_name.c_str()))
                 {
-                    if (ImGui::Button(m->_name.c_str()))
-                    {
-                        _currentObj = m;
-                    }
+                    _currentObj = r->_meshes[0];
                 }
 
-                ImGui::TreePop();
+                ImGui::NextColumn();
+                ImGui::Text("Mesh");
+                ImGui::NextColumn();
             }
+            else
+            {
+                if (ImGui::TreeNode(r->_name.c_str()))
+                {
+                    for (auto m : r->_meshes)
+                    {
+                        if (ImGui::Button(m->_name.c_str()))
+                        {
+                            _currentObj = m;
+                        }
+                    }
 
-            ImGui::NextColumn();
-            ImGui::Text("Group"); 
-            ImGui::NextColumn();
+                    ImGui::TreePop();
+                }
+
+                ImGui::NextColumn();
+                ImGui::Text("Group");
+                ImGui::NextColumn();
+            }
         }
 
 

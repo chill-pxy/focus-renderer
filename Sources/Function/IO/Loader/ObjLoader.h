@@ -138,13 +138,13 @@ namespace focus
                     {
                         if (nameTable.find(shapes[i].name) != nameTable.end())
                         {
-                            nameTable[shapes[i].name] = 1;
-                            name[materialIndex] = shapes[i].name;
+                            nameTable[shapes[i].name] = nameTable[shapes[i].name] + 1;
+                            name[materialIndex] = shapes[i].name + std::to_string(nameTable[shapes[i].name]);
                         }
                         else
                         {
-                            nameTable[shapes[i].name] = nameTable[shapes[i].name] + 1;
-                            name[materialIndex] = shapes[i].name + std::to_string(nameTable[shapes[i].name]);
+                            nameTable[shapes[i].name] = 1;
+                            name[materialIndex] = shapes[i].name;
                         }
                     }
                 }

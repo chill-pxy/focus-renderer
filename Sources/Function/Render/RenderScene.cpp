@@ -114,24 +114,56 @@ namespace focus
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
 	{
-		removeSameName(resource, _submitGroup);
+		//removeSameName(resource, _submitGroup);
+
+		if (_t_name_table.find(resource->_name) != _t_name_table.end())
+		{
+			_t_name_table[resource->_name]++;
+			resource->_name = resource->_name + std::to_string(_t_name_table[resource->_name]);
+		}
+		else
+		{
+			_t_name_table[resource->_name] = 0;
+		}
 
 		_submitGroup.push_back(resource);
 
 		_group.push_back(resource);
+
+
 	}
 
 	void RenderScene::addModel(std::shared_ptr<Model> model)
 	{
 		for (auto mesh : model->_meshes)
 		{
-			auto m = static_cast<std::shared_ptr<RenderResource>>(mesh);
-			removeSameName(m, _submitGroup);
+			//auto m = static_cast<std::shared_ptr<RenderResource>>(mesh);
+			//removeSameName(m, _submitGroup);
+
+			if (_t_name_table.find(mesh->_name) != _t_name_table.end())
+			{
+				_t_name_table[mesh->_name]++;
+				mesh->_name = mesh->_name + std::to_string(_t_name_table[mesh->_name]);
+			}
+			else
+			{
+				_t_name_table[mesh->_name] = 0;
+			}
 
 			_submitGroup.push_back(mesh);
 		}
 
-		removeSameName(model, _modelGroup);
+		//removeSameName(model, _modelGroup);
+
+		if (_t_name_table.find(model->_name) != _t_name_table.end())
+		{
+			_t_name_table[model->_name]++;
+			model->_name = model->_name + std::to_string(_t_name_table[model->_name]);
+		}
+		else
+		{
+			_t_name_table[model->_name] = 0;
+		}
 
 		_modelGroup.push_back(model);
 	}

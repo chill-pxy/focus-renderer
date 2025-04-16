@@ -26,6 +26,9 @@ namespace focus
 		std::vector<std::shared_ptr<Model>> _modelGroup;
 		std::vector<std::shared_ptr<RenderResource>> _submitGroup;
 
+		std::unordered_map<std::string, std::shared_ptr<RenderResource>> _t_group;
+		std::unordered_map<std::string, uint32_t> _t_name_table;
+
 		std::shared_ptr<PointLight> _pointLight;
 		std::shared_ptr<DirectionalLight> _dirLight;
 		std::shared_ptr<RenderCamera> _camera;

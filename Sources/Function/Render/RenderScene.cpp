@@ -10,6 +10,21 @@
 
 namespace focus
 {
+	template<class T>
+	void removeSameName(std::shared_ptr<T>& resource, std::vector<std::shared_ptr<T>>& group)
+	{
+		uint32_t count = 0;
+		for (uint32_t i = 0; i < group.size(); ++i)
+		{
+			if (resource->_name == group[i]->_name)
+			{
+				count++;
+				resource->_name = resource->_name + std::to_string(count);
+				i = 0;
+			}
+		}
+	}
+
 	void RenderScene::initialize(std::shared_ptr<drhi::DynamicRHI> rhi)
 	{
 		rhi->createCommandPool(&_sceneCommandPool);
@@ -99,6 +114,8 @@ namespace focus
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
 	{
+		removeSameName(resource, _submitGroup);
+
 		_submitGroup.push_back(resource);
 
 		_group.push_back(resource);
@@ -108,8 +125,13 @@ namespace focus
 	{
 		for (auto mesh : model->_meshes)
 		{
+			auto m = static_cast<std::shared_ptr<RenderResource>>(mesh);
+			removeSameName(m, _submitGroup);
+
 			_submitGroup.push_back(mesh);
 		}
+
+		removeSameName(model, _modelGroup);
 
 		_modelGroup.push_back(model);
 	}

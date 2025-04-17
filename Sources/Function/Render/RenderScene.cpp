@@ -114,8 +114,6 @@ namespace focus
 
 	void RenderScene::add(std::shared_ptr<RenderResource> resource)
 	{
-		//removeSameName(resource, _submitGroup);
-
 		if (_t_name_table.find(resource->_name) != _t_name_table.end())
 		{
 			_t_name_table[resource->_name]++;
@@ -129,8 +127,6 @@ namespace focus
 		_submitGroup.push_back(resource);
 
 		_group.push_back(resource);
-
-
 	}
 
 	void RenderScene::addModel(std::shared_ptr<Model> model)

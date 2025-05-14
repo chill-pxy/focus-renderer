@@ -162,7 +162,7 @@ namespace focus
                 {
                     Vertex vertex{};
 
-                    if (attrib.vertices.size() > 0)
+                    if (attrib.vertices.size() > 0 && index.vertex_index >= 0)
                     {
                         vertex.pos =
                         {
@@ -172,7 +172,7 @@ namespace focus
                         };
                     }
 
-                    if (attrib.texcoords.size() > 0)
+                    if (attrib.texcoords.size() > 0 && index.texcoord_index >= 0)
                     {
                         vertex.texCoord =
                         {
@@ -181,7 +181,7 @@ namespace focus
                         };
                     }
 
-                    if (attrib.normals.size() > 0)
+                    if (attrib.normals.size() > 0 && index.normal_index >= 0)
                     {
                         vertex.normal =
                         {

@@ -5,6 +5,8 @@
 
 #include<volk.h>
 
+#include<future>
+
 #include"Overlay.h"
 #include"IconsMaterialDesign.h"
 #include"../Function/Render/RenderSystem.h"
@@ -733,10 +735,13 @@ namespace focus
                 case FileType::MODEL:
                 {
                     auto scene = RenderSystemSingleton::getInstance()->_scene;
-                    auto obj = scene->loadModel(_selectedFile);
-                    scene->addModel(obj);
-                    RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_submitGroup, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
-                    std::cout << _selectedFile << std::endl;
+                    std::future<void> task = std::async(std::launch::async, [&]() {
+                        auto obj = scene->loadModel(_selectedFile);
+                        scene->addModel(obj);
+                        RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_submitGroup, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
+                        std::cout << _selectedFile << std::endl;
+                        });
+
                     _selectedType = FileType::NONE;
                     break;
                 }

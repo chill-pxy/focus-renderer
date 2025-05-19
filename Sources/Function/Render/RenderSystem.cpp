@@ -11,15 +11,21 @@ namespace focus
 {
 	void RenderSystem::initialize(RenderSystemCreateInfo rsci)
 	{
-		count++;
 		drhi::PlatformInfo platformCI{};
 		platformCI.window = rsci.window;
 		platformCI.width = rsci.width;
 		platformCI.height = rsci.height;
 
+		// count max thread
+		_maxThread = std::thread::hardware_concurrency();
+
 		// initialize renderer
 		_renderer = std::make_shared<Renderer>(drhi::VULKAN, platformCI);
 		_renderer->initialize();
+
+		// create primary commandbuffer
+		_renderer->_rhiContext->createCommandPool(&_priCmdpool);
+		_renderer->_rhiContext->createCommandBuffer(&_priCmdbuf, &_priCmdpool);
 
 		// initialize scene
 		_scene = std::make_shared<RenderScene>();

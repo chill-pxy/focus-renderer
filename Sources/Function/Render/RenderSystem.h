@@ -23,14 +23,18 @@ namespace focus
 
 	class RenderSystem
 	{
+	private:
+		uint32_t                   _maxThread = 1;
+		drhi::DynamicCommandBuffer _priCmdbuf;
+		drhi::DynamicCommandPool   _priCmdpool;
+
 	public:
-		std::shared_ptr<Renderer> _renderer;
+		std::shared_ptr<Renderer>    _renderer;
 		std::shared_ptr<RenderScene> _scene;
 
 		std::vector<std::function<void()>>      _recreateFunc;
 		std::vector<drhi::DynamicCommandBuffer> _submitCommandBuffers;
 
-		int count = 0;
 		uint32_t _frameCounter = 0;
 		uint32_t _lastFPS = 0;
 		float    _frameTimer = 1.0f;

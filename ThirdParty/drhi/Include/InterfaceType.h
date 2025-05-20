@@ -8,6 +8,7 @@
 
 #include<variant>
 #include<vector>
+#include<string>
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -28,6 +29,7 @@ namespace drhi
 	class DynamicCommandBuffer
 	{
 	public:
+		std::string _name = "unnamed command buffer";
 		std::variant<VkCommandBuffer> internalID;
 
 		inline VkCommandBuffer getVulkanCommandBuffer() { return std::get<VkCommandBuffer>(internalID); }

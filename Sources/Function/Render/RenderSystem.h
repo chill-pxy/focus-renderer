@@ -51,7 +51,7 @@ namespace focus
 	public:
 		void initialize(RenderSystemCreateInfo rsci);
 		void tick(bool* running);
-		void recordCommand();
+		void recordCommand(std::vector<drhi::DynamicCommandBuffer> cmdbufs);
 		void clean();
 		void build();
 		void setViewportSize(uint32_t width, uint32_t height);

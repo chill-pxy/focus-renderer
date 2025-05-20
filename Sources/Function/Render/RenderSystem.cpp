@@ -31,6 +31,9 @@ namespace focus
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
+		recordCommand(_renderer->_shadowCommandBuffers);
+		recordCommand(_renderer->_sceneCommandBuffers);
+
 		_isInitialized = true;
 	}
 
@@ -77,9 +80,9 @@ namespace focus
 		*running = true;
 	}
 
-	void RenderSystem::recordCommand()
+	void RenderSystem::recordCommand(std::vector<drhi::DynamicCommandBuffer> cmdbufs)
 	{
-		
+		_submitCommandBuffers.insert(_submitCommandBuffers.end(), cmdbufs.begin(), cmdbufs.end());
 	}
 
 	void RenderSystem::clean()

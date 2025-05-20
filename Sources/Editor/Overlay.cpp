@@ -20,6 +20,11 @@ namespace focus
 
         _rhi->createCommandPool(&_commandPool);
         _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
+        for (auto& cmdbuf : _commandBuffers)
+        {
+            cmdbuf._name = "ui command buffer";
+        }
+
         _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
         _rhi->createViewportImageViews(&_viewportImageViews, &_viewportImages);
 
@@ -127,6 +132,9 @@ namespace focus
 
         // init browser
         _browserPath = std::filesystem::path(RESOURCE_PATH"Asset/Models");
+
+        // record command
+        RenderSystemSingleton::getInstance()->recordCommand(_commandBuffers);
 
         _prepared = true;
     }

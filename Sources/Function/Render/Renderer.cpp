@@ -34,10 +34,19 @@ namespace focus
 			// initialize scene command
 			_rhiContext->createCommandPool(&_sceneCommandPool);
 			_rhiContext->createCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
+			for (auto& cmdbuf : _sceneCommandBuffers)
+			{
+				cmdbuf._name = "scene command buffer";
+			}
 
 			// initialize shadow map
 			_rhiContext->createCommandPool(&_shadowCommandPool);
 			_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
+			for (auto& cmdbuf : _shadowCommandBuffers)
+			{
+				cmdbuf._name = "shadow command buffer";
+			}
+
 			auto api = _rhiContext->getCurrentAPI();
 			auto format = drhi::DynamicFormat(api);
 			auto tilling = drhi::DynamicImageTiling(api);

@@ -19,9 +19,6 @@ namespace focus
 		std::shared_ptr<MaterialManager> _materialManager;
 
 	public:
-		std::vector<drhi::DynamicCommandBuffer> _sceneCommandBuffers;
-		drhi::DynamicCommandPool _sceneCommandPool;
-
 		std::vector<std::shared_ptr<RenderResource>> _group;
 		std::vector<std::shared_ptr<Model>> _modelGroup;
 		std::vector<std::shared_ptr<RenderResource>> _submitGroup;

@@ -17,8 +17,9 @@ namespace focus
 		std::shared_ptr<drhi::DynamicRHI> _rhiContext;
 		std::vector<std::shared_ptr<RenderResource>>* _submitRenderlist;
 		
-		std::vector<drhi::DynamicCommandBuffer> _commandBuffers;
-		drhi::DynamicCommandPool _commandPool;
+		// scene command buffer
+		std::vector<drhi::DynamicCommandBuffer> _sceneCommandBuffers;
+		drhi::DynamicCommandPool _sceneCommandPool;
 
 		// shadow command buffer
 		std::vector<drhi::DynamicCommandBuffer> _shadowCommandBuffers;
@@ -90,7 +91,7 @@ namespace focus
 		
 		void initialize();
 		void buildCommandBuffer();
-		void buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<drhi::DynamicCommandBuffer>* commandBuffers, drhi::DynamicCommandPool* commandPool);
+		void buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist);
 		void submitRenderTargetImage(std::vector<drhi::DynamicImage>* viewportImages, std::vector<drhi::DynamicImageView>* viewportImageViews, drhi::DynamicImage* depthImage, drhi::DynamicImageView* depthImageView);
 		void clean();
 		void recreate();

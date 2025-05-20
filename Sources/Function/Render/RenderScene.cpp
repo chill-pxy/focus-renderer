@@ -27,9 +27,6 @@ namespace focus
 
 	void RenderScene::initialize(std::shared_ptr<drhi::DynamicRHI> rhi)
 	{
-		rhi->createCommandPool(&_sceneCommandPool);
-		rhi->createCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
-
 		_pointLight = std::make_shared<PointLight>();
 		_dirLight = std::make_shared<DirectionalLight>();
 		_camera = std::make_shared<RenderCamera>();
@@ -202,9 +199,6 @@ namespace focus
             r->_shadow->clean(rhi);
             r->_deffered->clean(rhi);
 		}
-
-		rhi->freeCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
-		rhi->destroyCommandPool(&_sceneCommandPool);
 	}
 
     std::shared_ptr<Model> RenderScene::loadModel(std::string modelPath, std::string name)

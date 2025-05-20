@@ -31,6 +31,10 @@ namespace focus
 		_rhiContext->initialize(rayTracingMode);
 
 		{
+			// initialize scene command
+			_rhiContext->createCommandPool(&_sceneCommandPool);
+			_rhiContext->createCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
+
 			// initialize shadow map
 			_rhiContext->createCommandPool(&_shadowCommandPool);
 			_rhiContext->createCommandBuffers(&_shadowCommandBuffers, &_shadowCommandPool);
@@ -102,14 +106,12 @@ namespace focus
 		//_rhiContext->initRayTracing();
 	}
 
-	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist, std::vector<drhi::DynamicCommandBuffer>* commandBuffers, drhi::DynamicCommandPool* commandPool)
+	void Renderer::buildAndSubmit(std::vector<std::shared_ptr<RenderResource>>* renderlist)
 	{
 		if (_submitRenderlist != nullptr)
 			_submitRenderlist = nullptr;
 
 		_submitRenderlist = renderlist;
-		_commandBuffers = *commandBuffers;
-		_commandPool = *commandPool;
 
 		for (auto p : *_submitRenderlist)
 		{
@@ -133,7 +135,7 @@ namespace focus
 				p->_material->_gbuffer.depthSampler = &_depthSampler;
 			}
 
-			p->build(_rhiContext, &_commandPool);
+			p->build(_rhiContext, &_sceneCommandPool);
 		}
 
 		buildCommandBuffer();
@@ -160,6 +162,10 @@ namespace focus
 	void Renderer::clean()
 	{
 		_prepared = false;
+
+		// scene
+		_rhiContext->freeCommandBuffers(&_sceneCommandBuffers, &_sceneCommandPool);
+		_rhiContext->destroyCommandPool(&_sceneCommandPool);
 
 		// shadows
 		_rhiContext->clearImage(&_shadowImageView, &_shadowImage, &_shadowImageMemory);
@@ -256,7 +262,7 @@ namespace focus
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
 
-		for (int index = 0; index < _commandBuffers.size(); ++index)
+		for (int index = 0; index < _sceneCommandBuffers.size(); ++index)
 		{
 			renderInfo.targetImage = &(*_viewportImages)[index];
 			renderInfo.targetImageView = &(*_viewportImageViews)[index];
@@ -269,19 +275,19 @@ namespace focus
 			renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
 			renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 
-			_rhiContext->beginCommandBuffer(_commandBuffers[index]);
-			_rhiContext->beginRendering(_commandBuffers[index], renderInfo);
+			_rhiContext->beginCommandBuffer(_sceneCommandBuffers[index]);
+			_rhiContext->beginRendering(_sceneCommandBuffers[index], renderInfo);
 
 			// draw environment
-			_environmentMap->draw(_rhiContext, &_commandBuffers[index], RenderResourcePipeline::SCENE);
+			_environmentMap->draw(_rhiContext, &_sceneCommandBuffers[index], RenderResourcePipeline::SCENE);
 
 			for (auto p : *_submitRenderlist)
 			{
-				p->draw(_rhiContext, &_commandBuffers[index], RenderResourcePipeline::SCENE);
+				p->draw(_rhiContext, &_sceneCommandBuffers[index], RenderResourcePipeline::SCENE);
 			}
 
-			_rhiContext->endRendering(_commandBuffers[index], renderInfo);
-			_rhiContext->endCommandBuffer(_commandBuffers[index]);
+			_rhiContext->endRendering(_sceneCommandBuffers[index], renderInfo);
+			_rhiContext->endCommandBuffer(_sceneCommandBuffers[index]);
 		}
 	}
 

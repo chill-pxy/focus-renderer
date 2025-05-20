@@ -77,8 +77,16 @@ namespace focus
 		*running = true;
 	}
 
+	void RenderSystem::recordCommand()
+	{
+		
+	}
+
 	void RenderSystem::clean()
 	{
+		_renderer->_rhiContext->freeCommandBuffer(&_priCmdbuf, &_priCmdpool);
+		_renderer->_rhiContext->destroyCommandPool(&_priCmdpool);
+
 		_scene->clean(_renderer->_rhiContext);
 		_renderer->clean();
 		_isInitialized = false;
@@ -106,7 +114,7 @@ namespace focus
 
 	void RenderSystem::build()
 	{
-		_renderer->buildAndSubmit(&_scene->_submitGroup, &_scene->_sceneCommandBuffers, &_scene->_sceneCommandPool);
+		_renderer->buildAndSubmit(&_scene->_submitGroup);
 	}
 
 	std::shared_ptr<Renderer> RenderSystem::getRenderer()

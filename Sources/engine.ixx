@@ -57,7 +57,7 @@ extern "C" __declspec(dllexport) void plantObj(const char* path, const char* nam
 		if (focus::EngineSingleton::getInstance()->getJobState())
 		{
 			scene->addModel(obj);
-			focus::RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_submitGroup, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
+			focus::RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_submitGroup);
 			break;
 		}
 	}

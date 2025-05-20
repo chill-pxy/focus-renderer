@@ -80,6 +80,7 @@ namespace focus
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
         // init icon 
+
         io.Fonts->AddFontDefault();
         ImFontConfig config;
         config.MergeMode = true;
@@ -738,7 +739,7 @@ namespace focus
                     std::future<void> task = std::async(std::launch::async, [&]() {
                         auto obj = scene->loadModel(_selectedFile);
                         scene->addModel(obj);
-                        RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_submitGroup, &scene->_sceneCommandBuffers, &scene->_sceneCommandPool);
+                        RenderSystemSingleton::getInstance()->_renderer->buildAndSubmit(&scene->_submitGroup);
                         std::cout << _selectedFile << std::endl;
                         });
 

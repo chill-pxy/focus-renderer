@@ -52,7 +52,7 @@ namespace focus
 							RenderSystemSingleton::getInstance()->_renderer->_shadowCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
 
 						RenderSystemSingleton::getInstance()->_submitCommandBuffers.push_back(
-							RenderSystemSingleton::getInstance()->_scene->_sceneCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
+							RenderSystemSingleton::getInstance()->_renderer->_sceneCommandBuffers[RenderSystemSingleton::getInstance()->_renderer->_rhiContext->getCurrentFrame()]);
 
 						for (uint32_t i = 0; i < EngineUISingleton::getInstance()->_commandBuffers.size(); ++i)
 						{

@@ -25,12 +25,13 @@ namespace focus
 
 		// create primary commandbuffer
 		_renderer->_rhiContext->createCommandPool(&_priCmdpool);
-		_renderer->_rhiContext->createCommandBuffer(&_priCmdbuf, &_priCmdpool);
+		_renderer->_rhiContext->createCommandBuffers(&_priCmdbuf, &_priCmdpool);
 
 		// initialize scene
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
+		recordCommand(_priCmdbuf);
 		recordCommand(_renderer->_shadowCommandBuffers);
 		recordCommand(_renderer->_sceneCommandBuffers);
 
@@ -58,7 +59,6 @@ namespace focus
 		// scene tick
 		_scene->tick(_frameTimer);
 		_renderer->_environmentMap->updateUniformBuffer(_scene->_uud);
-		//_renderer->buildCommandBuffer();
 
 		// Convert to clamped timer value
 		_timer += _timerSpeed * _frameTimer;
@@ -80,6 +80,52 @@ namespace focus
 		*running = true;
 	}
 
+	void RenderSystem::update(std::function<void(uint32_t)> job, drhi::DynamicCommandBufferInheritanceInfo& inheritanceInfo, std::vector<drhi::DynamicCommandBuffer> exCmdbuf)
+	{
+		auto api = _renderer->_rhiContext->getCurrentAPI();
+		auto imageLayout = drhi::DynamicImageLayout(api);
+		auto format = drhi::DynamicFormat(api);
+		auto samples = drhi::DynamicSampleCountFlags(api);
+
+		drhi::DynamicRenderingInfo renderInfo{};
+		renderInfo.isRenderOnSwapChain = true;
+		renderInfo.isClearEveryFrame = true;
+		renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		//if (inheritanceInfo.pNext == nullptr)
+		{
+			inheritanceInfo.framebuffer = nullptr;
+			inheritanceInfo.renderPass = nullptr;
+			inheritanceInfo.subpass = 0;
+			
+			drhi::DynamicCommandBufferInheritanceRenderingInfoKHR inheritanceInfoKHR{};
+			uint32_t colorFormat = format.FORMAT_B8G8R8A8_UNORM;
+			inheritanceInfoKHR.colorAttachmentCount = 1;
+			inheritanceInfoKHR.depthAttachmentFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
+			inheritanceInfoKHR.pColorAttachmentFormats = &colorFormat;
+			inheritanceInfoKHR.stencilAttachmentFormat = format.FORMAT_UNDEFINED;
+			inheritanceInfoKHR.rasterizationSamples = samples.SAMPLE_COUNT_1_BIT;
+			renderInfo.isRenderBySecondaryCommand = true;
+
+			inheritanceInfo.pNext = &inheritanceInfoKHR;
+		}
+
+		for (uint32_t index = 0; index < _priCmdbuf.size(); ++index)
+		{
+			renderInfo.swapChainIndex = index;
+
+			_renderer->_rhiContext->beginCommandBuffer(_priCmdbuf[index]);
+			_renderer->_rhiContext->beginRendering(_priCmdbuf[index], renderInfo);
+
+			job(index);
+
+			_renderer->_rhiContext->executeCommands(_priCmdbuf[index], std::vector<drhi::DynamicCommandBuffer>{exCmdbuf[index]});
+
+			_renderer->_rhiContext->endRendering(_priCmdbuf[index], renderInfo);
+			_renderer->_rhiContext->endCommandBuffer(_priCmdbuf[index]);
+		}
+	}
+
 	void RenderSystem::recordCommand(std::vector<drhi::DynamicCommandBuffer> cmdbufs)
 	{
 		_submitCommandBuffers.insert(_submitCommandBuffers.end(), cmdbufs.begin(), cmdbufs.end());
@@ -87,7 +133,7 @@ namespace focus
 
 	void RenderSystem::clean()
 	{
-		_renderer->_rhiContext->freeCommandBuffer(&_priCmdbuf, &_priCmdpool);
+		_renderer->_rhiContext->freeCommandBuffers(&_priCmdbuf, &_priCmdpool);
 		_renderer->_rhiContext->destroyCommandPool(&_priCmdpool);
 
 		_scene->clean(_renderer->_rhiContext);

@@ -107,7 +107,7 @@ namespace drhi
 		virtual void createCommandPool(DynamicCommandPool* commandPool);
 		virtual void createCommandBuffers(std::vector<DynamicCommandBuffer>* commandBuffers, DynamicCommandPool* commandPool, DynamicCommandBufferLevel level = DynamicCommandBufferLevel::PRIMARY);
 		virtual void createCommandBuffer(DynamicCommandBuffer* commandBuffer, DynamicCommandPool* commandPool, DynamicCommandBufferLevel level = DynamicCommandBufferLevel::PRIMARY);
-		virtual void beginCommandBuffer(DynamicCommandBuffer commandBuffer);
+		virtual void beginCommandBuffer(DynamicCommandBuffer commandBuffer, DynamicCommandBufferInheritanceInfo* inheritanceInfo = nullptr);
 		virtual void beginRendering(DynamicCommandBuffer commandBuffer, DynamicRenderingInfo bri);
 		virtual void endCommandBuffer(DynamicCommandBuffer commandBuffer);
 		virtual void endRendering(DynamicCommandBuffer commandBuffer, DynamicRenderingInfo bri);
@@ -115,6 +115,7 @@ namespace drhi
 		virtual void freeCommandBuffer(DynamicCommandBuffer* commandBuffer, DynamicCommandPool* commandPool);
 		virtual void destroyCommandPool(DynamicCommandPool* commandPool);
 		virtual void flushCommandBuffer(DynamicCommandBuffer cmdBuf, DynamicCommandPool cmdPool, bool free);
+		virtual void executeCommands(drhi::DynamicCommandBuffer primaryCommandBuffer, std::vector<drhi::DynamicCommandBuffer> executeCommandbuffers);
 
 		//buffer functions
 		virtual void bindVertexBuffers(DynamicBuffer* vertexBuffer, DynamicCommandBuffer* commandBuffer);

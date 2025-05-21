@@ -19,10 +19,10 @@ namespace focus
         _rhi = RenderSystemSingleton::getInstance()->_renderer->_rhiContext;
 
         _rhi->createCommandPool(&_commandPool);
-        _rhi->createCommandBuffers(&_commandBuffers, &_commandPool);
-        for (auto& cmdbuf : _commandBuffers)
+        _rhi->createCommandBuffers(&_commandBuffers, &_commandPool, drhi::SECONDARY);
+        for (auto& c : _commandBuffers)
         {
-            cmdbuf._name = "ui command buffer";
+            c._name = "ui command buffer";
         }
 
         _rhi->createViewportImage(&_viewportImages, &_viewportImageMemorys, &_commandPool);
@@ -134,12 +134,12 @@ namespace focus
         _browserPath = std::filesystem::path(RESOURCE_PATH"Asset/Models");
 
         // record command
-        RenderSystemSingleton::getInstance()->recordCommand(_commandBuffers);
+       // RenderSystemSingleton::getInstance()->recordCommand(_commandBuffers);
 
         _prepared = true;
     }
 
-    void EngineUI::draw()
+    void EngineUI::draw(uint32_t index)
     {
         auto imageLayout = drhi::DynamicImageLayout(_rhi->getCurrentAPI());
         ImDrawData* imDrawData = ImGui::GetDrawData();
@@ -153,19 +153,19 @@ namespace focus
             if (imDrawData->CmdListsCount > 0)
             {
                 _isEmpty = false;
-                for (uint32_t index = 0; index < _commandBuffers.size(); ++index)
+                //for (uint32_t index = 0; index < _commandBuffers.size(); ++index)
                 {
-                    renderInfo.swapChainIndex = index;
+                    //renderInfo.swapChainIndex = index;
 
-                    _rhi->beginCommandBuffer(_commandBuffers[index]);
-                    _rhi->beginRendering(_commandBuffers[index], renderInfo);
+                    _rhi->beginCommandBuffer(_commandBuffers[index], &_inheritanceInfo);
+                    //_rhi->beginRendering(_commandBuffers[index], renderInfo);
 
                     if (_backend == drhi::VULKAN)
                     {
                         ImGui_ImplVulkan_RenderDrawData(imDrawData, _commandBuffers[index].getVulkanCommandBuffer());
                     }
 
-                    _rhi->endRendering(_commandBuffers[index], renderInfo);
+                    //_rhi->endRendering(_commandBuffers[index], renderInfo);
                     _rhi->endCommandBuffer(_commandBuffers[index]);
                 }
             }
@@ -207,7 +207,8 @@ namespace focus
 
         if(_prepared)
         {
-            draw();
+            //draw();
+            RenderSystemSingleton::getInstance()->update(std::bind(&EngineUI::draw, this, std::placeholders::_1), _inheritanceInfo, _commandBuffers);
         }
 
         *running = true;

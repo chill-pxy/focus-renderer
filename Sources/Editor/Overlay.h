@@ -32,7 +32,7 @@ namespace focus
 	private:
 		drhi::API      _backend{ drhi::VULKAN };
 
-		drhi::DynamicDescriptorPool _descriptorPool{};
+		drhi::DynamicDescriptorPool             _descriptorPool{};
 		std::vector<drhi::DynamicDescriptorSet> _descriptorSets{};
 	
 		drhi::DynamicSampler _textureSampler{};
@@ -40,21 +40,22 @@ namespace focus
 		std::shared_ptr<drhi::DynamicRHI> _rhi;
 
 		std::filesystem::path _browserPath;
-		std::string _selectedFile{"UnSelected"};
-		FileType _selectedType{ FileType::NONE };
-		bool _pathChange{ false };
+		std::string           _selectedFile{"UnSelected"};
+		FileType              _selectedType{ FileType::NONE };
+		bool                  _pathChange{ false };
 
 	public:
-		std::vector<drhi::DynamicImage> _viewportImages{};
+		std::vector<drhi::DynamicImage>        _viewportImages{};
 		std::vector<drhi::DynamicDeviceMemory> _viewportImageMemorys{};
-		std::vector<drhi::DynamicImageView> _viewportImageViews{};
+		std::vector<drhi::DynamicImageView>    _viewportImageViews{};
 
-		drhi::DynamicImage _viewportDepthImage{};
+		drhi::DynamicImage        _viewportDepthImage{};
 		drhi::DynamicDeviceMemory _viewportDepthImageMemory{};
-		drhi::DynamicImageView _viewportDepthImageView{};
+		drhi::DynamicImageView    _viewportDepthImageView{};
 
-		drhi::DynamicCommandPool _commandPool{};
-		std::vector<drhi::DynamicCommandBuffer> _commandBuffers{};
+		drhi::DynamicCommandPool                  _commandPool{};
+		std::vector<drhi::DynamicCommandBuffer>   _commandBuffers{};
+		drhi::DynamicCommandBufferInheritanceInfo _inheritanceInfo{};
 		
 		bool _isEmpty = true;
 		bool _prepared{ false };
@@ -75,7 +76,7 @@ namespace focus
 	public:
 		EngineUI() = default;
 
-		void draw();
+		void draw(uint32_t index);
 		void initialize();
 		void tick(bool* running);
 		void recreate();

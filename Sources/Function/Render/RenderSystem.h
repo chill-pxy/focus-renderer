@@ -24,9 +24,9 @@ namespace focus
 	class RenderSystem
 	{
 	private:
-		uint32_t                   _maxThread = 1;
-		drhi::DynamicCommandBuffer _priCmdbuf;
-		drhi::DynamicCommandPool   _priCmdpool;
+		uint32_t                                _maxThread = 1;
+		std::vector<drhi::DynamicCommandBuffer> _priCmdbuf;
+		drhi::DynamicCommandPool                _priCmdpool;
 
 	public:
 		std::shared_ptr<Renderer>    _renderer;
@@ -51,6 +51,7 @@ namespace focus
 	public:
 		void initialize(RenderSystemCreateInfo rsci);
 		void tick(bool* running);
+		void update(std::function<void(uint32_t)> job, drhi::DynamicCommandBufferInheritanceInfo& inheritanceInfo, std::vector<drhi::DynamicCommandBuffer> exCmdbuf);
 		void recordCommand(std::vector<drhi::DynamicCommandBuffer> cmdbufs);
 		void clean();
 		void build();

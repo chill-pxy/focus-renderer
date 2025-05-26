@@ -1,6 +1,3 @@
-#include<drhi.h>
-#include<ffx_api/ffx_api.hpp>
-
 #include"RenderSystem.h"
 
 namespace focus
@@ -27,6 +24,7 @@ namespace focus
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
+		// record command list
 		recordCommand(_priCmdbuf);
 		recordCommand(_renderer->_shadowCommandBuffers);
 		recordCommand(_renderer->_sceneCommandBuffers);

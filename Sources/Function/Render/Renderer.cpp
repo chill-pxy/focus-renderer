@@ -1,10 +1,16 @@
 #include<chrono>
 #include<array>
 
+// imgui api
 #define IMGUI_IMPL_VULKAN_USE_VOLK
 #include<imgui.h>
 #include<imgui_impl_vulkan.h>
 #include<imgui_impl_win32.h>
+
+// ffx api
+#include<ffx_api/ffx_api.hpp>
+#include<ffx_api/ffx_upscale.hpp>
+#include<ffx_api/vk/ffx_api_vk.hpp>
 
 #include"Renderer.h"
 #include"RenderResource.h"
@@ -29,6 +35,25 @@ namespace focus
 		// if ray tracing mode is on, renderdoc would throw abort() error
 		bool rayTracingMode = false;
 		_rhiContext->initialize(rayTracingMode);
+
+		// experiment for ffx
+		{
+			ffx::Context fsrContext;
+			ffx::CreateBackendVKDesc backend{};
+			backend.vkDevice = _rhiContext->getDevice()->getVulkanDevice();
+			
+			ffx::CreateContextDescUpscale upscale{};
+			upscale.maxUpscaleSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight()};
+			// test size
+			upscale.maxRenderSize = { 1920,1080 };
+			upscale.flags = FFX_UPSCALE_ENABLE_AUTO_EXPOSURE | FFX_UPSCALE_ENABLE_HIGH_DYNAMIC_RANGE;
+
+			ffx::ReturnCode result = ffx::CreateContext(fsrContext, nullptr, upscale, backend);
+			if (result != ffx::ReturnCode::Ok)
+			{
+				std::cout << "error";
+			}
+		}
 
 		{
 			// initialize scene command

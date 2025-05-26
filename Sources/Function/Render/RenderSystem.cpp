@@ -2,11 +2,6 @@
 
 #include"RenderSystem.h"
 
-#define IMGUI_IMPL_VULKAN_USE_VOLK
-#include<imgui.h>
-#include<imgui_impl_vulkan.h>
-#include<imgui_impl_win32.h>
-
 namespace focus
 {
 	void RenderSystem::initialize(RenderSystemCreateInfo rsci)

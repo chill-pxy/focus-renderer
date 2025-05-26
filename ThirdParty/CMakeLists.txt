@@ -47,5 +47,8 @@ if(NOT TARGET imgui)
     set_target_properties(imgui PROPERTIES FOLDER ${third_party_folder}/imgui)
 endif()
 
+# ffx
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ffx/PrebuiltSignedDLL/amd_fidelityfx_vk.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
 # drhi
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/drhi/drhi.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

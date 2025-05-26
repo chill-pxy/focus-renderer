@@ -52,10 +52,22 @@ target_link_libraries(${TARGET_NAME} PUBLIC
     imgui
 )
 
+# ---------------drhi------------------
 target_link_libraries(${TARGET_NAME} PRIVATE
     ${THIRD_PARTY_DIR}/drhi/drhi.lib
 )
 
 include_directories(${THIRD_PARTY_DIR}/drhi/Include)
+#--------------------------------------
+
+#---------------ffx api----------------
+target_link_libraries(${TARGET_NAME} PRIVATE
+    ${THIRD_PARTY_DIR}/ffx/PrebuiltSignedDLL/amd_fidelityfx_vk.lib
+)
+
+include_directories(${THIRD_PARTY_DIR}/ffx/ffx-api/include)
+#--------------------------------------
+
+# imgui
 include_directories(${THIRD_PARTY_DIR}/imgui/backends)
 

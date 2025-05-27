@@ -62,7 +62,7 @@ include_directories(${THIRD_PARTY_DIR}/drhi/Include)
 
 #---------------ffx api----------------
 target_link_libraries(${TARGET_NAME} PRIVATE
-    ${THIRD_PARTY_DIR}/ffx/PrebuiltSignedDLL/amd_fidelityfx_vk.lib
+    ${THIRD_PARTY_DIR}/ffx/ffx-api/lib/amd_fidelityfx_vk.lib
 )
 
 include_directories(${THIRD_PARTY_DIR}/ffx/ffx-api/include)

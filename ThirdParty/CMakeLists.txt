@@ -48,7 +48,7 @@ if(NOT TARGET imgui)
 endif()
 
 # ffx
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ffx/PrebuiltSignedDLL/amd_fidelityfx_vk.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ffx/ffx-api/lib/amd_fidelityfx_vk.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # drhi
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/drhi/drhi.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

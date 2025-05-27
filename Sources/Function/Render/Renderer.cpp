@@ -38,20 +38,27 @@ namespace focus
 
 		// experiment for ffx
 		{
-			ffx::Context fsrContext;
-			ffx::CreateBackendVKDesc backend{};
-			backend.vkDevice = _rhiContext->getDevice()->getVulkanDevice();
-			
-			ffx::CreateContextDescUpscale upscale{};
-			upscale.maxUpscaleSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight()};
-			// test size
-			upscale.maxRenderSize = { 1920,1080 };
-			upscale.flags = FFX_UPSCALE_ENABLE_AUTO_EXPOSURE | FFX_UPSCALE_ENABLE_HIGH_DYNAMIC_RANGE;
-
-			ffx::ReturnCode result = ffx::CreateContext(fsrContext, nullptr, upscale, backend);
-			if (result != ffx::ReturnCode::Ok)
+			ffx::Context fsrContext = nullptr;
+			if (_rhiContext->getCurrentAPI() == drhi::VULKAN)
 			{
-				std::cout << "error";
+				ffx::CreateBackendVKDesc backend{};
+				backend.vkDevice = static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->_device;
+				backend.vkPhysicalDevice = static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->_physicalDevice;
+				backend.vkDeviceProcAddr = *(static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->getVkDeviceProcAddr());
+				backend.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_VK;
+
+				ffx::CreateContextDescUpscale upscale{};
+				upscale.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE;
+				upscale.maxUpscaleSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight() };
+				upscale.maxRenderSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight() };
+				upscale.flags = FFX_UPSCALE_ENABLE_AUTO_EXPOSURE | FFX_UPSCALE_ENABLE_HIGH_DYNAMIC_RANGE;
+				upscale.fpMessage = nullptr;
+
+				ffx::ReturnCode result = ffx::CreateContext(fsrContext, nullptr, upscale, backend);
+				if (result != ffx::ReturnCode::Ok)
+				{
+					std::cout << "error";
+				}
 			}
 		}
 

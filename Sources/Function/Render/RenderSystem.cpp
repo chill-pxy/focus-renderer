@@ -1,5 +1,7 @@
 #include"RenderSystem.h"
 
+#include<ffx_api/ffx_api_types.h>
+
 namespace focus
 {
 	void RenderSystem::initialize(RenderSystemCreateInfo rsci)
@@ -232,5 +234,14 @@ namespace focus
 			};
 
 		_scene->_camera->setJitterCallBack(cameraJitterCallBack);
+
+		// dispatch
+		ffx::DispatchDescUpscale dispatchUpscale{};
+		dispatchUpscale.commandList = _submitCommandBuffers.data();
+
+		uint32_t state = FFX_API_RESOURCE_STATE_COMPUTE_READ;
+        VkImage image = _renderer->_viewportImages->at(0).getVulkanImage();
+		//dispatchUpscale.color = ffxApiGetResourceVK((void*)image, ffxApiGetImageResourceDescriptionVK(image, ), state)
+
 	}
 }

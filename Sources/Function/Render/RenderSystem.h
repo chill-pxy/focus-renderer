@@ -57,6 +57,7 @@ namespace focus
 		void build();
 		void setViewportSize(uint32_t width, uint32_t height);
 		void setSwapChainSize(uint32_t width, uint32_t height);
+		void updateRenderCanvasSize(uint32_t width, uint32_t height);
 
 		std::shared_ptr<Renderer> getRenderer();
 	};

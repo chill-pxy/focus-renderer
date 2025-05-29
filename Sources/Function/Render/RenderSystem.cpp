@@ -164,4 +164,14 @@ namespace focus
 	{
 		return _renderer;
 	}
+
+	void RenderSystem::updateRenderCanvasSize(uint32_t width, uint32_t height)
+	{
+		_renderer->_renderWidth = width;
+		_renderer->_renderHeight = height;
+
+		_scene->_camera->_viewportWidth = width;
+		_scene->_camera->_viewportHeight = height;
+		_scene->_camera->updateProjMatrix();
+	}
 }

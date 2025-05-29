@@ -32,9 +32,6 @@ namespace focus
 
 		UniformUpdateData _uud{};
 
-		uint32_t _canvasWidth{1280};
-		uint32_t _canvasHeight{720};
-
 	public:
 		RenderScene() = default;
 

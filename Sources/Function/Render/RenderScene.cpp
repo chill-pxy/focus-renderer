@@ -130,9 +130,6 @@ namespace focus
 	{
 		for (auto mesh : model->_meshes)
 		{
-			//auto m = static_cast<std::shared_ptr<RenderResource>>(mesh);
-			//removeSameName(m, _submitGroup);
-
 			if (_t_name_table.find(mesh->_name) != _t_name_table.end())
 			{
 				_t_name_table[mesh->_name]++;
@@ -145,8 +142,6 @@ namespace focus
 
 			_submitGroup.push_back(mesh);
 		}
-
-		//removeSameName(model, _modelGroup);
 
 		if (_t_name_table.find(model->_name) != _t_name_table.end())
 		{
@@ -167,8 +162,7 @@ namespace focus
 		_camera->handleMovement(frameTimer);
 
 		_uud.view = _camera->getViewMatrix();
-		_uud.proj = perspective(radians(60.0f), _canvasWidth / (float)_canvasHeight, 1.0f, 10000.0f);
-		_uud.proj[1][1] *= -1;
+		_uud.proj = _camera->getProjMatrix();
 
 		_uud.viewPosition = _camera->_position * Vector3(-1.0f, -1.0f, -1.0f);
 

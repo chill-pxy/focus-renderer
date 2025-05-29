@@ -648,8 +648,7 @@ namespace focus
             _viewportWidth = viewportPanelSize.x;
             _viewportHeight = viewportPanelSize.y;
 
-            RenderSystemSingleton::getInstance()->_scene->_canvasWidth = _viewportWidth;
-            RenderSystemSingleton::getInstance()->_scene->_canvasHeight = _viewportHeight;
+            RenderSystemSingleton::getInstance()->updateRenderCanvasSize(_viewportWidth, _viewportHeight);
         }
 
         ImGui::End();

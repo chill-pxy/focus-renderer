@@ -38,28 +38,47 @@ namespace focus
 
 		// experiment for ffx
 		{
-			ffx::Context fsrContext = nullptr;
-			if (_rhiContext->getCurrentAPI() == drhi::VULKAN)
-			{
-				ffx::CreateBackendVKDesc backend{};
-				backend.vkDevice = static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->_device;
-				backend.vkPhysicalDevice = static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->_physicalDevice;
-				backend.vkDeviceProcAddr = *(static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->getVkDeviceProcAddr());
-				backend.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_VK;
+			// initialize ffx context
+			//ffx::Context fsrContext = nullptr;
+			//if (_rhiContext->getCurrentAPI() == drhi::VULKAN)
+			//{
+			//	ffx::CreateBackendVKDesc backend{};
+			//	backend.vkDevice = static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->_device;
+			//	backend.vkPhysicalDevice = static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->_physicalDevice;
+			//	backend.vkDeviceProcAddr = *(static_cast<drhi::VulkanDRHI*>(_rhiContext.get())->getVkDeviceProcAddr());
+			//	backend.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_VK;
 
-				ffx::CreateContextDescUpscale upscale{};
-				upscale.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE;
-				upscale.maxUpscaleSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight() };
-				upscale.maxRenderSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight() };
-				upscale.flags = FFX_UPSCALE_ENABLE_AUTO_EXPOSURE | FFX_UPSCALE_ENABLE_HIGH_DYNAMIC_RANGE;
-				upscale.fpMessage = nullptr;
+			//	ffx::CreateContextDescUpscale upscale{};
+			//	upscale.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE;
+			//	upscale.maxUpscaleSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight() };
+			//	upscale.maxRenderSize = { _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight() };
+			//	upscale.flags = FFX_UPSCALE_ENABLE_AUTO_EXPOSURE | FFX_UPSCALE_ENABLE_HIGH_DYNAMIC_RANGE;
+			//	upscale.fpMessage = nullptr;
 
-				ffx::ReturnCode result = ffx::CreateContext(fsrContext, nullptr, upscale, backend);
-				if (result != ffx::ReturnCode::Ok)
-				{
-					std::cout << "error";
-				}
-			}
+			//	ffx::ReturnCode result = ffx::CreateContext(fsrContext, nullptr, upscale, backend);
+			//	if (result != ffx::ReturnCode::Ok)
+			//	{
+			//		std::cout << "error";
+			//	}
+			//}
+
+			//// apply camera jitter
+			//ffx::ReturnCode                     retCode;
+			//int32_t                             jitterPhaseCount;
+			//ffx::QueryDescUpscaleGetJitterPhaseCount getJitterPhaseDesc{};
+			//getJitterPhaseDesc.displayWidth = _rhiContext->getSwapChainExtentWidth();
+			//getJitterPhaseDesc.renderWidth = _renderWidth;
+			//getJitterPhaseDesc.pOutPhaseCount = &jitterPhaseCount;
+
+			//retCode = ffx::Query(fsrContext, getJitterPhaseDesc);
+
+			//ffx::QueryDescUpscaleGetJitterOffset getJitterOffsetDesc{};
+			//getJitterOffsetDesc.index = _jitterIndex;
+			//getJitterOffsetDesc.phaseCount = jitterPhaseCount;
+			//getJitterOffsetDesc.pOutX = &_jitterX;
+			//getJitterOffsetDesc.pOutY = &_jitterY;
+
+			//retCode = ffx::Query(fsrContext, getJitterOffsetDesc);
 		}
 
 		{

@@ -7,6 +7,11 @@ namespace focus
 		return _view;
 	}
 
+	Matrix4 RenderCamera::getProjMatrix()
+	{
+		return _proj;
+	}
+
 	void RenderCamera::handleMovement(float deltaTime)
 	{
 		_front.x = -cos(radians(_rotation.x)) * sin(radians(_rotation.y));
@@ -46,11 +51,26 @@ namespace focus
 		_view = rotM * transM;
 	}
 
+	void RenderCamera::updateProjMatrix()
+	{
+		if (_viewportWidth == 0 || _viewportHeight == 0 ) return;
+		_proj = perspective(radians(60.0f), _viewportWidth / (float)_viewportHeight, 1.0f, 10000.0f);
+		_proj[1][1] *= -1;
+	}
+
 	void RenderCamera::makeRotate(Vector3 delta)
 	{
 		_rotation += delta;
 		if (_rotation.x >= 89) _rotation.x = 89.0;
 		if (_rotation.x <= -89) _rotation.x = -89.0;
 		updateViewMatrix();		
+	}
+
+	void RenderCamera::applyJitter()
+	{
+		Matrix4 jitterMat{ 1.0f };
+		jitterMat[3][2] = _jitterX;
+		jitterMat[3][3] = _jitterY;
+		_proj = jitterMat * _proj;
 	}
 }

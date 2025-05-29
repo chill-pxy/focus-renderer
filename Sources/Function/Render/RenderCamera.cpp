@@ -12,6 +12,16 @@ namespace focus
 		return _proj;
 	}
 
+	void RenderCamera::tick(float deltaTime)
+	{
+		handleMovement(deltaTime);
+		if (_jitterCallBack)
+		{
+			_jitterCallBack(_jitter);
+			applyJitter();
+		}
+	}
+
 	void RenderCamera::handleMovement(float deltaTime)
 	{
 		_front.x = -cos(radians(_rotation.x)) * sin(radians(_rotation.y));
@@ -69,8 +79,15 @@ namespace focus
 	void RenderCamera::applyJitter()
 	{
 		Matrix4 jitterMat{ 1.0f };
-		jitterMat[3][2] = _jitterX;
-		jitterMat[3][3] = _jitterY;
-		_proj = jitterMat * _proj;
+		jitterMat[3][0] = _jitter.x;
+		jitterMat[3][1] = _jitter.y;
+		jitterMat[3][2] = 0.0;
+		jitterMat[3][3] = 1.0;
+		_projJitted = jitterMat * _proj;
+	}
+
+	void RenderCamera::setJitterCallBack(std::function<void(Vector2&)> func)
+	{
+		_jitterCallBack = func;
 	}
 }

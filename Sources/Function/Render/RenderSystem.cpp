@@ -24,6 +24,9 @@ namespace focus
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
+		// initialize fsr
+		initializeFSR();
+
 		// record command list
 		recordCommand(_priCmdbuf);
 		recordCommand(_renderer->_shadowCommandBuffers);
@@ -167,11 +170,67 @@ namespace focus
 
 	void RenderSystem::updateRenderCanvasSize(uint32_t width, uint32_t height)
 	{
-		_renderer->_renderWidth = width;
-		_renderer->_renderHeight = height;
+		_renderWidth = width;
+		_renderHeight = height;
 
 		_scene->_camera->_viewportWidth = width;
 		_scene->_camera->_viewportHeight = height;
 		_scene->_camera->updateProjMatrix();
+	}
+
+	void RenderSystem::initializeFSR()
+	{
+		// experiment for ffx
+	
+		// initialize ffx context
+		if (_renderer->_rhiContext->getCurrentAPI() == drhi::VULKAN)
+		{
+			ffx::CreateBackendVKDesc backend{};
+			backend.vkDevice = static_cast<drhi::VulkanDRHI*>(_renderer->_rhiContext.get())->_device;
+			backend.vkPhysicalDevice = static_cast<drhi::VulkanDRHI*>(_renderer->_rhiContext.get())->_physicalDevice;
+			backend.vkDeviceProcAddr = *(static_cast<drhi::VulkanDRHI*>(_renderer->_rhiContext.get())->getVkDeviceProcAddr());
+			backend.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_BACKEND_VK;
+
+			ffx::CreateContextDescUpscale upscale{};
+			upscale.header.type = FFX_API_CREATE_CONTEXT_DESC_TYPE_UPSCALE;
+			upscale.maxUpscaleSize = { _renderer->_rhiContext->getSwapChainExtentWidth(), _renderer->_rhiContext->getSwapChainExtentHeight() };
+			upscale.maxRenderSize = { _renderer->_rhiContext->getSwapChainExtentWidth(), _renderer->_rhiContext->getSwapChainExtentHeight() };
+			upscale.flags = FFX_UPSCALE_ENABLE_AUTO_EXPOSURE | FFX_UPSCALE_ENABLE_HIGH_DYNAMIC_RANGE;
+			upscale.fpMessage = nullptr;
+
+			ffx::ReturnCode result = ffx::CreateContext(_fsrContext, nullptr, upscale, backend);
+			if (result != ffx::ReturnCode::Ok)
+			{
+				std::cout << "error";
+			}
+		}
+
+		// apply camera jitter
+		auto cameraJitterCallBack = [this](Vector2& values)
+			{
+				// increment jitter index for frame
+				++_jitterIndex;
+
+				ffx::ReturnCode                     retCode;
+				int32_t                             jitterPhaseCount;
+				ffx::QueryDescUpscaleGetJitterPhaseCount getJitterPhaseDesc{};
+				getJitterPhaseDesc.displayWidth = _renderer->_rhiContext->getSwapChainExtentWidth();
+				getJitterPhaseDesc.renderWidth = _renderWidth;
+				getJitterPhaseDesc.pOutPhaseCount = &jitterPhaseCount;
+
+				retCode = ffx::Query(_fsrContext, getJitterPhaseDesc);
+
+				ffx::QueryDescUpscaleGetJitterOffset getJitterOffsetDesc{};
+				getJitterOffsetDesc.index = _jitterIndex;
+				getJitterOffsetDesc.phaseCount = jitterPhaseCount;
+				getJitterOffsetDesc.pOutX = &_jitterX;
+				getJitterOffsetDesc.pOutY = &_jitterY;
+
+				retCode = ffx::Query(_fsrContext, getJitterOffsetDesc);
+
+				values = Vector2(-2.f * _jitterX / _renderWidth, 2.f * _jitterY / _renderHeight);
+			};
+
+		_scene->_camera->setJitterCallBack(cameraJitterCallBack);
 	}
 }

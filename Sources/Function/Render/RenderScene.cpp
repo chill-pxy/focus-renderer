@@ -159,7 +159,7 @@ namespace focus
 	void RenderScene::tick(float frameTimer)
 	{
 		// camera tick
-		_camera->handleMovement(frameTimer);
+		_camera->tick(frameTimer);
 
 		_uud.view = _camera->getViewMatrix();
 		_uud.proj = _camera->getProjMatrix();

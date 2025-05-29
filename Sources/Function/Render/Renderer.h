@@ -16,9 +16,6 @@ namespace focus
 	public:
 		std::shared_ptr<drhi::DynamicRHI> _rhiContext;
 		std::vector<std::shared_ptr<RenderResource>>* _submitRenderlist;
-		
-		uint32_t _renderWidth{ 0 };
-		uint32_t _renderHeight{ 0 };
 
 		// scene command buffer
 		std::vector<drhi::DynamicCommandBuffer> _sceneCommandBuffers;
@@ -47,11 +44,6 @@ namespace focus
 		bool _prepared = false;
 
 	private:	
-		// members of fsr
-		uint32_t        _jitterIndex = 0;
-		float           _jitterX = 0.f;
-		float           _jitterY = 0.f;
-
 		// members of shadow
 		drhi::DynamicImage        _shadowImage{};
 		drhi::DynamicDeviceMemory _shadowImageMemory{};

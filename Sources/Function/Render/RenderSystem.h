@@ -12,6 +12,11 @@
 #include"RenderScene.h"
 #include"RenderCamera.h"
 
+// ffx api
+#include<ffx_api/ffx_api.hpp>
+#include<ffx_api/ffx_upscale.hpp>
+#include<ffx_api/vk/ffx_api_vk.hpp>
+
 namespace focus
 {
 	struct RenderSystemCreateInfo
@@ -27,6 +32,15 @@ namespace focus
 		uint32_t                                _maxThread = 1;
 		std::vector<drhi::DynamicCommandBuffer> _priCmdbuf;
 		drhi::DynamicCommandPool                _priCmdpool;
+
+		uint32_t _renderWidth{ 0 };
+		uint32_t _renderHeight{ 0 };
+
+		// members of fsr
+		ffx::Context _fsrContext{ nullptr };
+		uint32_t     _jitterIndex = 0;
+		float        _jitterX = 0.f;
+		float        _jitterY = 0.f;
 
 	public:
 		std::shared_ptr<Renderer>    _renderer;
@@ -58,6 +72,7 @@ namespace focus
 		void setViewportSize(uint32_t width, uint32_t height);
 		void setSwapChainSize(uint32_t width, uint32_t height);
 		void updateRenderCanvasSize(uint32_t width, uint32_t height);
+		void initializeFSR();
 
 		std::shared_ptr<Renderer> getRenderer();
 	};

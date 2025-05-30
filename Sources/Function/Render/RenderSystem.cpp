@@ -26,9 +26,6 @@ namespace focus
 		_scene = std::make_shared<RenderScene>();
 		_scene->initialize(_renderer->_rhiContext);
 
-		// initialize fsr
-		initializeFSR();
-
 		// record command list
 		recordCommand(_priCmdbuf);
 		recordCommand(_renderer->_shadowCommandBuffers);
@@ -239,9 +236,23 @@ namespace focus
 		ffx::DispatchDescUpscale dispatchUpscale{};
 		dispatchUpscale.commandList = _submitCommandBuffers.data();
 
-		uint32_t state = FFX_API_RESOURCE_STATE_COMPUTE_READ;
-        VkImage image = _renderer->_viewportImages->at(0).getVulkanImage();
-		//dispatchUpscale.color = ffxApiGetResourceVK((void*)image, ffxApiGetImageResourceDescriptionVK(image, ), state)
+		if (_renderer->_rhiContext->getCurrentAPI() == drhi::VULKAN)
+		{
+			uint32_t state = FFX_API_RESOURCE_STATE_COMPUTE_READ;
+			VkImage image = _renderer->_viewportImages->at(0).getVulkanImage();
+			VkImageCreateInfo imageci{};
+			_renderer->_rhiContext->getViewportImageCreateInfo(imageci);
 
+			VkImage depth = _renderer->_viewportDepthImage->getVulkanImage();
+			VkImageCreateInfo depthci{};
+			_renderer->_rhiContext->getDepthImageCreateInfo(depthci);
+
+			dispatchUpscale.color = ffxApiGetResourceVK((void*)image, ffxApiGetImageResourceDescriptionVK(image, imageci, 0), state);
+			dispatchUpscale.depth = ffxApiGetResourceVK((void*)depth, ffxApiGetImageResourceDescriptionVK(depth, depthci, 0), state);
+			//dispatchUpscale.motionVectors =
+			//dispatchUpscale.output =
+			//dispatchUpscale.reactive =
+			//dispatchUpscale.transparencyAndComposition =
+		}
 	}
 }

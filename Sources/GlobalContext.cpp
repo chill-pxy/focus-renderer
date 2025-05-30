@@ -28,6 +28,9 @@ namespace focus
 		RenderSystemSingleton::getInstance()->_recreateFunc.push_back(std::bind_back(&EngineUI::recreate, EngineUISingleton::getInstance()));
 		RenderSystemSingleton::getInstance()->_recreateFunc.push_back(std::bind(&Renderer::recreate, RenderSystemSingleton::getInstance()->_renderer));
 		RenderSystemSingleton::getInstance()->build();
+
+		// init fsr
+		RenderSystemSingleton::getInstance()->initializeFSR();
 	}
 
 	void GlobalContext::tick(bool* running, bool* tempStop)

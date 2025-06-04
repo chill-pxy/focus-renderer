@@ -1,0 +1,30 @@
+#version 450
+
+layout(set = 0, binding = 0) uniform UniformBufferObject 
+{
+    mat4 lastVP;
+} ubo;
+
+layout(set = 0, binding = 1) uniform sampler2D uvTex;
+layout(set = 0, binding = 2) uniform sampler2D lastWorldPosTex;
+
+layout(location = 0) out vec4 outColor;
+
+vec2 calculateMotionVector(mat4 lastVP, vec3 lastWorldPos, vec2 screenUV)
+{
+	vec4 lastScreenPos = lastVP * vec4(lastWorldPos, 1.0);
+	vec2 lastScreenUV = (vec2(lastScreenPos.x, lastScreenPos.y) * 0.5) / lastScreenPos.w + 0.5);
+	return screenUV - lastScreenUV;
+}
+
+void main()
+{
+    ivec2 texSize = textureSize(uvTex, 0);
+    vec2 screenUV = gl_FragCoord.xy / vec2(texSize);
+    vec2 uv = texture(uvTex, screenUV).rg;
+
+    vec3 lastWorldPos = texture(lastWorldPosTex, uv).rgb;
+
+	vec2 motionVector = calculateMotionVector(ubo.lastVP, lastWorldPos, uv);
+	outColor = vec4(motionVector, 1.0, 1.0);
+}

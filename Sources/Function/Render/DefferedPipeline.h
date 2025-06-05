@@ -24,10 +24,8 @@ namespace focus
         drhi::DynamicPipeline _pipeline{};
         drhi::DynamicPipelineLayout _pipelineLayout{};
 
-        // G-buffer
-        drhi::DynamicImage _position{};
-        drhi::DynamicImageView _positionView{};
-        drhi::DynamicSampler _positionSampler{};
+        drhi::DynamicImageView    _textureImageView{};
+        drhi::DynamicSampler      _textureSampler{};
 
     private:
         void* _uniformBufferMapped{ nullptr };
@@ -50,13 +48,20 @@ namespace focus
             auto useFlag = drhi::DynamicImageUsageFlagBits(api);
             auto aspect = drhi::DynamicImageAspectFlagBits(api);
             auto memoryFlag = drhi::DynamicMemoryPropertyFlags(api);
+            auto imageLayout = drhi::DynamicImageLayout(api);
 
-            std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(1);
+            std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(2);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             dsbs[0].pImmutableSamplers = nullptr;
             dsbs[0].stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
+
+            dsbs[1].binding = 1;
+            dsbs[1].descriptorCount = 1;
+            dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[1].pImmutableSamplers = nullptr;
+            dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
@@ -64,25 +69,38 @@ namespace focus
             rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(DefferedUniformBufferObject));
             _descriptorBufferInfo.set(rhi->getCurrentAPI(), _uniformBuffer, sizeof(DefferedUniformBufferObject));
 
-            std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(1);
+            std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[0].descriptorCount = 3;
+            poolSizes[0].descriptorCount = 2;
+
+            poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[1].descriptorCount = 2;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            std::vector<drhi::DynamicWriteDescriptorSet> wds(1);
+            drhi::DynamicDescriptorImageInfo dii[1]{};
+            dii[0].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[0].imageView = _textureImageView;
+            dii[0].sampler = _textureSampler;
+
+            std::vector<drhi::DynamicWriteDescriptorSet> wds(2);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_descriptorBufferInfo;
             wds[0].descriptorCount = 1;
 
-            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 0);
+            wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[1].dstBinding = 1;
+            wds[1].pImageInfo = &dii[0];
+            wds[1].descriptorCount = 1;
+
+            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 1);
 
             // create pipeline
             drhi::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = RESOURCE_PATH"Shaders/Deffered/normalVertex.spv";
-            pci.fragmentShader = RESOURCE_PATH"Shaders/Deffered/normalFragment.spv";
+            pci.vertexShader = RESOURCE_PATH"Shaders/Deffered/gbufferVertex.spv";
+            pci.fragmentShader = RESOURCE_PATH"Shaders/Deffered/gbufferFragment.spv";
             pci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();

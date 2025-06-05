@@ -67,6 +67,7 @@ namespace focus
 		void tick(bool* running);
 		void update(std::function<void(uint32_t)> job, drhi::DynamicCommandBufferInheritanceInfo& inheritanceInfo, std::vector<drhi::DynamicCommandBuffer> exCmdbuf);
 		void recordCommand(std::vector<drhi::DynamicCommandBuffer> cmdbufs);
+		void recordCommand(drhi::DynamicCommandBuffer cmdbuf);
 		void clean();
 		void build();
 		void setViewportSize(uint32_t width, uint32_t height);

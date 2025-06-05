@@ -28,6 +28,7 @@ namespace focus
 
 		// record command list
 		recordCommand(_priCmdbuf);
+		recordCommand(_renderer->_defferedCommandBuffer);
 		recordCommand(_renderer->_shadowCommandBuffers);
 		recordCommand(_renderer->_sceneCommandBuffers);
 
@@ -125,6 +126,11 @@ namespace focus
 	void RenderSystem::recordCommand(std::vector<drhi::DynamicCommandBuffer> cmdbufs)
 	{
 		_submitCommandBuffers.insert(_submitCommandBuffers.end(), cmdbufs.begin(), cmdbufs.end());
+	}
+
+	void RenderSystem::recordCommand(drhi::DynamicCommandBuffer cmdbuf)
+	{
+		_submitCommandBuffers.emplace_back(cmdbuf);
 	}
 
 	void RenderSystem::clean()
@@ -250,7 +256,7 @@ namespace focus
 			dispatchUpscale.color = ffxApiGetResourceVK((void*)image, ffxApiGetImageResourceDescriptionVK(image, imageci, 0), state);
 			dispatchUpscale.depth = ffxApiGetResourceVK((void*)depth, ffxApiGetImageResourceDescriptionVK(depth, depthci, 0), state);
 			//dispatchUpscale.motionVectors =
-			//dispatchUpscale.output =
+			//dispatchUpscale.output = 
 			//dispatchUpscale.reactive =
 			//dispatchUpscale.transparencyAndComposition =
 		}

@@ -165,6 +165,9 @@ void main()
 	// apply shadow
 	finalColor = finalColor * (shadow);
 
+	// test for g-buffer
+	vec3 normalColor = texture(normalSampler, fragTexCoord).rgb;
+
     // output
     outColor = vec4(finalColor, 1.0);
 } 

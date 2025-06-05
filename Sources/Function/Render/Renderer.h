@@ -54,6 +54,16 @@ namespace focus
 		uint32_t _shadowDepthImageHeight{ 2048 };
 
 		// members of deffered
+		drhi::DynamicImage _position{};
+		drhi::DynamicImageView _positionView{};
+		drhi::DynamicSampler _positionSampler{};
+		drhi::DynamicDeviceMemory _positionMemory{};
+		
+		drhi::DynamicImage _albedo{};
+		drhi::DynamicImageView _albedoView{};
+		drhi::DynamicSampler _albedoSampler{};
+		drhi::DynamicDeviceMemory _albedoMemory{};
+
 		drhi::DynamicImage _normal{};
 		drhi::DynamicImageView _normalView{};
 		drhi::DynamicSampler _normalSampler{};
@@ -84,6 +94,12 @@ namespace focus
 		drhi::DynamicImageView    _filteredImageView{};
 		drhi::DynamicSampler      _filteredImageSampler{};
 
+		// members of motion vector
+		drhi::DynamicImage        _motionImage{};
+		drhi::DynamicDeviceMemory _motionImageMemory{};
+		drhi::DynamicImageView    _motionImageView{};
+		drhi::DynamicSampler      _motionSampler{};
+
 	public:
 		Renderer() = delete;
 
@@ -100,6 +116,7 @@ namespace focus
 		void shadowPass();
 		void scenePass();
 		void defferedPass();
+		void postEffectPass();
 
 		void precomputeBRDFLUT();
 		void precomputeIrradianceCube();

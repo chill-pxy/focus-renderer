@@ -30,7 +30,7 @@ namespace focus
 		RenderSystemSingleton::getInstance()->build();
 
 		// init fsr
-		RenderSystemSingleton::getInstance()->initializeFSR();
+		//RenderSystemSingleton::getInstance()->initializeFSR();
 	}
 
 	void GlobalContext::tick(bool* running, bool* tempStop)

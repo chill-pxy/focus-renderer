@@ -70,21 +70,67 @@ namespace focus
 			_rhiContext->createCommandPool(&_defferedCommandPool);
 			_rhiContext->createCommandBuffer(&_defferedCommandBuffer, &_defferedCommandPool);
 
-			_rhiContext->createImage(&_normal, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
-			_rhiContext->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
-			_rhiContext->createDepthStencil(&_depth, &_depthView, &_depthMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_1_BIT);
-
 			auto bordercolor = drhi::DynamicBorderColor(api);
 			auto addressmode = drhi::DynamicSamplerAddressMode(api);
 			auto mipmap = drhi::DynamicSamplerMipmapMode(api);
 			drhi::DynamicSamplerCreateInfo samplerInfo{};
-			samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-			samplerInfo.maxLod = 1;
-			samplerInfo.minLod = 0.0f;
-			samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
-			samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 
-			_rhiContext->createSampler(&_normalSampler, samplerInfo);
+			// position
+			{
+				_rhiContext->createImage(&_position, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_positionMemory);
+				_rhiContext->createImageView(&_positionView, &_position, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+
+				samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+				samplerInfo.maxLod = 1;
+				samplerInfo.minLod = 0.0f;
+				samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+				samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+				_rhiContext->createSampler(&_positionSampler, samplerInfo);
+			}
+
+			// depth
+			_rhiContext->createDepthStencil(&_depth, &_depthView, &_depthMemory, format.FORMAT_D32_SFLOAT_S8_UINT, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), sampleCount.SAMPLE_COUNT_1_BIT);
+
+			// normal
+			{
+				_rhiContext->createImage(&_normal, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
+				_rhiContext->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+
+				samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+				samplerInfo.maxLod = 1;
+				samplerInfo.minLod = 0.0f;
+				samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+				samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+				_rhiContext->createSampler(&_normalSampler, samplerInfo);
+			}
+
+			// albedo
+			{
+				_rhiContext->createImage(&_albedo, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_albedoMemory);
+				_rhiContext->createImageView(&_albedoView, &_albedo, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+
+				samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+				samplerInfo.maxLod = 1;
+				samplerInfo.minLod = 0.0f;
+				samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+				samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+				_rhiContext->createSampler(&_albedoSampler, samplerInfo);
+			}
+
+			// initialize motion vector
+			//_rhiContext->createImage(&_motionImage, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
+			//_rhiContext->createImageView(&_motionImageView, &_motionImage, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+
+			//samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+			//samplerInfo.maxLod = 1;
+			//samplerInfo.minLod = 0.0f;
+			//samplerInfo.mipmapMode = mipmap.SAMPLER_MIPMAP_MODE_LINEAR;
+			//samplerInfo.sampleraAddressMode = addressmode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+
+			//_rhiContext->createSampler(&_motionSampler, samplerInfo);
 		}
 
 		// prepare environment map
@@ -163,7 +209,7 @@ namespace focus
 	{
 		if (_prepared)
 		{
-			//defferedPass();
+			defferedPass();
 			shadowPass();
 			scenePass();
 		}
@@ -185,6 +231,12 @@ namespace focus
 		_rhiContext->destroyCommandPool(&_shadowCommandPool);
 
 		// deffered
+		_rhiContext->clearImage(&_positionView, &_position, &_positionMemory);
+		_rhiContext->clearSampler(&_positionSampler);
+
+		_rhiContext->clearImage(&_albedoView, &_albedo, &_albedoMemory);
+		_rhiContext->clearSampler(&_albedoSampler);
+
 		_rhiContext->clearImage(&_normalView, &_normal, &_normalMemory);
 		_rhiContext->clearSampler(&_normalSampler);
 
@@ -332,6 +384,11 @@ namespace focus
 
 		_rhiContext->endRendering(_defferedCommandBuffer, renderInfo);
 		_rhiContext->endCommandBuffer(_defferedCommandBuffer);
+	}
+
+	void Renderer::postEffectPass()
+	{
+
 	}
 
 	void Renderer::precomputeBRDFLUT()

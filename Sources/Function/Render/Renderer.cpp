@@ -358,13 +358,14 @@ namespace focus
 		auto aspectFlag = drhi::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
 		auto imageLayout = drhi::DynamicImageLayout(_rhiContext->getCurrentAPI());
 
-		drhi::DynamicRenderingInfo renderInfo{};
-		renderInfo.isRenderOnSwapChain = false;
+		drhi::DynamicRenderingMRTInfo renderInfo{};
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
 
-		renderInfo.targetImage = &_normal;
-		renderInfo.targetImageView = &_normalView;
+		auto target = std::vector<drhi::DynamicImage>{_position, _albedo, _normal};
+		auto targetView = std::vector<drhi::DynamicImageView>{ _positionView, _albedoView, _normalView };
+		renderInfo.targetImage = &target;
+		renderInfo.targetImageView = &targetView;
 		renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
 		renderInfo.targetDepthImage = &_depth;
 		renderInfo.targetDepthImageView = &_depthView;

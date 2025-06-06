@@ -19,6 +19,7 @@ namespace focus
 			_intensity = 1.0f;
 			_material = std::make_shared<GeometryMaterial>();
 			_castShadow = false;
+			_isLightActor = true;
 		}
 	};
 }

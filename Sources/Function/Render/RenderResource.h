@@ -32,6 +32,7 @@ namespace focus
         std::shared_ptr<ShadowMap> _shadow{};
         std::shared_ptr<DefferedPipeline> _deffered{};
 
+        bool _isLightActor{ false };
         bool _castShadow{ true };
         bool _built{ false };
 

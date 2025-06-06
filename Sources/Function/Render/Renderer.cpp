@@ -380,6 +380,7 @@ namespace focus
 
 		for (auto p : *_submitRenderlist)
 		{
+			if (p->_isLightActor) continue;
 			p->draw(_rhiContext, &_defferedCommandBuffer, RenderResourcePipeline::DEFFERED);
 		}
 

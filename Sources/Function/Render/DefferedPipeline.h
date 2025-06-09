@@ -95,7 +95,7 @@ namespace focus
             wds[1].pImageInfo = &dii[0];
             wds[1].descriptorCount = 1;
 
-            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 1);
+            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 2);
 
             // create pipeline
             drhi::DynamicPipelineCreateInfo pci = {};

@@ -68,7 +68,7 @@ namespace focus
 
 			// initialize deffered
 			_rhiContext->createCommandPool(&_defferedCommandPool);
-			_rhiContext->createCommandBuffer(&_defferedCommandBuffer, &_defferedCommandPool);
+			_rhiContext->createCommandBuffers(&_defferedCommandBuffer, &_defferedCommandPool);
 
 			auto bordercolor = drhi::DynamicBorderColor(api);
 			auto addressmode = drhi::DynamicSamplerAddressMode(api);
@@ -243,7 +243,7 @@ namespace focus
 		_rhiContext->clearImage(&_depthView, &_depth, &_depthMemory);
 		_rhiContext->clearSampler(&_depthSampler);
 
-		_rhiContext->freeCommandBuffer(&_defferedCommandBuffer, & _defferedCommandPool);
+		_rhiContext->freeCommandBuffers(&_defferedCommandBuffer, & _defferedCommandPool);
 		_rhiContext->destroyCommandPool(&_defferedCommandPool);
 
 		// environment
@@ -362,30 +362,33 @@ namespace focus
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
 
-		auto target = std::vector<drhi::DynamicImage>{_position, _albedo, _normal};
-		auto targetView = std::vector<drhi::DynamicImageView>{ _positionView, _albedoView, _normalView };
-		renderInfo.targetImage = &target;
-		renderInfo.targetImageView = &targetView;
-		renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
-		renderInfo.targetDepthImage = &_depth;
-		renderInfo.targetDepthImageView = &_depthView;
-		renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
-		renderInfo.includeStencil = true;
-		renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
-		renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
-
-		_rhiContext->beginCommandBuffer(_defferedCommandBuffer);
-		_rhiContext->beginRendering(_defferedCommandBuffer, renderInfo);
-
-		for (auto p : *_submitRenderlist)
+		for (int index = 0; index < _defferedCommandBuffer.size(); ++index)
 		{
-			if (p->_isLightActor) continue;
-			p->draw(_rhiContext, &_defferedCommandBuffer, RenderResourcePipeline::DEFFERED);
-		}
+			auto target = std::vector<drhi::DynamicImage>{ _position, _albedo, _normal };
+			auto targetView = std::vector<drhi::DynamicImageView>{ _positionView, _albedoView, _normalView };
+			renderInfo.targetImage = &target;
+			renderInfo.targetImageView = &targetView;
+			renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
+			renderInfo.targetDepthImage = &_depth;
+			renderInfo.targetDepthImageView = &_depthView;
+			renderInfo.depthAspectFlag = aspectFlag.IMAGE_ASPECT_DEPTH_BIT | aspectFlag.IMAGE_ASPECT_STENCIL_BIT;
+			renderInfo.includeStencil = true;
+			renderInfo.depthImageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			renderInfo.targetImageWidth = _rhiContext->getSwapChainExtentWidth();
+			renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 
-		_rhiContext->endRendering(_defferedCommandBuffer, renderInfo);
-		_rhiContext->endCommandBuffer(_defferedCommandBuffer);
+			_rhiContext->beginCommandBuffer(_defferedCommandBuffer[index]);
+			_rhiContext->beginRendering(_defferedCommandBuffer[index], renderInfo);
+
+			for (auto p : *_submitRenderlist)
+			{
+				if (p->_isLightActor) continue;
+				p->draw(_rhiContext, &_defferedCommandBuffer[index], RenderResourcePipeline::DEFFERED);
+			}
+
+			_rhiContext->endRendering(_defferedCommandBuffer[index], renderInfo);
+			_rhiContext->endCommandBuffer(_defferedCommandBuffer[index]);
+		}
 	}
 
 	void Renderer::postEffectPass()

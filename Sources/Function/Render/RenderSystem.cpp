@@ -27,10 +27,11 @@ namespace focus
 		_scene->initialize(_renderer->_rhiContext);
 
 		// record command list
-		//recordCommand(_priCmdbuf);
+		
 		recordCommand(_renderer->_defferedCommandBuffer);
 		recordCommand(_renderer->_shadowCommandBuffers);
 		recordCommand(_renderer->_sceneCommandBuffers);
+		//recordCommand(_priCmdbuf);
 
 		_isInitialized = true;
 	}
@@ -43,8 +44,20 @@ namespace focus
 		auto tStart = std::chrono::high_resolution_clock::now();
 
 		// renderer tick
-		_renderer->_rhiContext->frameOnTick(_recreateFunc, &_submitCommandBuffers, &_priCmdbuf);
-		
+		{
+			uint32_t frameIndex = _renderer->_rhiContext->getCurrentFrame();
+			_submitCommandBuffers.resize(2);
+			//_submitCommandBuffers[0] = _renderer->_defferedCommandBuffer[frameIndex];
+			_submitCommandBuffers[0] = _renderer->_shadowCommandBuffers[frameIndex];
+			_submitCommandBuffers[1] = _renderer->_sceneCommandBuffers[frameIndex];
+
+			//std::vector<drhi::DynamicCommandBuffer> presentCommandBuffer{};
+			//presentCommandBuffer.resize(1);
+			//presentCommandBuffer[0] = _priCmdbuf[frameIndex];
+
+			_renderer->_rhiContext->frameOnTick(_recreateFunc, &_submitCommandBuffers, &_priCmdbuf);
+		}
+
 		// compute time on every frame cost
 		_frameCounter++;
 		

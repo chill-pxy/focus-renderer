@@ -26,7 +26,7 @@ namespace focus
 		drhi::DynamicCommandPool _shadowCommandPool;
 
 		// deffered command buffer
-		drhi::DynamicCommandBuffer _defferedCommandBuffer{};
+		std::vector<drhi::DynamicCommandBuffer> _defferedCommandBuffer{};
 		drhi::DynamicCommandPool _defferedCommandPool{};
 
 		// scene image

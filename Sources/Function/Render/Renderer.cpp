@@ -361,11 +361,11 @@ namespace focus
 		drhi::DynamicRenderingMRTInfo renderInfo{};
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
+		auto target = std::vector<drhi::DynamicImage>{ _position, _albedo };// , _normal
+		auto targetView = std::vector<drhi::DynamicImageView>{ _positionView, _albedoView };// , _normalView
 
 		for (int index = 0; index < _defferedCommandBuffer.size(); ++index)
 		{
-			auto target = std::vector<drhi::DynamicImage>{ _position, _albedo, _normal };
-			auto targetView = std::vector<drhi::DynamicImageView>{ _positionView, _albedoView, _normalView };
 			renderInfo.targetImage = &target;
 			renderInfo.targetImageView = &targetView;
 			renderInfo.colorAspectFlag = aspectFlag.IMAGE_ASPECT_COLOR_BIT;
@@ -378,7 +378,7 @@ namespace focus
 			renderInfo.targetImageHeight = _rhiContext->getSwapChainExtentHeight();
 
 			_rhiContext->beginCommandBuffer(_defferedCommandBuffer[index]);
-			_rhiContext->beginRendering(_defferedCommandBuffer[index], renderInfo);
+			_rhiContext->beginRendering(_defferedCommandBuffer[index], &renderInfo);
 
 			for (auto p : *_submitRenderlist)
 			{
@@ -386,7 +386,7 @@ namespace focus
 				p->draw(_rhiContext, &_defferedCommandBuffer[index], RenderResourcePipeline::DEFFERED);
 			}
 
-			_rhiContext->endRendering(_defferedCommandBuffer[index], renderInfo);
+			_rhiContext->endRendering(_defferedCommandBuffer[index], &renderInfo);
 			_rhiContext->endCommandBuffer(_defferedCommandBuffer[index]);
 		}
 	}

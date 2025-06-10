@@ -110,17 +110,17 @@ namespace focus
             pci.vertexInputAttributes[2].set(api, 2, 0, format.FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, Vertex::texCoord));
 
             std::vector<uint32_t> colorFormats{};
-            colorFormats.resize(3);
+            colorFormats.resize(2);
             colorFormats[0] = format.FORMAT_B8G8R8A8_UNORM;
             colorFormats[1] = format.FORMAT_B8G8R8A8_UNORM;
-            colorFormats[2] = format.FORMAT_B8G8R8A8_UNORM;
+            //colorFormats[2] = format.FORMAT_B8G8R8A8_UNORM;
             pci.colorImageFormats = colorFormats;
             pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
             pci.includeStencil = true;
             pci.dynamicDepthBias = false;
             pci.cullMode = cullMode.CULL_MODE_BACK_BIT;
             pci.sampleCounts = sampleCount.SAMPLE_COUNT_1_BIT;
-            pci.colorAttachmentCount = 3;
+            pci.colorAttachmentCount = 2;
 
             drhi::DynamicPipelineLayoutCreateInfo plci{};
             plci.pSetLayouts = &_descriptorSetLayout;

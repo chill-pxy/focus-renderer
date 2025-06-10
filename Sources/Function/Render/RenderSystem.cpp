@@ -28,9 +28,9 @@ namespace focus
 
 		// record command list
 		
-		recordCommand(_renderer->_defferedCommandBuffer);
-		recordCommand(_renderer->_shadowCommandBuffers);
-		recordCommand(_renderer->_sceneCommandBuffers);
+		//recordCommand(_renderer->_defferedCommandBuffer);
+		//recordCommand(_renderer->_shadowCommandBuffers);
+		//recordCommand(_renderer->_sceneCommandBuffers);
 		//recordCommand(_priCmdbuf);
 
 		_isInitialized = true;
@@ -46,14 +46,15 @@ namespace focus
 		// renderer tick
 		{
 			uint32_t frameIndex = _renderer->_rhiContext->getCurrentFrame();
-			_submitCommandBuffers.resize(2);
-			//_submitCommandBuffers[0] = _renderer->_defferedCommandBuffer[frameIndex];
-			_submitCommandBuffers[0] = _renderer->_shadowCommandBuffers[frameIndex];
-			_submitCommandBuffers[1] = _renderer->_sceneCommandBuffers[frameIndex];
+			_submitCommandBuffers.resize(1);
+			_submitCommandBuffers[0] = _renderer->_defferedCommandBuffer[frameIndex];
+			//_submitCommandBuffers[0] = _renderer->_shadowCommandBuffers[frameIndex];
+			//_submitCommandBuffers[1] = _renderer->_sceneCommandBuffers[frameIndex];
 
 			//std::vector<drhi::DynamicCommandBuffer> presentCommandBuffer{};
-			//presentCommandBuffer.resize(1);
-			//presentCommandBuffer[0] = _priCmdbuf[frameIndex];
+			//presentCommandBuffer.resize(2);
+			//presentCommandBuffer[0] = _renderer->_defferedCommandBuffer[frameIndex];
+			//presentCommandBuffer[1] = _priCmdbuf[frameIndex];
 
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, &_submitCommandBuffers, &_priCmdbuf);
 		}

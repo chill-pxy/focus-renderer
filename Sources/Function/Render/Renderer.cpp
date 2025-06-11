@@ -373,8 +373,8 @@ namespace focus
 		drhi::DynamicRenderingMRTInfo renderInfo{};
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
-		auto target = std::vector<drhi::DynamicImage>{ _position, _albedo, _normal };
-		auto targetView = std::vector<drhi::DynamicImageView>{ _positionView, _albedoView, _normalView };
+		auto target = std::vector<drhi::DynamicImage>{  _albedo, _position, _normal };
+		auto targetView = std::vector<drhi::DynamicImageView>{  _albedoView, _positionView, _normalView };
 
 		for (int index = 0; index < _defferedCommandBuffer.size(); ++index)
 		{

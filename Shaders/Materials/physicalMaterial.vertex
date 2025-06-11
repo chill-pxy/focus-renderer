@@ -27,7 +27,7 @@ layout(location = 2) in vec2 inTexCoord;
 layout(location = 3) in vec3 inNormal;
 
 layout(location = 0) out vec3 fragColor;
-layout(location = 1) out vec2 fragTexCoord;
+layout(location = 1) out vec2 outUV;
 layout(location = 2) out vec3 fragPosition;
 layout(location = 3) out vec3 fragNormal;
 
@@ -55,11 +55,11 @@ const mat4 biasMat = mat4(
 
 void main()
 {
-    gl_Position = vubo.proj * vubo.view * vubo.model * vec4(inPosition, 1.0);
+    //gl_Position = vubo.proj * vubo.view * vubo.model * vec4(inPosition, 1.0);
     
     fragColor    = inColor;
-    fragTexCoord = inTexCoord;
-    fragTexCoord.t = 1.0 - inTexCoord.t;
+    //fragTexCoord = inTexCoord;
+    //fragTexCoord.t = 1.0 - inTexCoord.t;
     fragPosition = (vubo.model * vec4(inPosition, 1.0)).xyz ;
     fragNormal   = mat3(vubo.model) * inNormal;
     fragNormal.y = -fragNormal.y;
@@ -78,4 +78,7 @@ void main()
     fragRoughness = vubo.roughness;
 
     fragShadowCoord = ( biasMat * vubo.dirLightSpace ) * vec4(inPosition, 1.0); 
+
+    outUV = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
+	gl_Position = vec4(outUV * 2.0f - 1.0f, 0.0f, 1.0f);
 }

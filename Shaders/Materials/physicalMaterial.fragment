@@ -19,7 +19,7 @@ layout(set = 0, binding = 7) uniform samplerCube filteredEnvSampler;
 
 
 layout(location = 0) in vec3 fragColor;
-layout(location = 1) in vec2 fragTexCoord;
+layout(location = 1) in vec2 outUV;
 layout(location = 2) in vec3 fragPosition;
 layout(location = 3) in vec3 fragNormal;
 
@@ -110,9 +110,9 @@ vec3 specularContribution(vec3 L, vec3 V, vec3 N, vec3 F0, float metallic, float
 
 void main()
 {
-    vec3 color = texture(albedoSampler, fragTexCoord).rgb;
-	vec3 fragPosition = texture(positionSampler, fragTexCoord).rgb;
-	vec3 fragNormal = texture(normalSampler, fragTexCoord).rgb;
+    vec3 color = texture(albedoSampler, outUV).rgb;
+	vec3 fragPosition = texture(positionSampler, outUV).rgb;
+	vec3 fragNormal = texture(normalSampler, outUV).rgb;
 
     float shadow = PCF(shadowMap, fragShadowCoord / fragShadowCoord.w, 10.0);
 

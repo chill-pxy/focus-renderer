@@ -32,7 +32,7 @@ namespace focus
             _type = "Geometry Material";
         }
 
-        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi)
         {
             if (_built) return;
             auto api = rhi->getCurrentAPI();

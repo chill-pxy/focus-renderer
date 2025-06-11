@@ -22,16 +22,17 @@ namespace focus
         drhi::DynamicDeviceMemory         _uniformBufferMemory{};
         drhi::DynamicDescriptorBufferInfo _descriptorBufferInfo{};
 
-        std::shared_ptr<Texture> _basicTexture{ nullptr };
         EUniformBufferObject      _uniformObject{};
 
     public:
         EnvironmentMap() = delete;
-        EnvironmentMap(std::shared_ptr<Texture> texture) : _basicTexture{ texture } {
+        EnvironmentMap(std::shared_ptr<Texture> texture)
+        {
+            _basicTexture = texture;
             _type = "EnvironmentMap Material";
         };
 
-        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi)
         {
             if (_built) return;
             auto api = rhi->getCurrentAPI();
@@ -66,11 +67,6 @@ namespace focus
             //create uniform buffer
             rhi->createUniformBuffer(&_uniformBuffer, &_uniformBufferMemory, &_uniformBufferMapped, sizeof(EUniformBufferObject));
             _descriptorBufferInfo.set(rhi->getCurrentAPI(), _uniformBuffer, sizeof(EUniformBufferObject));
-
-            //binding sampler and image view
-            rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
-            rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
-            rhi->createTextureSampler(&_textureSampler);
 
             std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;

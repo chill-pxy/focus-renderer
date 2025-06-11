@@ -26,17 +26,53 @@ namespace focus
         drhi::DynamicDescriptorBufferInfo _vdescriptorBufferInfo{};
         drhi::DynamicDescriptorBufferInfo _fdescriptorBufferInfo{};
 
-        std::shared_ptr<Texture> _basicTexture{ nullptr };
         ECubeUniformBufferObject      _uniformObject{};
 
     public:
         EnvironmentCube() = delete;
-        EnvironmentCube(std::shared_ptr<Texture> texture, bool isCube = false) : _basicTexture{ texture } {
+        EnvironmentCube(std::shared_ptr<Texture> texture, bool isCube = false)
+        {
+            _basicTexture = texture;
             _type = "EnvironmentMap Material";
             _mipLevel = _basicTexture->_mipLevels;
         };
 
-        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+        virtual void buildTexture(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool) override final
+        {
+            auto api = rhi->getCurrentAPI();
+            auto format = drhi::DynamicFormat(api);
+            auto imageAspect = drhi::DynamicImageAspectFlagBits(api);
+
+            //binding sampler and image view
+            rhi->createCubeTexture(&_textureImage, &_textureMemory, *commandPool,
+                _basicTexture->_ktxData, _basicTexture->_ktxSize, _basicTexture->_width, _basicTexture->_height,
+                _basicTexture->_mipLevels, _basicTexture->_offsets, _basicTexture->_texSizes);
+
+            auto type = drhi::DynamicImageViewType(api);
+            drhi::DynamicImageViewCreateInfo viewInfo{};
+            viewInfo.format = format.FORMAT_R16G16B16A16_SFLOAT;
+            viewInfo.image = _textureImage;
+            viewInfo.type = type.IMAGE_VIEW_TYPE_CUBE;
+            viewInfo.subresourceRange.aspectMask = imageAspect.IMAGE_ASPECT_COLOR_BIT;
+            viewInfo.subresourceRange.layerCount = 6;
+            viewInfo.subresourceRange.baseArrayLayer = 0;
+            viewInfo.subresourceRange.baseMipLevel = 0;
+            viewInfo.subresourceRange.levelCount = _basicTexture->_mipLevels;
+            rhi->createImageView(&_textureImageView, &_textureImage, viewInfo);
+
+            auto borderColor = drhi::DynamicBorderColor(api);
+            auto mipMode = drhi::DynamicSamplerMipmapMode(api);
+            auto addressMode = drhi::DynamicSamplerAddressMode(api);
+            drhi::DynamicSamplerCreateInfo samplerInfo{};
+            samplerInfo.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+            samplerInfo.maxLod = _basicTexture->_mipLevels;
+            samplerInfo.minLod = 0.0f;
+            samplerInfo.mipmapMode = mipMode.SAMPLER_MIPMAP_MODE_LINEAR;
+            samplerInfo.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            rhi->createSampler(&_textureSampler, samplerInfo);
+        }
+
+        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi)
         {
             if (_built) return;
             auto api = rhi->getCurrentAPI();
@@ -44,7 +80,6 @@ namespace focus
             auto format = drhi::DynamicFormat(api);
             auto descriptorType = drhi::DynamicDescriptorType(api);
             auto imageLayout = drhi::DynamicImageLayout(api);
-            auto imageAspect = drhi::DynamicImageAspectFlagBits(api);
             auto stageFlags = drhi::DynamicShaderStageFlags(api);
             auto memoryFlags = drhi::DynamicMemoryPropertyFlagBits(api);
             auto cullMode = drhi::DynamicCullMode(api);
@@ -77,34 +112,6 @@ namespace focus
             //create uniform buffer
             rhi->createUniformBuffer(&_vuniformBuffer, &_vuniformBufferMemory, &_vuniformBufferMapped, sizeof(ECubeUniformBufferObject));
             _vdescriptorBufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffer, sizeof(ECubeUniformBufferObject));
-
-            //binding sampler and image view
-            rhi->createCubeTexture(&_textureImage, &_textureMemory, *commandPool, 
-                _basicTexture->_ktxData, _basicTexture->_ktxSize, _basicTexture->_width, _basicTexture->_height,
-                _basicTexture->_mipLevels, _basicTexture->_offsets, _basicTexture->_texSizes);
-
-            auto type = drhi::DynamicImageViewType(api);
-            drhi::DynamicImageViewCreateInfo viewInfo{};
-            viewInfo.format = format.FORMAT_R16G16B16A16_SFLOAT;
-            viewInfo.image = _textureImage;
-            viewInfo.type = type.IMAGE_VIEW_TYPE_CUBE;
-            viewInfo.subresourceRange.aspectMask = imageAspect.IMAGE_ASPECT_COLOR_BIT;
-            viewInfo.subresourceRange.layerCount = 6;
-            viewInfo.subresourceRange.baseArrayLayer = 0;
-            viewInfo.subresourceRange.baseMipLevel = 0;
-            viewInfo.subresourceRange.levelCount = _basicTexture->_mipLevels;
-            rhi->createImageView(&_textureImageView, &_textureImage, viewInfo);
-
-            auto borderColor = drhi::DynamicBorderColor(api);
-            auto mipMode = drhi::DynamicSamplerMipmapMode(api);
-            auto addressMode = drhi::DynamicSamplerAddressMode(api);
-            drhi::DynamicSamplerCreateInfo samplerInfo{};
-            samplerInfo.borderColor = borderColor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-            samplerInfo.maxLod = _basicTexture->_mipLevels;
-            samplerInfo.minLod = 0.0f;
-            samplerInfo.mipmapMode = mipMode.SAMPLER_MIPMAP_MODE_LINEAR;
-            samplerInfo.sampleraAddressMode = addressMode.SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-            rhi->createSampler(&_textureSampler, samplerInfo);
 
             std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;

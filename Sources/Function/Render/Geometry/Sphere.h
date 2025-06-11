@@ -68,21 +68,10 @@ namespace focus
 			//create index buffer
 			auto indexBufferSize = sizeof(_indices[0]) * _indices.size();
 			rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, commandPool, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		
-			_material->build(rhi, commandPool);
 
-			//initiailize shadow map
-			_shadow = std::make_shared<ShadowMap>();
-			_shadow->initialize(rhi);
+			// prepare pipeline
+			buildPipeline(rhi, commandPool);
 
-			//initialize deffered
-			if (!_isLightActor)
-			{
-				_deffered = std::make_shared<DefferedPipeline>();
-				_deffered->_textureImageView = _material->_textureImageView;
-				_deffered->_textureSampler = _material->_textureSampler;
-				_deffered->initialize(rhi);
-			}
 			_built = true;
 		}
 

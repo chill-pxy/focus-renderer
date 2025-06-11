@@ -5,7 +5,6 @@
 #include<drhi.h>
 
 #include"Material.h"
-#include"../Texture.h"
 #include"../Geometry/MeshVertex.h"
 
 namespace focus
@@ -34,9 +33,6 @@ namespace focus
 
     class PhysicalMaterial : public Material
     {
-    public:
-        std::shared_ptr<Texture> _basicTexture;
-
     private:
         void* _vuniformBufferMapped{ nullptr };
         drhi::DynamicBuffer               _vuniformBuffer;
@@ -45,11 +41,13 @@ namespace focus
 
     public:
         PhysicalMaterial() {};
-        PhysicalMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {
+        PhysicalMaterial(std::shared_ptr<Texture> texture)
+        {
+            _basicTexture = texture;
             _type = "Physical Material";
         }
 
-        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+        virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi)
         {
             if (_built) return;
             auto api = rhi->getCurrentAPI();
@@ -57,7 +55,6 @@ namespace focus
             auto format = drhi::DynamicFormat(api);
             auto descriptorType = drhi::DynamicDescriptorType(api);
             auto imageLayout = drhi::DynamicImageLayout(api);
-            auto imageAspect = drhi::DynamicImageAspectFlagBits(api);
             auto stageFlags = drhi::DynamicShaderStageFlags(api);
             auto memoryFlags = drhi::DynamicMemoryPropertyFlagBits(api);
             auto cullMode = drhi::DynamicCullMode(api);
@@ -66,7 +63,7 @@ namespace focus
             if (_cullMode == 0)
                 _cullMode = cullMode.CULL_MODE_NONE;
 
-            std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(6);
+            std::vector<drhi::DynamicDescriptorSetLayoutBinding> dsbs(8);
             dsbs[0].binding = 0;
             dsbs[0].descriptorCount = 1;
             dsbs[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -103,11 +100,17 @@ namespace focus
             dsbs[5].pImmutableSamplers = nullptr;
             dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
-            //dsbs[6].binding = 6;
-            //dsbs[6].descriptorCount = 1;
-            //dsbs[6].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            //dsbs[6].pImmutableSamplers = nullptr;
-            //dsbs[6].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+            dsbs[5].binding = 6;
+            dsbs[5].descriptorCount = 1;
+            dsbs[5].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[5].pImmutableSamplers = nullptr;
+            dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+
+            dsbs[5].binding = 7;
+            dsbs[5].descriptorCount = 1;
+            dsbs[5].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[5].pImmutableSamplers = nullptr;
+            dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
@@ -115,56 +118,57 @@ namespace focus
             rhi->createUniformBuffer(&_vuniformBuffer, &_vuniformBufferMemory, &_vuniformBufferMapped, sizeof(PhysicalUniformBufferObject));
             _vdescriptorBufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffer, sizeof(PhysicalUniformBufferObject));
 
-            //binding sampler and image view
-            rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
-            rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
-            rhi->createTextureSampler(&_textureSampler);
-
-            std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(6);
+            std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(8);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[0].descriptorCount = 7;
+            poolSizes[0].descriptorCount = 1;
             poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[1].descriptorCount = 7;
+            poolSizes[1].descriptorCount = 1;
             poolSizes[2].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[2].descriptorCount = 7;
+            poolSizes[2].descriptorCount = 1;
             poolSizes[3].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[3].descriptorCount = 7;
+            poolSizes[3].descriptorCount = 1;
             poolSizes[4].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[4].descriptorCount = 7;
+            poolSizes[4].descriptorCount = 1;
             poolSizes[5].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[5].descriptorCount = 7;
-            //poolSizes[6].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            //poolSizes[6].descriptorCount = 7;
+            poolSizes[5].descriptorCount = 1;
+            poolSizes[6].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[6].descriptorCount = 1;
+            poolSizes[7].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            poolSizes[7].descriptorCount = 1;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
 
-            drhi::DynamicDescriptorImageInfo dii[5]{};
+            drhi::DynamicDescriptorImageInfo dii[7]{};
             dii[0].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii[0].imageView = _textureImageView;
-            dii[0].sampler = _textureSampler;
+            dii[0].imageView = *_gbuffer.albedoImageView;
+            dii[0].sampler = *_gbuffer.albedoSampler;
 
-            dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
-            dii[1].imageView = *_shadowImageView;
-            dii[1].sampler = *_shadowSampler;
+            dii[1].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[1].imageView = *_gbuffer.positionImageView;
+            dii[1].sampler = *_gbuffer.positionSampler;
 
             dii[2].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii[2].imageView = *_brdfImageView;
-            dii[2].sampler = *_brdfSampler;
+            dii[2].imageView = *_gbuffer.normalImageView;
+            dii[2].sampler = *_gbuffer.normalSampler;
 
-            dii[3].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii[3].imageView = *_irradianceImageView;
-            dii[3].sampler = *_irradianceSampler;
+            dii[3].imageLayout = imageLayout.IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL;
+            dii[3].imageView = *_shadowImageView;
+            dii[3].sampler = *_shadowSampler;
 
             dii[4].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii[4].imageView = *_filteredImageView;
-            dii[4].sampler = *_filteredImageSampler;
+            dii[4].imageView = *_brdfImageView;
+            dii[4].sampler = *_brdfSampler;
 
-            //dii[5].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            //dii[5].imageView = *_gbuffer.normalImageView;
-            //dii[5].sampler = *_gbuffer.normalSampler;
+            dii[5].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[5].imageView = *_irradianceImageView;
+            dii[5].sampler = *_irradianceSampler;
 
-            std::vector<drhi::DynamicWriteDescriptorSet> wds(6);
+            dii[6].imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            dii[6].imageView = *_filteredImageView;
+            dii[6].sampler = *_filteredImageSampler;
+
+            std::vector<drhi::DynamicWriteDescriptorSet> wds(8);
             wds[0].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
             wds[0].dstBinding = 0;
             wds[0].pBufferInfo = &_vdescriptorBufferInfo;
@@ -195,12 +199,17 @@ namespace focus
             wds[5].descriptorCount = 1;
             wds[5].pImageInfo = &dii[4];
 
-            //wds[6].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            //wds[6].dstBinding = 6;
-            //wds[6].descriptorCount = 1;
-            //wds[6].pImageInfo = &dii[5];
+            wds[6].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[6].dstBinding = 5;
+            wds[6].descriptorCount = 1;
+            wds[6].pImageInfo = &dii[5];
 
-            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 6);
+            wds[7].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            wds[7].dstBinding = 5;
+            wds[7].descriptorCount = 1;
+            wds[7].pImageInfo = &dii[6];
+
+            rhi->createDescriptorSet(&_descriptorSet, &_descriptorSetLayout, &_descriptorPool, &wds, 8);
 
             // create pipeline
             drhi::DynamicPipelineCreateInfo pci = {};

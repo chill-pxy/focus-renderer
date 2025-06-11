@@ -36,9 +36,6 @@ namespace focus
 
 	class BlinnPhongMaterial : public Material
 	{
-    public:
-        std::shared_ptr<Texture> _basicTexture;
-
 	private:
         void* _vuniformBufferMapped{nullptr};
         drhi::DynamicBuffer               _vuniformBuffer;
@@ -47,11 +44,13 @@ namespace focus
 
 	public:
         BlinnPhongMaterial() {};
-        BlinnPhongMaterial(std::shared_ptr<Texture> texture) :_basicTexture{ texture } {
+        BlinnPhongMaterial(std::shared_ptr<Texture> texture)
+        {
+            _basicTexture = texture;
             _type = "BlinnPhong Material";
         }
 		
-		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi)
 		{
             if (_built) return;
             auto api = rhi->getCurrentAPI();
@@ -92,11 +91,6 @@ namespace focus
             //create uniform buffer
             rhi->createUniformBuffer(&_vuniformBuffer, &_vuniformBufferMemory, &_vuniformBufferMapped, sizeof(PhongUniformBufferObject));
             _vdescriptorBufferInfo.set(rhi->getCurrentAPI(), _vuniformBuffer, sizeof(PhongUniformBufferObject));
-
-            //binding sampler and image view
-            rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
-            rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
-            rhi->createTextureSampler(&_textureSampler);
 
             std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(3);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;

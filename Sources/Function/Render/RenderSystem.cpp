@@ -46,15 +46,10 @@ namespace focus
 		// renderer tick
 		{
 			uint32_t frameIndex = _renderer->_rhiContext->getCurrentFrame();
-			_submitCommandBuffers.resize(1);
+			_submitCommandBuffers.resize(3);
 			_submitCommandBuffers[0] = _renderer->_defferedCommandBuffer[frameIndex];
-			//_submitCommandBuffers[0] = _renderer->_shadowCommandBuffers[frameIndex];
-			//_submitCommandBuffers[1] = _renderer->_sceneCommandBuffers[frameIndex];
-
-			//std::vector<drhi::DynamicCommandBuffer> presentCommandBuffer{};
-			//presentCommandBuffer.resize(2);
-			//presentCommandBuffer[0] = _renderer->_defferedCommandBuffer[frameIndex];
-			//presentCommandBuffer[1] = _priCmdbuf[frameIndex];
+			_submitCommandBuffers[1] = _renderer->_shadowCommandBuffers[frameIndex];
+			_submitCommandBuffers[2] = _renderer->_sceneCommandBuffers[frameIndex];
 
 			_renderer->_rhiContext->frameOnTick(_recreateFunc, &_submitCommandBuffers, &_priCmdbuf);
 		}

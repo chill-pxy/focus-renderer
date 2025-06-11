@@ -172,19 +172,31 @@ namespace focus
 		for (auto p : *_submitRenderlist)
 		{
 			if (p->_built) continue;
-			p->_material->_brdfImageView = &_brdflutImageView;
-			p->_material->_brdfSampler = &_brdflutSampler;
 			
-			p->_material->_irradianceImageView = &_irradianceImageView;
-			p->_material->_irradianceSampler = &_irradianceSampler;
-			
-			p->_material->_filteredImageView = &_filteredImageView;
-			p->_material->_filteredImageSampler = &_filteredImageSampler;
-
-			p->_material->_shadowImageView = &_shadowImageView;
-			p->_material->_shadowSampler = &_shadowSampler;
-
+			//preapre ibl resources
 			{
+				p->_material->_brdfImageView = &_brdflutImageView;
+				p->_material->_brdfSampler = &_brdflutSampler;
+
+				p->_material->_irradianceImageView = &_irradianceImageView;
+				p->_material->_irradianceSampler = &_irradianceSampler;
+
+				p->_material->_filteredImageView = &_filteredImageView;
+				p->_material->_filteredImageSampler = &_filteredImageSampler;
+			}
+
+			// prepare shadow resources
+			{
+				p->_material->_shadowImageView = &_shadowImageView;
+				p->_material->_shadowSampler = &_shadowSampler;
+			}
+
+			// prepare g-buffer resources
+			{
+				p->_material->_gbuffer.albedoImageView = &_albedoView;
+				p->_material->_gbuffer.albedoSampler = &_albedoSampler;
+				p->_material->_gbuffer.positionImageView = &_positionView;
+				p->_material->_gbuffer.positionSampler = &_positionSampler;
 				p->_material->_gbuffer.normalImageView = &_normalView;
 				p->_material->_gbuffer.normalSampler = &_normalSampler;
 				p->_material->_gbuffer.depthImageView = &_depthView;

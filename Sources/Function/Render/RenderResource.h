@@ -49,5 +49,25 @@ namespace focus
         virtual void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline) = 0;
         virtual void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer, drhi::DynamicPipeline pipeline, drhi::DynamicPipelineLayout pipelineLayout, drhi::DynamicDescriptorSet set) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
+        virtual void buildPipeline(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+        {
+            //initiailize shadow map
+            _shadow = std::make_shared<ShadowMap>();
+            _shadow->initialize(rhi);
+
+            if (_material->_basicTexture) _material->buildTexture(rhi, commandPool);
+
+            //initialize deffered
+            if (!_isLightActor)
+            {
+                _deffered = std::make_shared<DefferedPipeline>();
+                _deffered->_textureImageView = _material->_textureImageView;
+                _deffered->_textureSampler = _material->_textureSampler;
+                _deffered->initialize(rhi);
+            }
+
+            // build material
+            _material->build(rhi);
+        }
     };
 }

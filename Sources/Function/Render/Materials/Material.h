@@ -1,8 +1,10 @@
 #pragma once
 
 #include<drhi.h>
+
 #include"../../../Core/Path.h"
 #include"../../../Core/Math.h"
+#include"../Texture.h"
 
 namespace focus
 {
@@ -37,42 +39,23 @@ namespace focus
 
     typedef struct GBuffer
     {
+        drhi::DynamicImageView* albedoImageView{ nullptr };
+        drhi::DynamicSampler*   albedoSampler{ nullptr };
+        drhi::DynamicImageView* positionImageView{ nullptr };
+        drhi::DynamicSampler*   positionSampler{ nullptr };
         drhi::DynamicImageView* normalImageView{ nullptr };
-        drhi::DynamicSampler* normalSampler{ nullptr };
+        drhi::DynamicSampler*   normalSampler{ nullptr };
         drhi::DynamicImageView* depthImageView{ nullptr };
-        drhi::DynamicSampler* depthSampler{ nullptr };
+        drhi::DynamicSampler*   depthSampler{ nullptr };
     }GBuffer;
 
 	class Material
 	{
 	public:
-        drhi::DynamicImage        _textureImage{};
-        drhi::DynamicImageView    _textureImageView{};
-        drhi::DynamicSampler      _textureSampler{};
-        drhi::DynamicDeviceMemory _textureMemory{};
-
-        GBuffer _gbuffer{};
-
-        drhi::DynamicImageView* _shadowImageView{ nullptr };
-        drhi::DynamicSampler* _shadowSampler{ nullptr };
-
-        drhi::DynamicImageView* _brdfImageView{ nullptr };
-        drhi::DynamicSampler* _brdfSampler{ nullptr };
-
-        drhi::DynamicImageView*  _irradianceImageView{nullptr};
-        drhi::DynamicSampler*    _irradianceSampler{nullptr};
-
-        drhi::DynamicImageView*    _filteredImageView{nullptr};
-        drhi::DynamicSampler*      _filteredImageSampler{nullptr};
-
-        drhi::DynamicDescriptorPool      _descriptorPool{};
-        drhi::DynamicDescriptorSet       _descriptorSet{};
-        drhi::DynamicDescriptorSetLayout _descriptorSetLayout{};
-
-        drhi::DynamicPipeline       _pipeline{};
-        drhi::DynamicPipelineLayout _pipelineLayout{};
-
         std::string _type = "Material Base";
+
+        // resources
+        std::shared_ptr<Texture> _basicTexture;
 
         // property
         std::string _name{ "unknown" };
@@ -95,10 +78,38 @@ namespace focus
         bool _built{ false };
         bool _cleared{ false };
 
+        // rhi resources
+        GBuffer _gbuffer{};
+
+        drhi::DynamicImage        _textureImage{};
+        drhi::DynamicImageView    _textureImageView{};
+        drhi::DynamicSampler      _textureSampler{};
+        drhi::DynamicDeviceMemory _textureMemory{};
+
+        drhi::DynamicImageView* _shadowImageView{ nullptr };
+        drhi::DynamicSampler*   _shadowSampler{ nullptr };
+
+        drhi::DynamicImageView* _brdfImageView{ nullptr };
+        drhi::DynamicSampler*   _brdfSampler{ nullptr };
+
+        drhi::DynamicImageView* _irradianceImageView{ nullptr };
+        drhi::DynamicSampler*   _irradianceSampler{ nullptr };
+
+        drhi::DynamicImageView* _filteredImageView{ nullptr };
+        drhi::DynamicSampler*   _filteredImageSampler{ nullptr };
+
+        drhi::DynamicDescriptorPool      _descriptorPool{};
+        drhi::DynamicDescriptorSet       _descriptorSet{};
+        drhi::DynamicDescriptorSetLayout _descriptorSetLayout{};
+
+        drhi::DynamicPipeline       _pipeline{};
+        drhi::DynamicPipelineLayout _pipelineLayout{};
+
+
 	public:
 		Material() = default;
 
-		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool) = 0;
+		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi) = 0;
         virtual void updateUniformBuffer(UniformUpdateData uud) = 0;
         virtual void clean(std::shared_ptr<drhi::DynamicRHI> rhi) = 0;
 
@@ -109,6 +120,17 @@ namespace focus
 
             rhi->bindPipeline(_pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
             rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+        }
+
+        virtual void buildTexture(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+        {
+            //binding sampler and image view
+            auto api = rhi->getCurrentAPI();
+            auto format = drhi::DynamicFormat(api);
+            auto imageAspect = drhi::DynamicImageAspectFlagBits(api);
+            rhi->createTextureImage(&_textureImage, &_textureMemory, commandPool, _basicTexture->_width, _basicTexture->_height, _basicTexture->_channels, _basicTexture->_pixels);
+            rhi->createImageView(&_textureImageView, &_textureImage, format.FORMAT_R8G8B8A8_SRGB, imageAspect.IMAGE_ASPECT_COLOR_BIT);
+            rhi->createTextureSampler(&_textureSampler);
         }
 	};
 }

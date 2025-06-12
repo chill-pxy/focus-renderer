@@ -100,17 +100,17 @@ namespace focus
             dsbs[5].pImmutableSamplers = nullptr;
             dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
-            dsbs[5].binding = 6;
-            dsbs[5].descriptorCount = 1;
-            dsbs[5].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            dsbs[5].pImmutableSamplers = nullptr;
-            dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+            dsbs[6].binding = 6;
+            dsbs[6].descriptorCount = 1;
+            dsbs[6].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[6].pImmutableSamplers = nullptr;
+            dsbs[6].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
-            dsbs[5].binding = 7;
-            dsbs[5].descriptorCount = 1;
-            dsbs[5].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            dsbs[5].pImmutableSamplers = nullptr;
-            dsbs[5].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
+            dsbs[7].binding = 7;
+            dsbs[7].descriptorCount = 1;
+            dsbs[7].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            dsbs[7].pImmutableSamplers = nullptr;
+            dsbs[7].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
 
             rhi->createDescriptorSetLayout(&_descriptorSetLayout, &dsbs);
 
@@ -200,12 +200,12 @@ namespace focus
             wds[5].pImageInfo = &dii[4];
 
             wds[6].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            wds[6].dstBinding = 5;
+            wds[6].dstBinding = 6;
             wds[6].descriptorCount = 1;
             wds[6].pImageInfo = &dii[5];
 
             wds[7].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            wds[7].dstBinding = 5;
+            wds[7].dstBinding = 7;
             wds[7].descriptorCount = 1;
             wds[7].pImageInfo = &dii[6];
 

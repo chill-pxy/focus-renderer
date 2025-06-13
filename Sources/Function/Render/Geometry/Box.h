@@ -22,10 +22,10 @@ namespace focus
 
 		Box(double width, double length, double height) : _width(width), _length(length), _height(height){};
 	
-		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+		void buildVertexData(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
 		{
 			// create vertices
-			Vertex v1{},v2{},v3{},v4{},v5{},v6{},v7{},v8{};
+			Vertex v1{}, v2{}, v3{}, v4{}, v5{}, v6{}, v7{}, v8{};
 			v1.pos = Vector3(-_width / 2, -_length / 2, _height / 2);
 			v2.pos = Vector3(_width / 2, -_length / 2, _height / 2);
 			v3.pos = Vector3(_width / 2, _length / 2, _height / 2);
@@ -35,7 +35,7 @@ namespace focus
 			v7.pos = Vector3(_width / 2, _length / 2, -_height / 2);
 			v8.pos = Vector3(-_width / 2, _length / 2, -_height / 2);
 
-			v1.normal = normalize(Vector3(0, 0, 1)); 
+			v1.normal = normalize(Vector3(0, 0, 1));
 			v2.normal = normalize(Vector3(0, 0, 1));
 			v3.normal = normalize(Vector3(0, 0, 1));
 			v4.normal = normalize(Vector3(0, 0, 1));
@@ -46,14 +46,14 @@ namespace focus
 			v8.normal = normalize(Vector3(0, 0, -1));
 
 			v1.texCoord = Vector2(0, 0);
-			v2.texCoord = Vector2(1, 0); 
-			v3.texCoord = Vector2(1, 1); 
-			v4.texCoord = Vector2(0, 1); 
+			v2.texCoord = Vector2(1, 0);
+			v3.texCoord = Vector2(1, 1);
+			v4.texCoord = Vector2(0, 1);
 
-			v5.texCoord = Vector2(0, 0); 
+			v5.texCoord = Vector2(0, 0);
 			v6.texCoord = Vector2(1, 0);
 			v7.texCoord = Vector2(1, 1);
-			v8.texCoord = Vector2(0, 1); 
+			v8.texCoord = Vector2(0, 1);
 
 			_vertices = { v1,v2,v3, v4, v5, v6, v7, v8 };
 
@@ -83,11 +83,38 @@ namespace focus
 			//create index buffer
 			auto indexBufferSize = sizeof(_indices[0]) * _indices.size();
 			rhi->createDynamicBuffer(&_indexBuffer, &_indexDeviceMemory, commandPool, indexBufferSize, _indices.data(), bufferUsage.BUFFER_USAGE_INDEX_BUFFER_BIT, memoryFlags.MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		}
+
+		virtual void build(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+		{
+			buildVertexData(rhi, commandPool);
 
 			// prepare pipeline
 			buildPipeline(rhi, commandPool);
 
 			_built = true;
+		}
+
+		virtual void buildPipeline(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool) override final
+		{
+			//initiailize shadow map
+			_shadow = std::make_shared<ShadowMap>();
+			_shadow->initialize(rhi);
+
+			if (_material->_basicTexture) _material->buildTexture(rhi, commandPool);
+
+			//initialize deffered
+			if (!_isLightActor)
+			{
+				_deffered = std::make_shared<DefferedPipeline>();
+				_deffered->_textureImageView = _material->_textureImageView;
+				_deffered->_textureSampler = _material->_textureSampler;
+				_deffered->_isCube = true;
+				_deffered->initialize(rhi);
+			}
+
+			// build material
+			_material->build(rhi);
 		}
 
 		virtual void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer, RenderResourcePipeline pipeline)

@@ -95,13 +95,7 @@ namespace focus
             dsbs[0].pImmutableSamplers = nullptr;
             dsbs[0].stageFlags = stageFlags.SHADER_STAGE_VERTEX_BIT;
 
-            //dsbs[1].binding = 1;
-            //dsbs[1].descriptorCount = 1;
-            //dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            //dsbs[1].pImmutableSamplers = nullptr;
-            //dsbs[1].stageFlags = stageFlags.SHADER_STAGE_FRAGMENT_BIT;
-
-            dsbs[1].binding = 2;
+            dsbs[1].binding = 1;
             dsbs[1].descriptorCount = 1;
             dsbs[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             dsbs[1].pImmutableSamplers = nullptr;
@@ -115,9 +109,9 @@ namespace focus
 
             std::vector<drhi::DynamicDescriptorPoolSize> poolSizes(2);
             poolSizes[0].type = descriptorType.DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            poolSizes[0].descriptorCount = 3;
+            poolSizes[0].descriptorCount = 1;
             poolSizes[1].type = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            poolSizes[1].descriptorCount = 3;
+            poolSizes[1].descriptorCount = 1;
 
             // create descriptor
             rhi->createDescriptorPool(&_descriptorPool, &poolSizes);
@@ -130,11 +124,11 @@ namespace focus
 
             drhi::DynamicDescriptorImageInfo dii{};
             dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii.imageView = _textureImageView;
-            dii.sampler = _textureSampler;
+            dii.imageView = *_gbuffer.albedoImageView;
+            dii.sampler = *_gbuffer.albedoSampler;
 
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            wds[1].dstBinding = 2;
+            wds[1].dstBinding = 1;
             wds[1].descriptorCount = 1;
             wds[1].pImageInfo = &dii;
 
@@ -172,11 +166,6 @@ namespace focus
 
         virtual void updateUniformBuffer(UniformUpdateData uud)
         {
-            //FCUBEUniformBufferObject fe{};
-            //fe.exposure = 4.0;
-            //fe.gamma = 2.4;
-            //memcpy(_funiformBufferMapped, &fe, sizeof(FCUBEUniformBufferObject));
-
             ECubeUniformBufferObject ubo{};
             ubo.model = uud.model;
             ubo.proj = uud.proj;

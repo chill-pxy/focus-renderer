@@ -29,5 +29,11 @@ namespace focus
 			_material->clean(rhi);
 			_deffered->clean(rhi);
 		}
+
+		void preBuild(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandPool* commandPool)
+		{
+			buildVertexData(rhi, commandPool);
+			_material->buildTexture(rhi, commandPool);
+		}
 	};
 }

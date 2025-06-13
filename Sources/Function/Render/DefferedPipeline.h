@@ -18,6 +18,8 @@ namespace focus
 	class DefferedPipeline
 	{
     public:
+        bool _isCube{ false };
+
         drhi::DynamicDescriptorSetLayout _descriptorSetLayout{};
         drhi::DynamicDescriptorPool _descriptorPool{};
         drhi::DynamicDescriptorSet _descriptorSet{};
@@ -101,6 +103,11 @@ namespace focus
             drhi::DynamicPipelineCreateInfo pci = {};
             pci.vertexShader = RESOURCE_PATH"Shaders/Deffered/gbufferVertex.spv";
             pci.fragmentShader = RESOURCE_PATH"Shaders/Deffered/gbufferFragment.spv";
+            if (_isCube)
+            {
+                pci.vertexShader = RESOURCE_PATH"Shaders/Deffered/gbufferCubeVertex.spv";
+                pci.fragmentShader = RESOURCE_PATH"Shaders/Deffered/gbufferCubeFragment.spv";
+            }
             pci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();
@@ -118,7 +125,7 @@ namespace focus
             pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
             pci.includeStencil = true;
             pci.dynamicDepthBias = false;
-            pci.cullMode = cullMode.CULL_MODE_BACK_BIT;
+            pci.cullMode = cullMode.CULL_MODE_NONE;
             pci.sampleCounts = sampleCount.SAMPLE_COUNT_1_BIT;
             pci.colorAttachmentCount = 3;
 
@@ -158,7 +165,6 @@ namespace focus
             auto api = rhi->getCurrentAPI();
             auto bindPoint = drhi::DynamicPipelineBindPoint(api);
 
-            rhi->cmdSetDepthBias(*commandBuffer, 0.5f, 0.0f, 2.0f);
             rhi->bindPipeline(_pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
             rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
         }

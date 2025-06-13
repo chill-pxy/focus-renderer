@@ -142,7 +142,7 @@ namespace focus
 			_filteredImageHeight = texture->_height;
 			_environmentMap = std::make_shared<SkyCube>();
 			_environmentMap->initialize(_rhiContext, texture);
-			_environmentMap->build(_rhiContext, &_environmentMapCommandPool);
+			_environmentMap->preBuild(_rhiContext, &_environmentMapCommandPool);
 		}
 
 		_prepared = true;
@@ -168,6 +168,11 @@ namespace focus
 			_submitRenderlist = nullptr;
 
 		_submitRenderlist = renderlist;
+		
+		// build environment map
+		_environmentMap->_material->_gbuffer.albedoImageView = &_albedoView;
+		_environmentMap->_material->_gbuffer.albedoSampler = &_albedoSampler;
+		_environmentMap->buildPipeline(_rhiContext, &_environmentMapCommandPool);
 
 		for (auto p : *_submitRenderlist)
 		{
@@ -392,11 +397,17 @@ namespace focus
 			_rhiContext->beginCommandBuffer(_defferedCommandBuffer[index]);
 			_rhiContext->beginRendering(_defferedCommandBuffer[index], &renderInfo);
 
+			// draw environment map
+			_environmentMap->draw(_rhiContext, &_defferedCommandBuffer[index], RenderResourcePipeline::DEFFERED);
+
+			// draw scene
 			for (auto p : *_submitRenderlist)
 			{
 				if (p->_isLightActor) continue;
 				p->draw(_rhiContext, &_defferedCommandBuffer[index], RenderResourcePipeline::DEFFERED);
 			}
+
+			
 
 			_rhiContext->endRendering(_defferedCommandBuffer[index], &renderInfo);
 			_rhiContext->endCommandBuffer(_defferedCommandBuffer[index]);

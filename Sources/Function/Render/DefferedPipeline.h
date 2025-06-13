@@ -5,6 +5,7 @@
 #include"../../Core/Math.h"
 #include"../../Core/Path.h"
 #include"Geometry/MeshVertex.h"
+#include"Pipeline.h"
 
 namespace focus
 {
@@ -15,26 +16,8 @@ namespace focus
         alignas(16) Matrix4 view;
     } DefferedUniformBufferObject;
 
-	class DefferedPipeline
+	class DefferedPipeline : public Pipeline
 	{
-    public:
-        bool _isCube{ false };
-
-        drhi::DynamicDescriptorSetLayout _descriptorSetLayout{};
-        drhi::DynamicDescriptorPool _descriptorPool{};
-        drhi::DynamicDescriptorSet _descriptorSet{};
-        drhi::DynamicPipeline _pipeline{};
-        drhi::DynamicPipelineLayout _pipelineLayout{};
-
-        drhi::DynamicImageView    _textureImageView{};
-        drhi::DynamicSampler      _textureSampler{};
-
-    private:
-        void* _uniformBufferMapped{ nullptr };
-        drhi::DynamicBuffer               _uniformBuffer;
-        drhi::DynamicDeviceMemory         _uniformBufferMemory;
-        drhi::DynamicDescriptorBufferInfo _descriptorBufferInfo;
-
     public:
         void initialize(std::shared_ptr<drhi::DynamicRHI> rhi)
         {
@@ -119,8 +102,8 @@ namespace focus
             std::vector<uint32_t> colorFormats{};
             colorFormats.resize(3);
             colorFormats[0] = format.FORMAT_B8G8R8A8_UNORM;
-            colorFormats[1] = format.FORMAT_B8G8R8A8_UNORM;
-            colorFormats[2] = format.FORMAT_B8G8R8A8_UNORM;
+            colorFormats[1] = format.FORMAT_R16G16B16A16_SFLOAT;
+            colorFormats[2] = format.FORMAT_R16G16B16A16_SFLOAT;
             pci.colorImageFormats = colorFormats;
             pci.depthImageFormat = format.FORMAT_D32_SFLOAT_S8_UINT;
             pci.includeStencil = true;
@@ -139,7 +122,7 @@ namespace focus
             rhi->createPipeline(&_pipeline, &_pipelineLayout, pci);
         }
 
-        virtual void updateUniformBuffer(UniformUpdateData uud)
+        void updateUniformBuffer(UniformUpdateData uud)
         {
             DefferedUniformBufferObject ubo{};
             ubo.model = uud.model;
@@ -147,26 +130,6 @@ namespace focus
             ubo.proj = uud.proj;
 
             memcpy(_uniformBufferMapped, &ubo, sizeof(ubo));
-        }
-
-        virtual void clean(std::shared_ptr<drhi::DynamicRHI> rhi)
-        {
-            rhi->clearBuffer(&_uniformBuffer, &_uniformBufferMemory);
-             
-            rhi->freeDescriptorSets(&_descriptorSet, &_descriptorPool);
-            rhi->clearDescriptorPool(&_descriptorPool);
-            rhi->clearDescriptorSetLayout(&_descriptorSetLayout);
-
-            rhi->clearPipeline(&_pipeline, &_pipelineLayout);
-        }
-
-        void draw(std::shared_ptr<drhi::DynamicRHI> rhi, drhi::DynamicCommandBuffer* commandBuffer)
-        {
-            auto api = rhi->getCurrentAPI();
-            auto bindPoint = drhi::DynamicPipelineBindPoint(api);
-
-            rhi->bindPipeline(_pipeline, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
-            rhi->bindDescriptorSets(&_descriptorSet, _pipelineLayout, commandBuffer, bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
         }
 	};
 }

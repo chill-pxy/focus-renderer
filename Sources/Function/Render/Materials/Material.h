@@ -77,6 +77,7 @@ namespace focus
 
         bool _built{ false };
         bool _cleared{ false };
+        bool _defferdDraw{ false };
 
         // rhi resources
         GBuffer _gbuffer{};

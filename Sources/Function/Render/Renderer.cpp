@@ -77,8 +77,8 @@ namespace focus
 
 			// position
 			{
-				_rhiContext->createImage(&_position, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_positionMemory);
-				_rhiContext->createImageView(&_positionView, &_position, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+				_rhiContext->createImage(&_position, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_R16G16B16A16_SFLOAT, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_positionMemory);
+				_rhiContext->createImageView(&_positionView, &_position, format.FORMAT_R16G16B16A16_SFLOAT, aspect.IMAGE_ASPECT_COLOR_BIT);
 
 				samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 				samplerInfo.maxLod = 1;
@@ -94,8 +94,8 @@ namespace focus
 
 			// normal
 			{
-				_rhiContext->createImage(&_normal, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_B8G8R8A8_UNORM, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
-				_rhiContext->createImageView(&_normalView, &_normal, format.FORMAT_B8G8R8A8_UNORM, aspect.IMAGE_ASPECT_COLOR_BIT);
+				_rhiContext->createImage(&_normal, _rhiContext->getSwapChainExtentWidth(), _rhiContext->getSwapChainExtentHeight(), format.FORMAT_R16G16B16A16_SFLOAT, tilling.IMAGE_TILING_OPTIMAL, useFlag.IMAGE_USAGE_COLOR_ATTACHMENT_BIT | useFlag.IMAGE_USAGE_SAMPLED_BIT, sampleCount.SAMPLE_COUNT_1_BIT, memoryFlag.MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &_normalMemory);
+				_rhiContext->createImageView(&_normalView, &_normal, format.FORMAT_R16G16B16A16_SFLOAT, aspect.IMAGE_ASPECT_COLOR_BIT);
 
 				samplerInfo.borderColor = bordercolor.BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 				samplerInfo.maxLod = 1;
@@ -143,6 +143,7 @@ namespace focus
 			_environmentMap = std::make_shared<SkyCube>();
 			_environmentMap->initialize(_rhiContext, texture);
 			_environmentMap->preBuild(_rhiContext, &_environmentMapCommandPool);
+			//_environmentMap->build(_rhiContext, &_environmentMapCommandPool);
 		}
 
 		_prepared = true;
@@ -168,11 +169,9 @@ namespace focus
 			_submitRenderlist = nullptr;
 
 		_submitRenderlist = renderlist;
-		
-		// build environment map
-		_environmentMap->_material->_gbuffer.albedoImageView = &_albedoView;
-		_environmentMap->_material->_gbuffer.albedoSampler = &_albedoSampler;
-		_environmentMap->buildPipeline(_rhiContext, &_environmentMapCommandPool);
+		_environmentMap->_material->_defferdDraw = true;
+		_environmentMap->_built = false;
+		_submitRenderlist->push_back(_environmentMap);
 
 		for (auto p : *_submitRenderlist)
 		{
@@ -333,13 +332,19 @@ namespace focus
 
 	void Renderer::scenePass()
 	{
-		auto aspectFlag = drhi::DynamicImageAspectFlagBits(_rhiContext->getCurrentAPI());
-		auto imageLayout = drhi::DynamicImageLayout(_rhiContext->getCurrentAPI());
+		auto api = _rhiContext->getCurrentAPI();
+		auto aspectFlag = drhi::DynamicImageAspectFlagBits(api);
+		auto imageLayout = drhi::DynamicImageLayout(api);
+		auto bindPoint = drhi::DynamicPipelineBindPoint(api);
 
 		drhi::DynamicRenderingInfo renderInfo{};
 		renderInfo.isRenderOnSwapChain = false;
 		renderInfo.isClearEveryFrame = true;
 		renderInfo.includeStencil = false;
+
+		auto pipeline = _submitRenderlist->at(1)->_material->_pipeline;
+		auto descriptorSet = _submitRenderlist->at(1)->_material->_descriptorSet;
+		auto pipelineLayout = _submitRenderlist->at(1)->_material->_pipelineLayout;
 
 		for (int index = 0; index < _sceneCommandBuffers.size(); ++index)
 		{
@@ -357,13 +362,10 @@ namespace focus
 			_rhiContext->beginCommandBuffer(_sceneCommandBuffers[index]);
 			_rhiContext->beginRendering(_sceneCommandBuffers[index], renderInfo);
 
-			// draw environment
-			_environmentMap->draw(_rhiContext, &_sceneCommandBuffers[index], RenderResourcePipeline::SCENE);
-
-			for (auto p : *_submitRenderlist)
-			{
-				p->draw(_rhiContext, &_sceneCommandBuffers[index], RenderResourcePipeline::SCENE);
-			}
+			_rhiContext->bindDescriptorSets(&descriptorSet, pipelineLayout, &_sceneCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			_rhiContext->bindPipeline(pipeline, &_sceneCommandBuffers[index], bindPoint.PIPELINE_BIND_POINT_GRAPHICS);
+			
+			_rhiContext->draw(&_sceneCommandBuffers[index], 3, 1, 0, 0);
 
 			_rhiContext->endRendering(_sceneCommandBuffers[index], renderInfo);
 			_rhiContext->endCommandBuffer(_sceneCommandBuffers[index]);

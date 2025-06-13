@@ -124,8 +124,16 @@ namespace focus
 
             drhi::DynamicDescriptorImageInfo dii{};
             dii.imageLayout = imageLayout.IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            dii.imageView = *_gbuffer.albedoImageView;
-            dii.sampler = *_gbuffer.albedoSampler;
+            if (_defferdDraw)
+            {
+                dii.imageView = *_gbuffer.albedoImageView;
+                dii.sampler = *_gbuffer.albedoSampler;
+            }
+            else
+            {
+                dii.imageView = _textureImageView;
+                dii.sampler = _textureSampler;
+            }
 
             wds[1].descriptorType = descriptorType.DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             wds[1].dstBinding = 1;
@@ -136,8 +144,13 @@ namespace focus
 
             // create pipeline
             drhi::DynamicPipelineCreateInfo pci = {};
-            pci.vertexShader = RESOURCE_PATH"Shaders/Materials/environmentCubeVertex.spv";
-            pci.fragmentShader = RESOURCE_PATH"Shaders/Materials/environmentCubeFragment.spv";
+            pci.vertexShader = RESOURCE_PATH"Shaders/Materials/Environment/environmentCubeVertex.spv";
+            pci.fragmentShader = RESOURCE_PATH"Shaders/Materials/Environment/environmentCubeFragment.spv";
+            if (_defferdDraw)
+            {
+                pci.vertexShader = RESOURCE_PATH"Shaders/Materials/Environment/environmentCubeDefferedVertex.spv";
+                pci.fragmentShader = RESOURCE_PATH"Shaders/Materials/Environment/environmentCubeDefferedFragment.spv";
+            }
             pci.vertexInputBinding = drhi::DynamicVertexInputBindingDescription();
             pci.vertexInputBinding.set(api, 0, sizeof(Vertex));
             pci.vertexInputAttributes = std::vector<drhi::DynamicVertexInputAttributeDescription>();
